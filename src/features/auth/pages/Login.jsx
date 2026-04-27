@@ -24,33 +24,32 @@ function Login({ onLogin, mudarTela }) {
     setErro("");
 
     fetch("https://abcgjl-smartcusine-backend-api.onrender.com/auth/login", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    email,
-    senha,
-    tipoUsuario: "ADMIN"
-  })
-})
-  .then(res => {
-    if (!res.ok) throw new Error("Erro no login");
-    return res.json();
-  })
-  .then(data => {
-    if (data.token) {
-      localStorage.setItem("token", data.token);
-      onLogin();
-    } else {
-      setErro("Email ou senha inválidos");
-    }
-  })
-  .catch(() => {
-    setErro("Não foi possível conectar ao servidor.");
-  });
-
-};
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email , senha })
+    })
+      .then(res => {
+        if (!res.ok) throw new Error("Erro na rede");
+        return res.json();
+      })
+      .then(data => {
+        // Verificamos se o objeto 'data' possui a propriedade 'token'
+        if (data && data.token) {
+          // Opcional: Salvar o token para manter o usuário logado ao atualizar a página
+          localStorage.setItem("token", data.token);
+          
+          onLogin(); // Agora ele vai entrar no Dashboard!
+        } else {
+          setErro("Email ou senha inválidos");
+        }
+      })
+      .catch((err) => {
+        setErro("Não foi possível conectar ao servidor.");
+        console.error(err);
+      });
+  };
 
   // Permite logar apertando a tecla Enter
   const handleKeyDown = (e) => {

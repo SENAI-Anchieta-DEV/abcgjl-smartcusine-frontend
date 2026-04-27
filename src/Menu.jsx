@@ -19,7 +19,7 @@ Sistema Académico
 
 {/* onClick altera o estado 'telaAtiva' que está no App.js */}
 <Button color="inherit" onClick={() => setTelaAtiva("dashboard")}>Dashboard</Button>
-<Button color="inherit" onClick={() => setTelaAtiva("alunos")}>Alunos</Button>
+<Button color="inherit" onClick={() => setTelaAtiva("usuarios")}>usuários</Button>
 
 <Button
 color="inherit"

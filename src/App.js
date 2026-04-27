@@ -1,94 +1,130 @@
 import { useState, useMemo } from "react";
-// ThemeProvider: Providencia o tema para todos os componentes filhos
-// createTheme: Função que define as cores e estilos do sistema
-// CssBaseline: Normaliza o CSS e aplica a cor de fundo correta (preto no dark, branco no light)
 import { ThemeProvider, createTheme, CssBaseline, Box } from "@mui/material";
+import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
+
+// Importações das tuas telas originais (intactas!)
 import TelaDeBoasVindas from "./TelaDeBoasVindas";
 import Login from "./Login";
 import Cadastro from "./Cadastro";
 import Menu from "./Menu";
 import Dashboard from "./dashboard";
-import Alunos from "./Alunos";
+import Usuarios from "./Usuarios";
 
-function App() {
-// Estado para controlar se o utilizador passou pela tela de login
-const [logado, setLogado] = useState(false);
+function AppContent() {
+  const navigate = useNavigate(); // Hook poderoso que muda as rotas
+  const [logado, setLogado] = useState(false);
+  const [modo, setModo] = useState("light");
 
-// Estado para saber qual componente renderizar no conteúdo principal
-const [telaAtiva, setTelaAtiva] = useState("boas-vindas");
+  const theme = useMemo(() => createTheme({
+      palette: {
+          mode: modo,
+          primary: { main: '#1976d2' },
+      },
+  }), [modo]);
 
-// Estado para controlar o modo de cor (claro ou escuro)
-const [modo, setModo] = useState("light");
+  const toggleTema = () => {
+      setModo((prev) => (prev === "light" ? "dark" : "light"));
+  };
 
-// useMemo: Memoriza o tema para evitar que o React o processe novamente
-// sem necessidade, a menos que o 'modo' mude.
-const theme = useMemo(() => createTheme({
-        palette: {
-            mode: modo, // Define se o MUI usa paleta clara ou escura
-            primary: { main: '#1976d2' }, // Cor azul padrão
-        },
-    }), 
-    [modo]
-);
+  const irParaLogin = () => navigate("/login");
+  const irParaCadastro = () => navigate("/cadastro");
+  const irParaDashboard = () => navigate("/dashboard");
+  const irParaBoasVindas = () => navigate("/teladeboasvindas");
 
-// Função simples para inverter o estado do tema
-const toggleTema = () => {
-    setModo((prev) => (prev === "light" ? "dark" : "light"));
-};
+  // O teu Menu e Dashboard passavam uma string (ex: "alunos") no setTelaAtiva.
+  // Esta função recebe a string e transforma no link correto!
+  const mudarTelaPorString = (tela) => {
+    if (tela === "login") navigate("/login");
+    else if (tela === "cadastro") navigate("/cadastro");
+    else if (tela === "dashboard") navigate("/dashboard");
+    else if (tela === "usuarios") navigate("/usuarios");
+    else if (tela === "boas-vindas") navigate("/teladeboasvindas");
+    else navigate(`/${tela}`);
+  };
 
-// Proteção de Rota: Se não estiver logado, interrompe e mostra apenas o Login
-if (!logado) {
-  if (telaAtiva === "boas-vindas") {
-    return <TelaDeBoasVindas
-     irParaLogin={() => setTelaAtiva("login")}
-     irParaCadastro={() => setTelaAtiva("cadastro")}
-     />;
-  }
-
-  if (telaAtiva === "cadastro") {
-      return <Cadastro mudarTela={() => setTelaAtiva("login")} />;
-  }
-  
   return (
-    <Login 
-      mudarTela={() => setTelaAtiva("cadastro")} 
-      onLogin={() => {
-        setLogado(true);           
-        setTelaAtiva("dashboard");
-      }}
-    />
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Box sx={{ minHeight: '100vh' }}>
+        
+        <Routes>
+          
+          {/* ---- ROTAS PÚBLICAS ---- */}
+          <Route path="/" element={
+            <TelaDeBoasVindas 
+              irParaLogin={irParaLogin} 
+              irParaCadastro={irParaCadastro} 
+            />
+          } />
+
+          <Route path="/login" element={
+            <Login 
+              mudarTela={irParaCadastro} // Do login vai pro cadastro
+              onLogin={() => {
+                setLogado(true);
+                irParaDashboard(); // Vai direto pro dashboard ao logar
+              }}
+            />
+          } />
+
+          <Route path="/cadastro" element={
+            <Cadastro mudarTela={irParaLogin} /> // Do cadastro volta pro login
+          } />
+
+
+          {/* ---- ROTAS PROTEGIDAS (PRECISA ESTAR LOGADO) ---- */}
+          <Route path="/dashboard" element={
+            logado ? (
+              <>
+                <Menu 
+                  onLogout={() => { setLogado(false); irParaBoasVindas(); }} 
+                  setTelaAtiva={mudarTelaPorString} 
+                  toggleTema={toggleTema} 
+                  modo={modo} 
+                />
+                <main style={{ padding: "20px" }}>
+                  <Dashboard mudarTela={mudarTelaPorString} />
+                </main>
+              </>
+            ) : (
+              <Navigate to="/login" replace /> // Se tentar entrar sem logar, chuta pro login
+            )
+          } />
+
+          <Route path="/usuarios" element={
+            logado ? (
+              <>
+                <Menu 
+                  onLogout={() => { setLogado(false); irParaBoasVindas(); }} 
+                  setTelaAtiva={mudarTelaPorString} 
+                  toggleTema={toggleTema} 
+                  modo={modo} 
+                />
+                <main style={{ padding: "20px" }}>
+                  <Usuarios mudarTela={mudarTelaPorString} />
+                </main>
+              </>
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          } />
+
+          {/*se o usúario digitar um link errado, volta pro inicio */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+
+        </Routes>
+      </Box>
+    </ThemeProvider>
   );
 }
 
-return (
-<ThemeProvider theme={theme}>
-<CssBaseline />
-
-{/* Box com minHeight garante que o fundo escuro cubra a tela toda */}
-<Box sx={{ minHeight: '100vh' }}>
-
-{/* Passamos as funções e o estado do modo para o Menu */}
-{telaAtiva !== "cadastro" && telaAtiva !== "boas-vindas" &&(
-    <Menu
-    onLogout={() => { 
-        setLogado(false);
-        setTelaAtiva("boas-vindas");
-    }}
-    setTelaAtiva={setTelaAtiva}
-    toggleTema={toggleTema}
-    modo={modo}
-/>
-)}
-
-{/* Renderização Condicional: Mostra o componente conforme o valor da string telaAtiva */}
-<main style={{padding: telaAtiva === "cadastro" ? "0px" : "20px"}}>
-{telaAtiva === "dashboard" && <Dashboard mudarTela={setTelaAtiva}/>}
-{telaAtiva === "login" && <Login mudarTela={setTelaAtiva}/>}
-{telaAtiva === "cadastro" && <Cadastro mudarTela={setTelaAtiva}/>}
-{telaAtiva === "alunos" && <Alunos mudarTela={setTelaAtiva}/>}
-</main>
-</Box>
-</ThemeProvider>
-);
+//O App principal agora apenas envolve tudo no BrowserRouter
+function App() {
+  return (
+    <BrowserRouter>
+      <AppContent />
+    </BrowserRouter>
+  );
 }
+
 export default App;

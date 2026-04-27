@@ -23,18 +23,36 @@ function Cadastro({mudarTela}) {
   const [erro, setErro] = useState("");
 
   const cadastrar = () => {
-    setErro("");
+  setErro("");
 
-    if (senha !== confirmarSenha) {
-      setErro("As senhas não coincidem");
-      return;
-    }
+  if (senha !== confirmarSenha) {
+    setErro("As senhas não coincidem");
+    return;
+  }
 
-    console.log({ tipo, nome, email, senha });
-
-    // Aqui depois você conecta com o backend
-  };
-
+  fetch("https://abcgjl-smartcusine-backend-api.onrender.com/usuarios", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      nome,
+      email,
+      senha,
+      tipo
+    })
+  })
+    .then(res => {
+      if (!res.ok) throw new Error("Erro ao cadastrar");
+      return res.json();
+    })
+    .then(() => {
+      mudarTela("login");
+    })
+    .catch(() => {
+      setErro("Erro ao cadastrar usuário.");
+    });
+};
   return (
     <Box
       sx={{
@@ -106,9 +124,9 @@ function Cadastro({mudarTela}) {
                 fullWidth
                 sx={{ backgroundColor: "#f5f5f5", borderRadius: 2 }}
               >
-                <MenuItem value="aluno">Administrador</MenuItem>
-                <MenuItem value="professor">Gerente</MenuItem>
-                <MenuItem value="professor">Cozinheito</MenuItem>
+               <MenuItem value="ADMIN">Administrador</MenuItem>
+               <MenuItem value="GERENTE">Gerente</MenuItem>
+               <MenuItem value="COZINHEIRO">Cozinheiro</MenuItem>
               </TextField>
 
               {/* NOME */}

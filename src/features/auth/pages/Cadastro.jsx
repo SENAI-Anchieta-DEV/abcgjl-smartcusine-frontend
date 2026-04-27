@@ -1,8 +1,7 @@
 import { useState } from "react";
 import imagemLogin from "./Logo_SmartCuisine.png";
-import { FiMail, FiLock } from 'react-icons/fi';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
+import { FiUser, FiMail, FiLock } from "react-icons/fi";
+
 import {
   Container,
   TextField,
@@ -11,52 +10,29 @@ import {
   Paper,
   Box,
   InputAdornment,
+  MenuItem,
   Link
 } from "@mui/material";
 
-function Login({ onLogin, mudarTela }) {
+function Cadastro({mudarTela}) {
+  const [tipo, setTipo] = useState("");
+  const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
+  const [confirmarSenha, setConfirmarSenha] = useState("");
   const [erro, setErro] = useState("");
 
-  const autenticar = () => {
-    // Limpa o erro anterior antes de tentar de novo.....
+  const cadastrar = () => {
     setErro("");
 
-    fetch("https://abcgjl-smartcusine-backend-api.onrender.com/auth/login", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    email,
-    senha,
-    tipoUsuario: "ADMIN"
-  })
-})
-  .then(res => {
-    if (!res.ok) throw new Error("Erro no login");
-    return res.json();
-  })
-  .then(data => {
-    if (data.token) {
-      localStorage.setItem("token", data.token);
-      onLogin();
-    } else {
-      setErro("Email ou senha inválidos");
+    if (senha !== confirmarSenha) {
+      setErro("As senhas não coincidem");
+      return;
     }
-  })
-  .catch(() => {
-    setErro("Não foi possível conectar ao servidor.");
-  });
 
-};
+    console.log({ tipo, nome, email, senha });
 
-  // Permite logar apertando a tecla Enter
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      autenticar();
-    }
+    // Aqui depois você conecta com o backend
   };
 
   return (
@@ -88,13 +64,14 @@ function Login({ onLogin, mudarTela }) {
               display: { xs: "none", md: "flex" },
               alignItems: "center",
               justifyContent: "center",
-              background: "linear-gradient(135deg, #BFA2FF80, #AEDCFF80, #EB863A80)",
-                padding: 4
+              background:
+                "linear-gradient(135deg, #BFA2FF80, #AEDCFF80, #EB863A80)",
+              padding: 4
             }}
           >
             <img
-              src={imagemLogin} // Usando o import corretamente
-              alt="logo smartcuisine"
+              src={imagemLogin}
+              alt="logo"
               style={{ width: "200px" }}
             />
           </Box>
@@ -104,103 +81,110 @@ function Login({ onLogin, mudarTela }) {
             sx={{
               flex: 1,
               padding: 5,
-              backgroundColor: "#ffff",
+              backgroundColor: "#fff"
             }}
           >
-            <Typography
-              variant="h3"
-              sx={{ 
+            <Typography 
+              variant="h3" 
+              sx={{
                 fontFamily: "'Glacial Indifference', sans-serif",
                 fontWeight: 700, 
-                marginBottom: 1 }}
+                mb: 2 }}
             >
-              Login
-            </Typography>
-
-            <Typography
-              variant="body2"
-              sx={{ 
-                fontFamily: "'Glacial Indifference', sans-serif",
-                color: "#666", 
-                marginBottom: 3 }}
-            >
-              Bem-vindo de volta! Insira suas credenciais.
+              Cadastro
             </Typography>
 
             <Box display="flex" flexDirection="column" gap={2}>
+
+              {/* TIPO DE PERFIL */}
               <TextField
-                label="Email"
-                variant="outlined"
+                select
+                label="Selecione um perfil"
+                size="small"
+                value={tipo}
+                onChange={(e) => setTipo(e.target.value)}
+                fullWidth
+                sx={{ backgroundColor: "#f5f5f5", borderRadius: 2 }}
+              >
+                <MenuItem value="aluno">Administrador</MenuItem>
+                <MenuItem value="professor">Gerente</MenuItem>
+                <MenuItem value="professor">Cozinheito</MenuItem>
+              </TextField>
+
+              {/* NOME */}
+              <TextField
+                label="Seu nome"
+                size="small"
+                fullWidth
+                onChange={(e) => setNome(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <FiUser />
+                    </InputAdornment>
+                  )
+                }}
+                sx={{ backgroundColor: "#f5f5f5", borderRadius: 2 }}
+              />
+
+              {/* EMAIL */}
+              <TextField
+                label="Seu email"
                 size="small"
                 fullWidth
                 onChange={(e) => setEmail(e.target.value)}
-                onKeyDown={handleKeyDown}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
                       <FiMail />
                     </InputAdornment>
-                  ),
+                  )
                 }}
-                sx={{
-                  backgroundColor: "#f5f5f5",
-                  borderRadius: 2
-                }}
+                sx={{ backgroundColor: "#f5f5f5", borderRadius: 2 }}
               />
 
+              {/* SENHA */}
               <TextField
                 label="Senha"
                 type="password"
-                variant="outlined"
                 size="small"
                 fullWidth
                 onChange={(e) => setSenha(e.target.value)}
-                onKeyDown={handleKeyDown}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
                       <FiLock />
                     </InputAdornment>
-                  ),
+                  )
                 }}
-                sx={{
-                  backgroundColor: "#f5f5f5",
-                  borderRadius: 2
-                }}
+                sx={{ backgroundColor: "#f5f5f5", borderRadius: 2 }}
               />
 
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  mt: 1
+              {/* CONFIRMAR SENHA */}
+              <TextField
+                label="Confirmar senha"
+                type="password"
+                size="small"
+                fullWidth
+                onChange={(e) => setConfirmarSenha(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <FiLock />
+                    </InputAdornment>
+                  )
                 }}
-              >
-
-              <FormControlLabel
-                control={
-                  <Checkbox 
-                    size="small"
-                    sx={{
-                      padding: "4px" 
-                    }}
-                  />
-                }
-                label="Me lembre"
-                sx={{
-                  margin: 0
-                }}
+                sx={{ backgroundColor: "#f5f5f5", borderRadius: 2 }}
               />
-              </Box>
 
+              {/* BOTÃO */}
               <Button
                 variant="contained"
                 fullWidth
-                onClick={autenticar}
+                onClick={cadastrar}
                 sx={{
                   fontFamily: "'Poppins', sans-serif",
-                  marginTop: 1,
+                  mt: 1,
                   padding: 1.2,
                   borderRadius: 2,
                   backgroundColor: "#ff7a00",
@@ -210,37 +194,34 @@ function Login({ onLogin, mudarTela }) {
                   }
                 }}
               >
-                Entrar
+                Criar conta
               </Button>
 
               {erro && (
-                <Typography color="error" align="center" sx={{ mt: 1 }}>
+                <Typography color="error" align="center">
                   {erro}
                 </Typography>
               )}
 
               <Box sx={{ mt: 2, textAlign: "center" }}>
-                <Typography variant="body2" sx={{ color: "#666" }}>
-                  Não possui uma conta?{" "}
+                <Typography 
+                  variant="body2" 
+                  sx={{ color: "#666" }}>
+
+                  Já possui uma conta?{" "}
                   <Link
-                    component="button" // Faz o Link se comportar como botão (evita refresh)
-                    type="button"
-                    onClick={() => mudarTela("cadastro")} 
+                    onClick={() => mudarTela("login")}
                     sx={{
                       color: "#ff7a00",
                       fontWeight: "bold",
                       textDecoration: "none",
                       cursor: "pointer",
-                      background: "none",
-                      border: "none",
-                      padding: 0,
-                      font: "inherit",
                       "&:hover": {
                         textDecoration: "underline"
                       }
                     }}
                   >
-                    Cadastre-se
+                    Faça Login
                   </Link>
                 </Typography>
               </Box>
@@ -252,4 +233,4 @@ function Login({ onLogin, mudarTela }) {
   );
 }
 
-export default Login;
+export default Cadastro;
