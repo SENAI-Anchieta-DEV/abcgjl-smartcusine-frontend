@@ -1,135 +1,503 @@
 import React from 'react';
+import {
+  Box, 
+  Typography, 
+  Button, 
+  Grid, 
+  AppBar, 
+  Container, 
+  Toolbar, 
+  Paper,
+  Stack,   
+  Link,    
+  Divider 
+} from '@mui/material';
+import { useState } from 'react';
+import { Drawer, IconButton } from '@mui/material';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import ThermostatIcon from '@mui/icons-material/Thermostat';
+import FactCheckIcon from '@mui/icons-material/FactCheck';
+import MenuIcon from '@mui/icons-material/Menu';
 import imagemLogin from "./Logo_SmartCuisine.png";
-import imagemHome from "./tela_home_smartcuisine.png"
-import { Box, Typography, Button, Container, Grid, AppBar, Toolbar } from '@mui/material';
+import cozinhaImg from "./cozinha.webp";
 
 function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
+
+  const [open, setOpen] = useState(false);
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        // Gradiente linear suave conforme a imagem
-        background: 'linear-gradient(135deg, #e0eafc 0%, #f7faff 50%, #fbdec6 100%)',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
-      {/* Header com Botão Entrar */}
-      <AppBar position="static" color="transparent" elevation={0} sx={{ p: 2 }}>
-        <Toolbar sx={{ justifyContent: 'space-between' }}>
-          <Box sx={{ 
-            width: "70px" ,
+    <Box sx={{ bgcolor: '#FAF9F6', minHeight: '100vh', overflowX: 'hidden' }}>
+      
+      {/* --- NAVBAR --- */}
+      <AppBar 
+        position="absolute" // Fica por cima da imagem
+        elevation={0} 
+        sx={{ 
+          backgroundColor: 'rgba(255, 255, 255, 0.05)', // Quase transparente
+          backdropFilter: 'blur(10px)', // Efeito de vidro
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
+          py: 1
+        }}
+      >
+        <Toolbar 
+          sx={{ 
             display: 'flex', 
-            alignItems: 'center', 
-            gap: 1 
+            justifyContent: 'space-between', 
+            px: { xs: 2, md: 8 } 
+          }}>
+
+          {/* Logo */}
+          <Box 
+            sx={{ 
+              display: 'flex', 
+              alignItems: 'center' 
             }}>
-            <img
+            <img 
               src={imagemLogin} 
-              alt="logo smartcuisine"
-              style={{ width: "70px" }}
+              alt="Logo" 
+              style={{ 
+                height: '60px', 
+                marginRight: '10px' 
+              }} 
             />
-            <Typography variant="h6" sx={{ 
-              fontWeight: 'bold', 
-              letterSpacing: 1 }}>
-            
-            SMARTCUISINE
+
+            <Typography variant="h6" sx={{ fontWeight: 800 }}>
+              SMARTCUISINE
             </Typography>
           </Box>
-          <Button 
-            variant="contained" 
-            onClick={irParaLogin}
+
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 4 }}>
+            <Button onClick={() => scrollToSection('funcionalidades')} 
+              sx={{ 
+                color: '#1a1a1a', 
+                '&:hover': {
+                  backgroundColor: 'transparent',
+                  color: '#EF6C00'
+                }
+              }}>
+              Funcionalidades
+            </Button>
+
+            <Button onClick={() => scrollToSection('como-funciona')} 
+              sx={{ 
+                color: '#1A1A1A',
+                '&:hover': {
+                  backgroundColor: 'transparent',
+                  color: '#EF6C00'
+                }
+                }}>
+              Como Funciona
+            </Button>
+
+            <Button variant="contained" 
+              onClick={irParaLogin} 
+              sx={{ 
+                backgroundColor: '#ff8b31', 
+                color: '#ffff' 
+              }}>
+
+              Entrar
+            </Button>
+          </Box>
+
+          {/* MENU MOBILE (hamburguer) */}
+          <IconButton 
             sx={{ 
-              backgroundColor: '#f6ad76', 
-              color: '#000', 
-              borderRadius: '20px',
-              textTransform: 'none',
-              px: 4,
-              '&:hover': { backgroundColor: '#e59a65' }
-            }}
+              display: { xs: 'flex', 
+                md: 'none' } 
+            }} 
+            onClick={() => setOpen(true)}
           >
-            Entrar
-          </Button>
+            <MenuIcon />
+          </IconButton>
         </Toolbar>
       </AppBar>
 
-      <Container maxWidth="lg" sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', py: 2 }}>
-        <Grid container spacing={2} alignItems="center" wrap="nowrap"> {/* wrap="nowrap" impede que a imagem desça */}
+      <Drawer anchor="right" open={open} onClose={() => setOpen(false)}>
+        <Box sx={{ width: 250, p: 2 }}>
           
-          {/* LADO ESQUERDO: TEXTOS */}
-          <Grid item md={6} sx={{ minWidth: '50%' }}> {/* Força ocupar metade */}
-            <Typography variant="h3" component="h1" sx={{ 
-              fontWeight: 800, 
-              mb: 3, 
+          <Button fullWidth 
+            onClick={() => scrollToSection('funcionalidades')}
+            sx={{ 
               color: '#1a1a1a', 
-              lineHeight: 1.1,
-              maxWidth: '500px' // Limita a largura do título para não empurrar a imagem
+              '&:hover': {
+                backgroundColor: 'transparent',
+                color: '#EF6C00'
+              }
             }}>
-              Chega de desperdício:<br />
-              Organize a sua cozinha com inteligência!
-            </Typography>
-            
-            <Typography variant="body1" sx={{ 
-              mb: 4, 
-              color: '#555', 
-              fontSize: '1.1rem', 
-              maxWidth: '400px' // Limita a largura da descrição
-            }}>
-              Utilize os nossos recursos de monitoramento de temperatura, relatórios semanais e segurança para as suas produções e transforme a sua cozinha.
-            </Typography>
+              
+            Funcionalidades
+          </Button>
 
-            <Button 
-              variant="contained" 
-              onClick={irParaCadastro}
+          <Button fullWidth 
+            onClick={() => scrollToSection('como-funciona')}
+            sx={{ 
+              color: '#1a1a1a', 
+              '&:hover': {
+                backgroundColor: 'transparent',
+                color: '#EF6C00'
+              }
+            }}>
+            
+            Como Funciona
+          </Button>
+
+          <Button fullWidth variant="contained" 
+            onClick={irParaLogin}
+            sx={{ 
+              backgroundColor: '#ff8b31', 
+              color: '#ffff' 
+            }}>
+
+            Entrar
+          </Button>
+
+        </Box>
+      </Drawer>
+
+      <Box
+        sx={{
+          position: 'relative',
+          px: { xs: 4, md: 15 },
+          py: { xs: 10, md: 14 },
+          color: '#fff',
+          overflow: 'hidden',
+        }}>
+
+        <Box
+          component="img"
+          src={cozinhaImg}
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            zIndex: 0,
+          }}
+        />
+
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            background: 'rgba(0,0,0,0.5)',
+            zIndex: 1,
+          }}
+        />
+
+        <Box 
+          sx={{ 
+            position: 'relative', 
+            zIndex: 2, 
+            maxWidth: '600px' 
+          }}>
+          
+          <Box 
+            sx={{ 
+              display: 'inline-flex',
+              bgcolor: '#fff',
+              px: 2,
+              py: 0.5,
+              borderRadius: '20px',
+              mb: 3,
+            }}
+          >
+            <Typography variant="caption" 
               sx={{ 
-                backgroundColor: '#f6ad76', 
-                color: '#000', 
-                borderRadius: '25px', 
-                px: 6, 
-                py: 1.5,
-                fontWeight: 'bold',
-                textTransform: 'none',
-                '&:hover': { backgroundColor: '#e59a65' }
-              }}
-            >
-              Cadastre-se
-            </Button>
+                fontWeight: 'bold',  
+                color: '#EF6C00'
+              }}>
+
+              Sua Cozinha Inteligente
+            </Typography>
+          </Box>
+
+          <Typography 
+            variant="h1" 
+            sx={{ 
+              fontWeight: 900, 
+              fontSize: { xs: '2.5rem', md: '4.5rem' },
+              lineHeight: 1.1,
+              mb: 3
+            }}>
+
+            Chega de desperdício: <br />
+            <span style={{ color: '#EF6C00' }}>
+              Organize a sua cozinha com inteligência!
+            </span>
+          </Typography>
+
+          <Typography sx={{ fontSize: '1.2rem', mb: 4 }}>
+            Utilize os nossos recursos de monitoramento de temperatura,
+            relatórios semanais e segurança para as suas produções!
+          </Typography>
+
+        </Box>
+      </Box>
+
+      {/*Cards*/}
+      <Box id= "funcionalidades" 
+        sx={{ 
+          py: 10, 
+          px: { xs: 2, md: 4 }, 
+          textAlign: 'center', 
+          backgroundColor: '#fcfcfc' 
+        }}>
+
+        {/* Limitar a largura do cabeçalho para melhor leitura */}
+        <Box 
+          sx={{ 
+            maxWidth: '800px', 
+            mx: 'auto', 
+            mb: 8 
+          }}>
+
+          <Typography variant="h5" 
+            sx={{ 
+              fontWeight: 800, 
+              mb: 1, 
+              fontSize: { xs: '2rem', md: '3rem' } 
+            }}>
+
+            Sua cozinha tecnológica
+          </Typography>
+
+          <Typography sx={{ color: '#666', fontSize: '1.1rem' }}>
+            Sua cozinha organizada, eficiente e sem desperdícios!
+          </Typography>
+        </Box>
+
+        {/* Container para limitar a largura dos cards e centralizá-los */}
+        <Grid container spacing={4} sx={{ maxWidth: '1400px', mx: 'auto' }}>
+          {
+            [
+            {
+              title: 'Evite Desperdícios',
+              desc: 'Tenha controle total dos insumos e reduza perdas com monitoramento em tempo real.',
+              icon: <DeleteOutlineIcon />,
+              color: '#FF7043'
+            },
+            {
+              title: 'Relatórios Semanais',
+              desc: 'Acompanhe o desempenho da sua cozinha com relatórios automáticos e insights.',
+              icon: <BarChartIcon />,
+              color: '#5C6BC0'
+            },
+            {
+              title: 'Monitoramento Inteligente',
+              desc: 'Controle temperatura e condições dos alimentos com alertas em tempo real.',
+              icon: <ThermostatIcon />,
+              color: '#66BB6A'
+            },
+            {
+              title: 'Rastreabilidade',
+              desc: 'Acompanhe todo o ciclo dos alimentos garantindo segurança e controle.',
+              icon: <FactCheckIcon />,
+              color: '#AB47BC'
+            }
+          ].map((item, index) => (
+            <Grid item xs={12} sm={6} md={3} key={index} sx={{ display: 'flex' }}>
+              <Paper 
+                elevation={0} 
+                sx={{ 
+                  p: 4, 
+                  borderRadius: '24px', 
+                  border: '1px solid #f0f0f0', 
+                  textAlign: 'left', 
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'space-between',
+                  height: '100%',
+                  width: '100%',
+                  transition: 'all 0.3s ease-in-out', 
+                  '&:hover': { 
+                    transform: 'translateY(-8px)', 
+                    boxShadow: '0 12px 30px rgba(0,0,0,0.08)',
+                    borderColor: 'transparent'
+                  } 
+                }}
+              >
+                <Box 
+                  sx={{ 
+                    color: item.color, 
+                    mb: 2, 
+                    backgroundColor: `${item.color}15`, // Fundo suave com a cor do ícone
+                    width: 'fit-content',
+                    p: 1.5,
+                    borderRadius: '12px',
+                    display: 'flex'
+                  }}
+                >
+                  {item.icon}
+                </Box>
+
+                <Typography variant="h6" sx={{ fontWeight: 700, mb: 1.5, lineHeight: 1.2 }}>
+                  {item.title}
+                </Typography>
+
+                <Typography variant="body1" 
+                  sx={{ 
+                    color: '#777', 
+                    lineHeight: 1.6, 
+                    flexGrow: 1
+                  }}>
+
+                  {item.desc}
+                </Typography>
+
+              </Paper>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+
+      {/* --- SEÇÃO FINAL --- */}
+      <Box 
+        id="como-funciona" 
+        sx={{ 
+          py: { xs: 10, md: 15 }, // Responsivo: menor no celular
+          textAlign: 'center', 
+          // Gradiente para dar profundidade
+          background: 'linear-gradient(135deg, #ffb049 0%, #ff8b31 100%)',
+          color: '#000000',
+          position: 'relative',
+          overflow: 'hidden'
+        }}
+      >
+        
+        <Box sx={{
+          position: 'absolute',
+          top: -50,
+          right: -50,
+          width: 200,
+          height: 200,
+          borderRadius: '50%',
+          bgcolor: 'rgba(255,255,255,0.1)',
+        }} />
+
+        <Container maxWidth="md">
+          <Typography 
+            variant="h3" 
+            sx={{ 
+              fontWeight: 900, 
+              mb: 3,
+              lineHeight: 1.2,
+              textShadow: '0px 2px 4px rgba(0,0,0,0.1)'
+            }}
+          >
+            Transforme sua cozinha em um <br /> 
+            sistema inteligente hoje mesmo.
+          </Typography>
+
+          <Typography 
+            variant="body1" 
+            sx={{ mb: 5, opacity: 0.9, fontSize: '1.1rem' }}
+          >
+            Junte-se a centenas de pessoas que simplificaram sua rotina culinária.
+          </Typography>
+
+          <Button 
+            variant="contained" 
+            onClick={irParaCadastro}
+            sx={{ 
+              backgroundColor: '#e7751e', 
+              color: '#ffff', 
+              fontWeight: 'bold',
+              borderRadius: '50px', 
+              px: 8, 
+              py: 2,
+              fontSize: '1.1rem',
+              textTransform: 'none',
+              boxShadow: '0px 10px 20px rgba(0,0,0,0.1)',
+              '&:hover': { 
+                backgroundColor: '#f97326',
+                transform: 'scale(1.05)', 
+                transition: 'all 0.3s ease'
+              }
+            }}
+          >
+            Quero começar agora
+          </Button>
+        </Container>
+      </Box>
+
+
+      <Box component="footer" 
+        sx={{ 
+          bgcolor: '#121212', 
+          color: '#fff', 
+          py: 8 
+        }}>
+
+        <Container maxWidth="lg">
+          <Grid container spacing={4} justifyContent="space-between">
+            <Grid item xs={12} md={4}>
+
+              <Typography variant="h6" 
+                sx={{ 
+                  fontWeight: 800, 
+                  mb: 2 
+                }}>
+                  SMARTCUISINE
+              </Typography>
+
+              <Typography variant="body2" 
+                sx={{ 
+                  opacity: 0.6, 
+                  maxWidth: '300px' 
+                }}>
+
+                Tecnologia e inteligência aplicadas à segurança alimentar e gestão de cozinhas profissionais.
+              </Typography>
+            </Grid>
+
+            <Grid item xs={12} md={6}>
+              <Stack direction="row" spacing={4} justifyContent={{ xs: 'flex-start', md: 'flex-end' }}>
+                <Link href="#" color="inherit" underline="hover" sx={{ opacity: 0.8 }}>Privacidade</Link>
+                <Link href="#" color="inherit" underline="hover" sx={{ opacity: 0.8 }}>Termos de Uso</Link>
+                <Link href="#" color="inherit" underline="hover" sx={{ opacity: 0.8 }}>Contato</Link>
+              </Stack>
+            </Grid>
           </Grid>
 
-          {/* Lado Direito: Imagem (Mockup) */}
-          <Grid item md={6} 
+          <Divider 
+            sx={{ 
+              my: 4, 
+              borderColor: 'rgba(255,255,255,0.1)' 
+            }} 
+          />
+
+          <Box 
             sx={{ 
               display: 'flex', 
-              justifyContent: 'center', 
-              alignItems: 'center',
-              height: '100%'
-            }}
-            >
-            <Box 
-              sx={{ 
-                width: '100%', 
-                maxWidth: '650px', // Aumentei o limite máximo consideravelmente
-                height: 'auto',
-                filter: 'drop-shadow(0px 20px 30px rgba(0,0,0,0.15))',
-                padding: 2, // Um padding interno para a imagem "respirar"
-                display: 'flex', 
-                justifyContent: 'center'
-              }}
-              > 
-              <img
-                src={imagemHome} 
-                alt="home smartcuisine"
-                style={{ 
-                  width: "100%", // Força a imagem a ocupar 100% do Box pai
-                  height: "auto",
-                  borderRadius: '40px', // Leve arredondado nas bordas da imagem
-                  objectFit: 'contain' // Garante que ela não distorça
-                }}
-              />
-            </Box>
-          </Grid>
+              flexDirection: { xs: 'column', md: 'row' }, 
+              justifyContent: 'space-between', 
+              alignItems: 'center', 
+              gap: 2, 
+              opacity: 0.5 
+            }}>
+            <Typography variant="caption">© {new Date().getFullYear()} 
+              SmartCuisine. Todos os direitos reservados.
+            </Typography>
 
-        </Grid>
-      </Container>
+            <Typography variant="caption">
+              Feito com foco em eficiência e segurança.
+            </Typography>
+          </Box>
+        </Container>
+      </Box>
     </Box>
   );
 }
