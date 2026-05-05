@@ -114,7 +114,6 @@ function Cadastro({mudarTela}) {
 
             <Box display="flex" flexDirection="column" gap={2}>
 
-              {/* TIPO DE PERFIL */}
               <TextField
                 select
                 label="Selecione um perfil"
@@ -129,7 +128,6 @@ function Cadastro({mudarTela}) {
                <MenuItem value="COZINHEIRO">Cozinheiro</MenuItem>
               </TextField>
 
-              {/* NOME */}
               <TextField
                 label="Seu nome"
                 size="small"
@@ -145,7 +143,6 @@ function Cadastro({mudarTela}) {
                 sx={{ backgroundColor: "#f5f5f5", borderRadius: 2 }}
               />
 
-              {/* EMAIL */}
               <TextField
                 label="Seu email"
                 size="small"
@@ -161,7 +158,6 @@ function Cadastro({mudarTela}) {
                 sx={{ backgroundColor: "#f5f5f5", borderRadius: 2 }}
               />
 
-              {/* SENHA */}
               <TextField
                 label="Senha"
                 type="password"
@@ -178,7 +174,6 @@ function Cadastro({mudarTela}) {
                 sx={{ backgroundColor: "#f5f5f5", borderRadius: 2 }}
               />
 
-              {/* CONFIRMAR SENHA */}
               <TextField
                 label="Confirmar senha"
                 type="password"
@@ -194,8 +189,7 @@ function Cadastro({mudarTela}) {
                 }}
                 sx={{ backgroundColor: "#f5f5f5", borderRadius: 2 }}
               />
-
-              {/* BOTÃO */}
+              
               <Button
                 variant="contained"
                 fullWidth

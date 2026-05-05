@@ -6,10 +6,15 @@ import {
   TextField,
   Snackbar,
   Alert,
-  IconButton
+  IconButton,
+  Box,
+  Button,
+  Chip
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
+import { Avatar } from "@mui/material";
 
 function Usuarios() {
   const [usuarios, setUsuarios] = useState([]);
@@ -25,33 +30,97 @@ function Usuarios() {
         Authorization: `Bearer ${token}`
       }
     })
-      .then((res) => {
-        if (!res.ok) throw new Error("Erro ao buscar usuários");
-        return res.json();
-      })
+      .then((res) => res.json())
       .then((data) => setUsuarios(data))
       .catch(() => {
-        setMensagem("Erro ao carregar usuários da API!");
+        setMensagem("Erro ao carregar usuários!");
         setOpenAlert(true);
       });
   }, []);
 
-  const handleEliminar = (nome) => {
-    setMensagem(`Usuário ${nome} removido com sucesso!`);
+  const handleEliminar = async (id, nome) => {
+  const token = localStorage.getItem("token");
+
+  try {
+    const res = await fetch(
+      `https://abcgjl-smartcusine-backend-api.onrender.com/usuarios/${id}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    if (!res.ok) throw new Error();
+
+    setUsuarios((prev) => prev.filter((u) => u.id !== id));
+
+    setMensagem(`Usuário ${nome} removido!`);
     setOpenAlert(true);
+  } catch {
+    setMensagem("Erro ao excluir usuário!");
+    setOpenAlert(true);
+  }
+
+};
+
+  const getTipoColor = (tipo) => {
+    if (tipo === "ADMIN") return "primary";
+    if (tipo === "GERENTE") return "warning";
+
+    return "default";
   };
 
   const colunas = [
     { field: "id", headerName: "ID", flex: 0.5 },
-    { field: "nome", headerName: "Nome", flex: 2 },
+
+    {
+      field: "nome",
+      headerName: "Nome",
+      flex: 2,
+      renderCell: (params) => (
+        <Box display="flex" alignItems="center" gap={1}>
+          
+          <Avatar
+            sx={{
+              width: 35,
+              height: 35,
+              fontSize: 14
+            }}
+          >
+            {params.value?.charAt(0)}
+          </Avatar>
+
+          {params.value}
+        </Box>
+      )
+    },
+
     { field: "email", headerName: "Email", flex: 2 },
-    { field: "tipo", headerName: "Tipo", flex: 1 },
+
+    {
+      field: "tipo",
+      headerName: "Tipo",
+      flex: 1,
+      renderCell: (params) => (
+        <Chip
+          label={params.value}
+          color={getTipoColor(params.value)}
+          sx={{ fontWeight: "bold" }}
+        />
+      )
+    },
+
     {
       field: "acoes",
       headerName: "Ações",
-      flex: 0.5,
+      flex: 0.7,
       renderCell: (params) => (
-        <IconButton color="error" onClick={() => handleEliminar(params.row.nome)}>
+        <IconButton
+          onClick={() => handleEliminar(params.row.id, params.row.nome)}
+          color="error" 
+        >
           <DeleteIcon />
         </IconButton>
       )
@@ -63,39 +132,83 @@ function Usuarios() {
   );
 
   return (
-    <Container>
-      <Typography variant="h4" sx={{ my: 3 }}>
-        Gestão de Usuários
-      </Typography>
+    <Box sx={{ backgroundColor: "background.default", minHeight: "100vh", py: 4 }}>
+      <Container maxWidth="lg">
 
-      <TextField
-        fullWidth
-        label="Pesquisar usuário..."
-        variant="outlined"
-        sx={{ mb: 3 }}
-        onChange={(e) => setBusca(e.target.value)}
-      />
+        <Typography variant="h4" fontWeight="bold" gutterBottom>
+          Gestão de Usuários
+        </Typography>
 
-      <Paper sx={{ height: 400, width: "100%" }}>
-        <DataGrid
-          rows={usuariosFiltrados}
-          columns={colunas}
-          pageSizeOptions={[5]}
-          getRowId={(row) => row.id}
-        />
-      </Paper>
+        <Typography color="text.secondary" mb={3}>
+          Gerencie os usuários do sistema.
+        </Typography>
 
-      <Snackbar
-        open={openAlert}
-        autoHideDuration={3000}
-        onClose={() => setOpenAlert(false)}
-        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      >
-        <Alert severity="success" variant="filled" sx={{ width: "100%" }}>
-          {mensagem}
-        </Alert>
-      </Snackbar>
-    </Container>
+        <Paper
+          sx={{
+            p: 2,
+            mb: 3,
+            borderRadius: 3,
+            display: "flex",
+            gap: 2,
+            backgroundColor: "background.paper"
+          }}
+        >
+          <TextField
+            fullWidth
+            placeholder="Pesquisar usuário..."
+            onChange={(e) => setBusca(e.target.value)}
+          />
+
+          <Button
+            variant="contained"
+            startIcon={<AddIcon />}
+            sx={{ 
+              fontSize: { xs: '0.75rem', sm: '0.875rem' },
+              padding: { xs: '6px 12px', sm: '8px 16px' },
+              minWidth: { xs: '120px', sm: '150px' },
+              whiteSpace: 'nowrap',
+              borderRadius: 3, 
+              textTransform: "none" 
+            }}
+          >
+            Novo Usuário
+          </Button>
+        </Paper>
+
+       
+        <Paper sx={{ borderRadius: 4, overflow: "hidden" }}>
+          <DataGrid
+            rows={usuariosFiltrados}
+            columns={colunas}
+            pageSizeOptions={[5]}
+            getRowId={(row) => row.id}
+            disableRowSelectionOnClick
+            sx={{
+              border: "none",
+              backgroundColor: "background.paper",
+
+              "& .MuiDataGrid-columnHeaders": {
+                backgroundColor: "background.default"
+              },
+
+              "& .MuiDataGrid-row:hover": {
+                backgroundColor: "action.hover"
+              }
+            }}
+          />
+        </Paper>
+
+        <Snackbar
+          open={openAlert}
+          autoHideDuration={3000}
+          onClose={() => setOpenAlert(false)}
+        >
+          <Alert severity="success" variant="filled">
+            {mensagem}
+          </Alert>
+        </Snackbar>
+      </Container>
+    </Box>
   );
 }
 

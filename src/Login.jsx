@@ -18,14 +18,18 @@ function Login({ onLogin, mudarTela }) {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
+  const [lembreme, setLembreme] = useState(false);
+
+  const handleChange = (event) => {
+    setLembreme(event.target.checked);
+    console.log("Valor atual:", event.target.checked);
+  };
 
   const autenticar = () => {
-    // Limpa o erro anterior antes de tentar de novo.....
     setErro("");
-
     fetch("https://abcgjl-smartcusine-backend-api.onrender.com/auth/login", {
-  method: "POST",
-  headers: {
+    method: "POST",
+    headers: {
     "Content-Type": "application/json"
   },
   body: JSON.stringify({
@@ -182,16 +186,13 @@ function Login({ onLogin, mudarTela }) {
                 control={
                   <Checkbox 
                     size="small"
-                    sx={{
-                      padding: "4px" 
-                    }}
+                    sx={{padding: "4px"}}
+                    checked={lembreme}
+                    onChange={handleChange}
                   />
                 }
                 label="Me lembre"
-                sx={{
-                  margin: 0
-                }}
-              />
+                sx={{margin: 0}}/>
               </Box>
 
               <Button
@@ -223,7 +224,7 @@ function Login({ onLogin, mudarTela }) {
                 <Typography variant="body2" sx={{ color: "#666" }}>
                   Não possui uma conta?{" "}
                   <Link
-                    component="button" // Faz o Link se comportar como botão (evita refresh)
+                    component="button"
                     type="button"
                     onClick={() => mudarTela("cadastro")} 
                     sx={{

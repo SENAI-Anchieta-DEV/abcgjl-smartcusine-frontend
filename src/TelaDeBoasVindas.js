@@ -34,14 +34,12 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
 
   return (
     <Box sx={{ bgcolor: '#FAF9F6', minHeight: '100vh', overflowX: 'hidden' }}>
-      
-      {/* --- NAVBAR --- */}
       <AppBar 
         position="absolute" // Fica por cima da imagem
         elevation={0} 
         sx={{ 
-          backgroundColor: 'rgba(255, 255, 255, 0.05)', // Quase transparente
-          backdropFilter: 'blur(10px)', // Efeito de vidro
+          backgroundColor: 'rgba(255, 255, 255, 0.05)', 
+          backdropFilter: 'blur(10px)',
           borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
           py: 1
         }}
@@ -107,7 +105,7 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
             </Button>
           </Box>
 
-          {/* MENU MOBILE (hamburguer) */}
+
           <IconButton 
             sx={{ 
               display: { xs: 'flex', 
@@ -247,7 +245,7 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
         </Box>
       </Box>
 
-      {/*Cards*/}
+  
       <Box id= "funcionalidades" 
         sx={{ 
           py: 10, 
@@ -256,7 +254,7 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
           backgroundColor: '#fcfcfc' 
         }}>
 
-        {/* Limitar a largura do cabeçalho para melhor leitura */}
+
         <Box 
           sx={{ 
             maxWidth: '800px', 
@@ -279,7 +277,7 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
           </Typography>
         </Box>
 
-        {/* Container para limitar a largura dos cards e centralizá-los */}
+        
         <Grid container spacing={4} sx={{ maxWidth: '1400px', mx: 'auto' }}>
           {
             [
@@ -333,7 +331,7 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
                   sx={{ 
                     color: item.color, 
                     mb: 2, 
-                    backgroundColor: `${item.color}15`, // Fundo suave com a cor do ícone
+                    backgroundColor: `${item.color}15`,
                     width: 'fit-content',
                     p: 1.5,
                     borderRadius: '12px',
@@ -363,13 +361,12 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
         </Grid>
       </Box>
 
-      {/* --- SEÇÃO FINAL --- */}
+     
       <Box 
         id="como-funciona" 
         sx={{ 
-          py: { xs: 10, md: 15 }, // Responsivo: menor no celular
+          py: { xs: 10, md: 15 },
           textAlign: 'center', 
-          // Gradiente para dar profundidade
           background: 'linear-gradient(135deg, #ffb049 0%, #ff8b31 100%)',
           color: '#000000',
           position: 'relative',
@@ -391,7 +388,7 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
           <Typography 
             variant="h3" 
             sx={{ 
-              fontWeight: 900, 
+              fontWeight: 800, 
               mb: 3,
               lineHeight: 1.2,
               textShadow: '0px 2px 4px rgba(0,0,0,0.1)'

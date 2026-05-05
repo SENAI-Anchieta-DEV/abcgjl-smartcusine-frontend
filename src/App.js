@@ -26,10 +26,11 @@ function AppContent() {
       setModo((prev) => (prev === "light" ? "dark" : "light"));
   };
 
+  const irParaBoasVindas = () => navigate("/teladeboasvindas");
   const irParaLogin = () => navigate("/login");
   const irParaCadastro = () => navigate("/cadastro");
   const irParaDashboard = () => navigate("/dashboard");
-  const irParaBoasVindas = () => navigate("/teladeboasvindas");
+  
 
   // O teu Menu e Dashboard passavam uma string (ex: "alunos") no setTelaAtiva.
   // Esta função recebe a string e transforma no link correto!
