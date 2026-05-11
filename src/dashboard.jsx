@@ -27,7 +27,7 @@ function Dashboard() {
   const categoriasFiltro = ['Todos', 'Crítico', 'Vencido', 'Atenção'];
 
   const alimentosFiltrados = alimentos.filter((item) => {
-    if (filtroAtivo === 'Todos') return true; // Mostra tudo
+    if (filtroAtivo === 'Todos') return true;
     return item.status === filtroAtivo; 
   });
 
