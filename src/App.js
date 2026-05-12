@@ -1,8 +1,6 @@
 import { useState, useMemo } from "react";
 import { ThemeProvider, createTheme, CssBaseline, Box } from "@mui/material";
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
-
-// Importações das tuas telas originais (intactas!)
 import TelaDeBoasVindas from "./TelaDeBoasVindas";
 import Login from "./Login";
 import Cadastro from "./Cadastro";
@@ -12,7 +10,7 @@ import Usuarios from "./Usuarios";
 import EditarPerfil from "./EditarPerfil";
 
 function AppContent() {
-  const navigate = useNavigate(); // Hook poderoso que muda as rotas
+  const navigate = useNavigate(); 
   const [logado, setLogado] = useState(false);
   const [modo, setModo] = useState("light");
 
@@ -32,9 +30,6 @@ function AppContent() {
   const irParaCadastro = () => navigate("/cadastro");
   const irParaDashboard = () => navigate("/dashboard");
   
-
-  // O teu Menu e Dashboard passavam uma string (ex: "alunos") no setTelaAtiva.
-  // Esta função recebe a string e transforma no link correto!
   const mudarTelaPorString = (tela) => {
     if (tela === "login") navigate("/login");
     else if (tela === "cadastro") navigate("/cadastro");
@@ -65,20 +60,20 @@ function AppContent() {
 
           <Route path="/login" element={
             <Login 
-              mudarTela={irParaCadastro} // Do login vai pro cadastro
+              mudarTela={irParaCadastro} 
               onLogin={() => {
                 setLogado(true);
-                irParaDashboard(); // Vai direto pro dashboard ao logar
+                irParaDashboard(); 
               }}
             />
           } />
 
           <Route path="/cadastro" element={
-            <Cadastro mudarTela={irParaLogin} /> // Do cadastro volta pro login
+            <Cadastro mudarTela={irParaLogin} /> 
           } />
 
 
-          {/* ---- ROTAS PROTEGIDAS (PRECISA ESTAR LOGADO) ---- */}
+          {/* ---- ROTAS PROTEGIDAS ---- */}
           <Route path="/dashboard" element={
             logado ? (
               <>
@@ -93,7 +88,7 @@ function AppContent() {
                 </main>
               </>
             ) : (
-              <Navigate to="/login" replace /> // Se tentar entrar sem logar, chuta pro login
+              <Navigate to="/login" replace /> 
             )
           } />
 
@@ -133,7 +128,6 @@ function AppContent() {
             )
           } />
 
-          {/*se o usúario digitar um link errado, volta pro inicio */}
           <Route path="*" element={<Navigate to="/" replace />} />
 
         </Routes>
@@ -142,7 +136,6 @@ function AppContent() {
   );
 }
 
-//O App principal agora apenas envolve tudo no BrowserRouter
 function App() {
   return (
     <BrowserRouter>

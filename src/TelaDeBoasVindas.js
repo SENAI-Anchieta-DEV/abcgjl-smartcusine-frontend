@@ -35,7 +35,7 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
   return (
     <Box sx={{ bgcolor: '#FAF9F6', minHeight: '100vh', overflowX: 'hidden' }}>
       <AppBar 
-        position="absolute" // Fica por cima da imagem
+        position="absolute" 
         elevation={0} 
         sx={{ 
           backgroundColor: 'rgba(255, 255, 255, 0.05)', 

@@ -75,7 +75,6 @@ function EditarPerfil() {
   return (
     <Container maxWidth="md">
 
-      {/* TÍTULO */}
       <Typography variant="h4" fontWeight="bold" gutterBottom>
         Editar Perfil
       </Typography>
@@ -84,7 +83,6 @@ function EditarPerfil() {
         Atualize suas informações pessoais
       </Typography>
 
-      {/* CARD PRINCIPAL */}
       <Paper
         sx={{
           p: 4,
@@ -94,7 +92,6 @@ function EditarPerfil() {
       >
         <Stack spacing={4} alignItems="center">
 
-          {/* FOTO */}
           <Typography fontWeight="bold">
             Foto de Perfil
           </Typography>
@@ -118,7 +115,6 @@ function EditarPerfil() {
             PNG, JPG ou GIF. Máx. 5MB.
           </Typography>
 
-          {/* DIVISÃO */}
           <Box
             sx={{
               width: "100%",
@@ -127,7 +123,6 @@ function EditarPerfil() {
             }}
           />
 
-          {/* FORM */}
           <Box width="100%">
             <Typography fontWeight="bold" mb={2}>
               Informações Pessoais
@@ -162,7 +157,6 @@ function EditarPerfil() {
             </Stack>
           </Box>
 
-          {/* BOTÕES */}
           <Stack direction="row" spacing={2} width="100%" justifyContent="flex-end">
             
             <Button
