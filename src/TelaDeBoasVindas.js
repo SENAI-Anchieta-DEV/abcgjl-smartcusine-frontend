@@ -35,10 +35,10 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
   return (
     <Box sx={{ bgcolor: '#FAF9F6', minHeight: '100vh', overflowX: 'hidden' }}>
       <AppBar 
-        position="absolute" 
+        position="fixed" 
         elevation={0} 
         sx={{ 
-          backgroundColor: 'rgba(255, 255, 255, 0.05)', 
+          backgroundColor: "#ffffff29", 
           backdropFilter: 'blur(10px)',
           borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
           py: 1
@@ -246,9 +246,10 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
       </Box>
 
   
-      <Box id= "funcionalidades" 
+      <Box 
+        id= "funcionalidades" 
         sx={{ 
-          py: 10, 
+          py: 20, 
           px: { xs: 2, md: 4 }, 
           textAlign: 'center', 
           backgroundColor: '#fcfcfc' 
@@ -278,30 +279,39 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
         </Box>
 
         
-        <Grid container spacing={4} sx={{ maxWidth: '1400px', mx: 'auto' }}>
-          {
-            [
+        <Grid 
+          container 
+          spacing={2} 
+          sx={{ 
+            display: 'flex',
+            flexWrap: { xs: 'wrap', md: 'nowrap' }, 
+            justifyContent: 'center',
+            width: '100%',
+            margin: 0 
+          }}
+        >
+          {[
             {
               title: 'Evite Desperdícios',
-              desc: 'Tenha controle total dos insumos e reduza perdas com monitoramento em tempo real.',
+              desc: 'Tenha controle total dos insumos e reduza perdas \n com monitoramento em tempo real.',
               icon: <DeleteOutlineIcon />,
               color: '#FF7043'
             },
             {
               title: 'Relatórios Semanais',
-              desc: 'Acompanhe o desempenho da sua cozinha com relatórios automáticos e insights.',
+              desc: 'Acompanhe o desempenho da sua cozinha \n com relatórios automáticos e insights.',
               icon: <BarChartIcon />,
               color: '#5C6BC0'
             },
             {
               title: 'Monitoramento Inteligente',
-              desc: 'Controle temperatura e condições dos alimentos com alertas em tempo real.',
+              desc: 'Controle temperatura e condições dos alimentos \n com alertas em tempo real.',
               icon: <ThermostatIcon />,
               color: '#66BB6A'
             },
             {
               title: 'Rastreabilidade',
-              desc: 'Acompanhe todo o ciclo dos alimentos garantindo segurança e controle.',
+              desc: 'Acompanhe todo o ciclo dos alimentos \n garantindo segurança e controle.',
               icon: <FactCheckIcon />,
               color: '#AB47BC'
             }
@@ -310,7 +320,7 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
               <Paper 
                 elevation={0} 
                 sx={{ 
-                  p: 4, 
+                  p: 2.5, 
                   borderRadius: '24px', 
                   border: '1px solid #f0f0f0', 
                   textAlign: 'left', 
@@ -319,6 +329,8 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
                   justifyContent: 'space-between',
                   height: '100%',
                   width: '100%',
+                  boxSizing: 'border-box',
+                  minWidth: 0, 
                   transition: 'all 0.3s ease-in-out', 
                   '&:hover': { 
                     transform: 'translateY(-8px)', 
@@ -349,7 +361,8 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
                   sx={{ 
                     color: '#777', 
                     lineHeight: 1.6, 
-                    flexGrow: 1
+                    flexGrow: 1,
+                    whiteSpace: 'pre-line'
                   }}>
 
                   {item.desc}
@@ -361,9 +374,70 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
         </Grid>
       </Box>
 
+      {/* Seção do Vídeo Demonstrativo */}
+      <Box 
+        id="como-funciona"
+        sx={{ 
+          py: { xs: 8, md: 12 }, 
+          backgroundColor: "#d8d8d8", // Fundo branco para separar da seção cinza dos cards
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center'
+        }}
+      >
+        <Container maxWidth="lg">
+          {/* Título e Subtítulo da Seção */}
+          <Box sx={{ textAlign: 'center', mb: 6 }}>
+            <Typography variant="h4" sx={{ fontWeight: 800, mb: 2, color: '#1a1a1a' }}>
+              Veja como o SmartCuisine funciona
+            </Typography>
+            <Typography sx={{ color: '#666', maxWidth: '600px', mx: 'auto', fontSize: '1.1rem' }}>
+              Assista ao vídeo abaixo e conheça todas as ferramentas que vão 
+              revolucionar a gestão da sua cozinha.
+            </Typography>
+          </Box>
+
+
+          <Paper 
+            elevation={6}
+            sx={{ 
+              position: 'relative', 
+              width: '100%',
+              maxWidth: '900px',
+              mx: 'auto',
+              borderRadius: '24px', 
+              overflow: 'hidden',
+              pt: '36%',
+              boxShadow: '0 20px 50px rgba(0,0,0,0.1)'
+            }}
+          >
+            <iframe
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover'
+              }}
+              src="https://www.youtube.com/embed/g0HONsygJ_0?si=BMhTNrVmThVhUKxq" 
+              title="Pitch do SmartCuisine"
+              frameborder="0" 
+              allow="accelerometer; 
+              autoplay; 
+              clipboard-write; 
+              encrypted-media; 
+              gyroscope; 
+              picture-in-picture; 
+              web-share" referrerpolicy="strict-origin-when-cross-origin" 
+              allowfullscreen>
+            </iframe>
+          </Paper>
+        </Container>
+      </Box>
      
       <Box 
-        id="como-funciona" 
+
         sx={{ 
           py: { xs: 10, md: 15 },
           textAlign: 'center', 
