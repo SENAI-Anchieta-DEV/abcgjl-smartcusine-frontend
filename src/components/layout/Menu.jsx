@@ -18,9 +18,12 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import GroupsIcon from "@mui/icons-material/Groups";
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import { Menu as MenuDropdown } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 function Menu({ onLogout, setTelaAtiva, toggleTema, modo, mudarTela}) {
   const [anchorEl, setAnchorEl] = useState(null);
+
+  const navigate = useNavigate();
 
   const abrirMenu = (event) => setAnchorEl(event.currentTarget);
   const fecharMenu = () => setAnchorEl(null);
@@ -105,6 +108,7 @@ function Menu({ onLogout, setTelaAtiva, toggleTema, modo, mudarTela}) {
           </Button>
 
           <Button
+             onClick={() => setTelaAtiva("adicionar-produto")}
             sx={{
               fontSize: { xs: '0.75rem', sm: '0.875rem' },
               padding: { xs: '6px 12px', sm: '8px 16px' },
@@ -117,7 +121,7 @@ function Menu({ onLogout, setTelaAtiva, toggleTema, modo, mudarTela}) {
               px: 2,
               '&:hover': { backgroundColor: "#e67e3a" }
             }}>
-            + Adicionar Alimento
+            + Adicionar Produto
           </Button>
           
           

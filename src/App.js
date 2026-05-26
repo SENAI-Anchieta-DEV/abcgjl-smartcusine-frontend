@@ -8,6 +8,7 @@ import Menu from "./components/layout/Menu";
 import Dashboard from "./pages/Dashboard/dashboard";
 import Usuarios from "./pages/Usuarios/Usuarios";
 import EditarPerfil from "./pages/Auth/EditarPerfil";
+import AdicionarProduto from "./pages/AdicionarProduto/AdicionarProduto";
 
 function AppContent() {
   const navigate = useNavigate(); 
@@ -36,6 +37,7 @@ function AppContent() {
     else if (tela === "dashboard") navigate("/dashboard");
     else if (tela === "usuarios") navigate("/usuarios");
     else if (tela === "boas-vindas") navigate("/teladeboasvindas");
+    else if (tela === "adicionar-produto") navigate("/adicionar-produto");
     else navigate(`/${tela}`);
   };
 
@@ -127,6 +129,24 @@ function AppContent() {
               <Navigate to="/login" replace />
             )
           } />
+
+          <Route path="/adicionar-produto" element={
+  logado ? (
+    <>
+      <Menu 
+        onLogout={() => { setLogado(false); irParaBoasVindas(); }} 
+        setTelaAtiva={mudarTelaPorString} 
+        toggleTema={toggleTema} 
+        modo={modo} 
+      />
+      <main style={{ padding: "20px" }}>
+        <AdicionarProduto />
+      </main>
+    </>
+  ) : (
+    <Navigate to="/login" replace />
+  )
+} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
 
