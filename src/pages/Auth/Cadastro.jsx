@@ -1,5 +1,5 @@
 import { useState } from "react";
-import imagemLogin from "./Logo_SmartCuisine.png";
+import imagemLogin from "../../assets/images/logo/Logo_SmartCuisine.png";
 import { FiUser, FiMail, FiLock } from "react-icons/fi";
 
 import {
@@ -23,10 +23,20 @@ function Cadastro({mudarTela}) {
   const [confirmarSenha, setConfirmarSenha] = useState("");
   const [erro, setErro] = useState("");
 
+  const [tentouEnviar, setTentouEnviar] = useState(false);
+
+
+
   const [loading, setLoading] = useState(false);
 
   const cadastrar = async () => {
   setErro("");
+  setTentouEnviar(true);
+
+  if (!nome || !email || !senha || !tipo) {
+    setErro("Por favor, preencha todos os campos obrigatórios.");
+    return;
+  }
 
   if (senha !== confirmarSenha) {
     setErro("As senhas não coincidem");
@@ -127,19 +137,25 @@ function Cadastro({mudarTela}) {
               <TextField
                 select
                 label="Selecione um perfil"
+                required
+                error={tentouEnviar && !tipo}
+                helperText={tentouEnviar && !tipo ? "Selecione um perfil" : ""}
                 size="small"
                 value={tipo}
                 onChange={(e) => setTipo(e.target.value)}
                 fullWidth
                 sx={{ backgroundColor: "#f5f5f5", borderRadius: 2 }}
               >
-               <MenuItem value="ADMIN">Administrador</MenuItem>
-               <MenuItem value="GERENTE">Gerente</MenuItem>
-               <MenuItem value="COZINHEIRO">Cozinheiro</MenuItem>
+                <MenuItem value="ADMIN">Administrador</MenuItem>
+                <MenuItem value="GERENTE">Gerente</MenuItem>
+                <MenuItem value="COZINHEIRO">Cozinheiro</MenuItem>
               </TextField>
 
               <TextField
                 label="Seu nome"
+                required     
+                error={!nome && tentouEnviar}
+                helperText={!nome && tentouEnviar ? "O nome é obrigatório" : ""}
                 size="small"
                 fullWidth
                 onChange={(e) => setNome(e.target.value)}
@@ -154,7 +170,11 @@ function Cadastro({mudarTela}) {
               />
 
               <TextField
-                label="Seu email"
+                label="Email"
+                type="email"
+                required
+                error={tentouEnviar && !email}
+                helperText={tentouEnviar && !email ? "O e-mail é obrigatório" : ""}
                 size="small"
                 fullWidth
                 onChange={(e) => setEmail(e.target.value)}
@@ -171,6 +191,9 @@ function Cadastro({mudarTela}) {
               <TextField
                 label="Senha"
                 type="password"
+                required
+                error={tentouEnviar && !senha}
+                helperText={tentouEnviar && !senha ? "A senha é obrigatória" : ""}
                 size="small"
                 fullWidth
                 onChange={(e) => setSenha(e.target.value)}
@@ -187,9 +210,18 @@ function Cadastro({mudarTela}) {
               <TextField
                 label="Confirmar senha"
                 type="password"
+                required
                 size="small"
                 fullWidth
                 onChange={(e) => setConfirmarSenha(e.target.value)}
+                error={tentouEnviar && (!confirmarSenha || confirmarSenha !== senha)}
+                helperText={
+                  tentouEnviar && !confirmarSenha 
+                  ? "Confirme sua senha" 
+                  : tentouEnviar && confirmarSenha !== senha 
+                    ? "As senhas não coincidem" 
+                    : ""
+                }
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">

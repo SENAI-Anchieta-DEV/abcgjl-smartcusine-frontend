@@ -1,5 +1,5 @@
 import { useState } from "react";
-import imagemLogin from "./Logo_SmartCuisine.png";
+import imagemLogin from "../../assets/images/logo/Logo_SmartCuisine.png";
 import { FiMail, FiLock } from 'react-icons/fi';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -18,40 +18,55 @@ function Login({ onLogin, mudarTela }) {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [erro, setErro] = useState("");
+  const [lembreme, setLembreme] = useState(false);
+  const [tentouEnviar, setTentouEnviar] = useState(false);
 
-  const autenticar = () => {
-    // Limpa o erro anterior antes de tentar de novo.....
-    setErro("");
-
-    fetch("https://abcgjl-smartcusine-backend-api.onrender.com/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ email , senha })
-    })
-      .then(res => {
-        if (!res.ok) throw new Error("Erro na rede");
-        return res.json();
-      })
-      .then(data => {
-        // Verificamos se o objeto 'data' possui a propriedade 'token'
-        if (data && data.token) {
-          // Opcional: Salvar o token para manter o usuário logado ao atualizar a página
-          localStorage.setItem("token", data.token);
-          
-          onLogin(); // Agora ele vai entrar no Dashboard!
-        } else {
-          setErro("Email ou senha inválidos");
-        }
-      })
-      .catch((err) => {
-        setErro("Não foi possível conectar ao servidor.");
-        console.error(err);
-      });
+  const emailValido = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
   };
 
-  // Permite logar apertando a tecla Enter
+  const handleChange = (event) => {
+    setLembreme(event.target.checked);
+  };
+
+  const autenticar = () => {
+    setErro("");
+    setTentouEnviar(true); 
+
+    if (!email || !senha) {
+      return; 
+    }
+
+    fetch("https://abcgjl-smartcusine-backend-api.onrender.com/auth/login", {
+    method: "POST",
+    headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    email,
+    senha,
+    tipoUsuario: "ADMIN"
+  })
+})
+  .then(res => {
+    if (!res.ok) throw new Error("Erro no login");
+    return res.json();
+  })
+  .then(data => {
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+      onLogin();
+    } else {
+      setErro("Email ou senha inválidos");
+    }
+  })
+  .catch(() => {
+    setErro("Não foi possível conectar ao servidor.");
+  });
+
+};
+
   const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       autenticar();
@@ -92,7 +107,7 @@ function Login({ onLogin, mudarTela }) {
             }}
           >
             <img
-              src={imagemLogin} // Usando o import corretamente
+              src={imagemLogin} 
               alt="logo smartcuisine"
               style={{ width: "200px" }}
             />
@@ -129,7 +144,16 @@ function Login({ onLogin, mudarTela }) {
             <Box display="flex" flexDirection="column" gap={2}>
               <TextField
                 label="Email"
+                type="email"
                 variant="outlined"
+                required
+                error={tentouEnviar && !email}
+                helperText={tentouEnviar && !email 
+                  ? "O e-mail é obrigatório" 
+                  : tentouEnviar && !emailValido(email) 
+                    ? "Digite um e-mail válido (ex: julia@email.com)" 
+                    : ""
+                }
                 size="small"
                 fullWidth
                 onChange={(e) => setEmail(e.target.value)}
@@ -151,6 +175,9 @@ function Login({ onLogin, mudarTela }) {
                 label="Senha"
                 type="password"
                 variant="outlined"
+                required
+                error={tentouEnviar && !senha}
+                helperText={tentouEnviar && !senha ? "A senha é obrigatória" : ""}
                 size="small"
                 fullWidth
                 onChange={(e) => setSenha(e.target.value)}
@@ -181,16 +208,13 @@ function Login({ onLogin, mudarTela }) {
                 control={
                   <Checkbox 
                     size="small"
-                    sx={{
-                      padding: "4px" 
-                    }}
+                    sx={{padding: "4px"}}
+                    checked={lembreme}
+                    onChange={handleChange}
                   />
                 }
                 label="Me lembre"
-                sx={{
-                  margin: 0
-                }}
-              />
+                sx={{margin: 0}}/>
               </Box>
 
               <Button
@@ -222,7 +246,7 @@ function Login({ onLogin, mudarTela }) {
                 <Typography variant="body2" sx={{ color: "#666" }}>
                   Não possui uma conta?{" "}
                   <Link
-                    component="button" // Faz o Link se comportar como botão (evita refresh)
+                    component="button"
                     type="button"
                     onClick={() => mudarTela("cadastro")} 
                     sx={{

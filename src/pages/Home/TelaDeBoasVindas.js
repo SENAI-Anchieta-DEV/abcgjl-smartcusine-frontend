@@ -19,8 +19,8 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 import ThermostatIcon from '@mui/icons-material/Thermostat';
 import FactCheckIcon from '@mui/icons-material/FactCheck';
 import MenuIcon from '@mui/icons-material/Menu';
-import imagemLogin from "./Logo_SmartCuisine.png";
-import cozinhaImg from "./cozinha.webp";
+import imagemLogin from "../../assets/images/logo/Logo_SmartCuisine.png";
+import cozinhaImg from "../../assets/images/backgrounds/cozinha.webp";
 
 function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
 
@@ -374,12 +374,11 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
         </Grid>
       </Box>
 
-      {/* Seção do Vídeo Demonstrativo */}
       <Box 
         id="como-funciona"
         sx={{ 
           py: { xs: 8, md: 12 }, 
-          backgroundColor: "#d8d8d8", // Fundo branco para separar da seção cinza dos cards
+          backgroundColor: "#d8d8d8", 
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center'

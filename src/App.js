@@ -1,13 +1,13 @@
 import { useState, useMemo } from "react";
 import { ThemeProvider, createTheme, CssBaseline, Box } from "@mui/material";
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from "react-router-dom";
-import TelaDeBoasVindas from "./TelaDeBoasVindas";
-import Login from "./Login";
-import Cadastro from "./Cadastro";
-import Menu from "./Menu";
-import Dashboard from "./dashboard";
-import Usuarios from "./Usuarios";
-import EditarPerfil from "./EditarPerfil";
+import TelaDeBoasVindas from "./pages/Home/TelaDeBoasVindas";
+import Login from "./pages/Auth/Login";
+import Cadastro from "./pages/Auth/Cadastro";
+import Menu from "./components/layout/Menu";
+import Dashboard from "./pages/Dashboard/dashboard";
+import Usuarios from "./pages/Usuarios/Usuarios";
+import EditarPerfil from "./pages/Auth/EditarPerfil";
 
 function AppContent() {
   const navigate = useNavigate(); 

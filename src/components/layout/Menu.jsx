@@ -10,12 +10,13 @@ import {
   Divider
 } from "@mui/material";
 import { useState } from "react";
-import imagemLogin from "./Logo_SmartCuisine.png";
+import imagemLogin from "../../assets/images/logo/Logo_SmartCuisine.png";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import EditIcon from "@mui/icons-material/Edit";
 import LogoutIcon from "@mui/icons-material/Logout";
 import GroupsIcon from "@mui/icons-material/Groups";
+import AssessmentIcon from '@mui/icons-material/Assessment';
 import { Menu as MenuDropdown } from "@mui/material";
 
 function Menu({ onLogout, setTelaAtiva, toggleTema, modo, mudarTela}) {
@@ -87,6 +88,7 @@ function Menu({ onLogout, setTelaAtiva, toggleTema, modo, mudarTela}) {
         <Box display="flex" alignItems="center" gap={2}>
           
           <Button
+            startIcon={<AssessmentIcon />}
             sx={{
               fontSize: { xs: '0.75rem', sm: '0.875rem' },
               padding: { xs: '6px 12px', sm: '8px 16px' },
@@ -115,7 +117,7 @@ function Menu({ onLogout, setTelaAtiva, toggleTema, modo, mudarTela}) {
               px: 2,
               '&:hover': { backgroundColor: "#e67e3a" }
             }}>
-            Adicionar Alimento
+            + Adicionar Alimento
           </Button>
           
           
