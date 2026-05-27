@@ -108,7 +108,7 @@ function Menu({ onLogout, setTelaAtiva, toggleTema, modo, mudarTela}) {
           </Button>
 
           <Button
-             onClick={() => setTelaAtiva("adicionar-produto")}
+             onClick={() => setTelaAtiva("produtos")}
             sx={{
               fontSize: { xs: '0.75rem', sm: '0.875rem' },
               padding: { xs: '6px 12px', sm: '8px 16px' },

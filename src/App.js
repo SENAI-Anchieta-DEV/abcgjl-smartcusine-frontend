@@ -9,6 +9,9 @@ import Dashboard from "./pages/Dashboard/dashboard";
 import Usuarios from "./pages/Usuarios/Usuarios";
 import EditarPerfil from "./pages/Auth/EditarPerfil";
 import AdicionarProduto from "./pages/AdicionarProduto/AdicionarProduto";
+import CadastroInsumo from "./pages/Insumos/CadastroInsumo";
+import CadastroFichaTecnica from "./pages/FichaTecnica/CadastroFichaTecnica";
+import Produtos from "./pages/Produtos/Produtos";
 
 function AppContent() {
   const navigate = useNavigate(); 
@@ -38,6 +41,7 @@ function AppContent() {
     else if (tela === "usuarios") navigate("/usuarios");
     else if (tela === "boas-vindas") navigate("/teladeboasvindas");
     else if (tela === "adicionar-produto") navigate("/adicionar-produto");
+    else if (tela === "produtos") navigate("/produtos");
     else navigate(`/${tela}`);
   };
 
@@ -130,6 +134,24 @@ function AppContent() {
             )
           } />
 
+          <Route path="/produtos" element={
+  logado ? (
+    <>
+      <Menu 
+        onLogout={() => { setLogado(false); irParaBoasVindas(); }} 
+        setTelaAtiva={mudarTelaPorString} 
+        toggleTema={toggleTema} 
+        modo={modo} 
+      />
+      <main style={{ padding: "20px" }}>
+        <Produtos />
+      </main>
+    </>
+  ) : (
+    <Navigate to="/login" replace />
+  )
+} />
+
           <Route path="/adicionar-produto" element={
   logado ? (
     <>
@@ -141,6 +163,42 @@ function AppContent() {
       />
       <main style={{ padding: "20px" }}>
         <AdicionarProduto />
+      </main>
+    </>
+  ) : (
+    <Navigate to="/login" replace />
+  )
+} />
+
+<Route path="/insumos/novo" element={
+  logado ? (
+    <>
+      <Menu 
+        onLogout={() => { setLogado(false); irParaBoasVindas(); }} 
+        setTelaAtiva={mudarTelaPorString} 
+        toggleTema={toggleTema} 
+        modo={modo} 
+      />
+      <main style={{ padding: "20px" }}>
+        <CadastroInsumo />
+      </main>
+    </>
+  ) : (
+    <Navigate to="/login" replace />
+  )
+} />
+
+<Route path="/fichas-tecnicas/novo" element={
+  logado ? (
+    <>
+      <Menu 
+        onLogout={() => { setLogado(false); irParaBoasVindas(); }} 
+        setTelaAtiva={mudarTelaPorString} 
+        toggleTema={toggleTema} 
+        modo={modo} 
+      />
+      <main style={{ padding: "20px" }}>
+        <CadastroFichaTecnica />
       </main>
     </>
   ) : (
