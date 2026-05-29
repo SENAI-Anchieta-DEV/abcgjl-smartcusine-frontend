@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -16,6 +16,8 @@ import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 
 import { useNavigate } from "react-router-dom";
+
+import api from "../../services/api";
 
 function Produtos() {
   const navigate = useNavigate();
@@ -47,46 +49,29 @@ function Produtos() {
     setModalEditarAberto(false);
   }
 
-  const dados = {
-    insumos: [
-      {
-        nome: "Maionese Helmans",
-        categoria: "Condimento",
-        data: "31/08/2026",
-      },
-      {
-        nome: "Patinho moído",
-        categoria: "Carne",
-        data: "31/08/2026",
-      },
-    ],
+  useEffect(() => {
+  carregarDados();
+}, []);
 
-    equipamentos: [
-      {
-        nome: "Freezer Vertical",
-        categoria: "Refrigeração",
-        data: "01/09/2026",
-      },
-      {
-        nome: "Balança Digital",
-        categoria: "Medição",
-        data: "10/09/2026",
-      },
-    ],
+async function carregarDados() {
+  try {
+    const response = await api.get("/insumos");
 
-    fichas: [
-      {
-        nome: "Bolo de Chocolate",
-        categoria: "Ficha Técnica",
-        data: "15/09/2026",
-      },
-      {
-        nome: "Molho Branco",
-        categoria: "Ficha Técnica",
-        data: "18/09/2026",
-      },
-    ],
-  };
+    setDados({
+      insumos: response.data,
+      equipamentos: [],
+      fichas: [],
+    });
+  } catch (error) {
+    console.error("Erro ao carregar insumos:", error);
+  }
+}
+
+  const [dados, setDados] = useState({
+  insumos: [],
+  equipamentos: [],
+  fichas: [],
+  });
 
   return (
     <Box
@@ -206,14 +191,14 @@ function Produtos() {
         </Box>
       </Paper>
 
-      {dados[abaAtiva].map((item, index) => (
+      {dados[abaAtiva]?.map((item, index) => (
         <ProdutoCard
-          key={index}
-          nome={item.nome}
-          categoria={item.categoria}
-          data={item.data}
-          onEditar={() => abrirEditar(item)}
-        />
+      key={item.idInsumo || index}
+      nome={item.nome}
+      categoria={item.unidadeMedida || item.categoria}
+      data={item.dataValidade || item.data}
+      onEditar={() => abrirEditar(item)}
+/>
       ))}
 
       <Dialog
@@ -318,6 +303,8 @@ function Produtos() {
             }
             sx={{ mb: 3 }}
           />
+
+          
 
           <TextField
             fullWidth

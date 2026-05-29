@@ -9,13 +9,75 @@ import {
   RadioGroup,
   FormControlLabel,
   Dialog,
-  DialogContent
+  DialogContent,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import { useNavigate } from "react-router-dom";
+import api from "../../services/api";
 
 function CadastroInsumo() {
+  const navigate = useNavigate();
+
+  const [nome, setNome] = useState("");
   const [unidade, setUnidade] = useState("");
+  const [quantidade, setQuantidade] = useState("");
+  const [dataValidade, setDataValidade] = useState("");
+
   const [popupAberto, setPopupAberto] = useState(false);
+  const [fichaTecnica, setFichaTecnica] = useState("");
+  const [quantidadePreparo, setQuantidadePreparo] = useState("");
+  const [unidadePreparo, setUnidadePreparo] = useState("");
+
+  async function cadastrarInsumo() {
+    try {
+      if (!nome || !unidade || !quantidade || !dataValidade) {
+        alert("Preencha todos os campos!");
+        return;
+      }
+
+      await api.post("/insumos", {
+        nome,
+        unidadeMedida: unidade,
+        quantidadeEstoque: Number(quantidade),
+        dataValidade,
+      });
+
+      alert("Insumo cadastrado com sucesso!");
+      navigate("/produtos");
+    } catch (error) {
+      console.error("Erro ao cadastrar insumo:", error);
+      alert("Erro ao cadastrar insumo!");
+    }
+  }
+
+  function abrirPopupFicha() {
+    if (!nome || !unidade || !quantidade || !dataValidade) {
+      alert("Preencha os dados do insumo antes de relacionar com uma ficha!");
+      return;
+    }
+
+    setPopupAberto(true);
+  }
+
+  async function continuarComFicha() {
+    try {
+      if (!fichaTecnica || !quantidadePreparo || !unidadePreparo) {
+        alert("Preencha os dados da ficha técnica!");
+        return;
+      }
+
+      await cadastrarInsumo();
+
+      console.log("Relacionar com ficha:", {
+        fichaTecnica,
+        quantidadePreparo,
+        unidadePreparo,
+      });
+    } catch (error) {
+      console.error("Erro ao relacionar ficha:", error);
+      alert("Erro ao relacionar ficha!");
+    }
+  }
 
   return (
     <Box sx={{ minHeight: "100vh", backgroundColor: "#b8ced8", p: 5 }}>
@@ -74,6 +136,8 @@ function CadastroInsumo() {
 
         <TextField
           fullWidth
+          value={nome}
+          onChange={(e) => setNome(e.target.value)}
           placeholder="Insira o nome do Insumo"
           sx={{ backgroundColor: "#fff", borderRadius: 10, mb: 4 }}
         />
@@ -97,6 +161,8 @@ function CadastroInsumo() {
 
         <TextField
           fullWidth
+          value={quantidade}
+          onChange={(e) => setQuantidade(e.target.value)}
           placeholder="Insira a quantidade de Insumo"
           type="number"
           sx={{ backgroundColor: "#fff", borderRadius: 10, mb: 4 }}
@@ -108,6 +174,8 @@ function CadastroInsumo() {
 
         <TextField
           fullWidth
+          value={dataValidade}
+          onChange={(e) => setDataValidade(e.target.value)}
           type="date"
           sx={{ backgroundColor: "#fff", borderRadius: 10, mb: 4 }}
         />
@@ -128,6 +196,7 @@ function CadastroInsumo() {
 
           <Box display="flex" justifyContent="center" gap={20}>
             <Button
+              onClick={cadastrarInsumo}
               sx={{
                 backgroundColor: "#ff2d2d",
                 color: "#fff",
@@ -139,7 +208,7 @@ function CadastroInsumo() {
             </Button>
 
             <Button
-              onClick={() => setPopupAberto(true)}
+              onClick={abrirPopupFicha}
               sx={{
                 backgroundColor: "#ff8c42",
                 color: "#fff",
@@ -154,6 +223,7 @@ function CadastroInsumo() {
 
         <Box display="flex" justifyContent="flex-end">
           <Button
+            onClick={cadastrarInsumo}
             sx={{
               backgroundColor: "#ff8c42",
               color: "#fff",
@@ -183,31 +253,51 @@ function CadastroInsumo() {
       >
         <DialogContent>
           <Typography variant="h6" sx={{ color: "#7996b4", mb: 1 }}>
-            Nome do preparo:
+            Ficha Técnica:
           </Typography>
 
           <TextField
             fullWidth
-            placeholder="Insira o nome do preparo"
+            value={fichaTecnica}
+            onChange={(e) => setFichaTecnica(e.target.value)}
+            placeholder="Insira o nome da ficha técnica"
             size="small"
             sx={{ mb: 3 }}
           />
 
           <Typography variant="h6" sx={{ color: "#7996b4", mb: 1 }}>
-            Quantidade que vai para esse preparo:
+            Quantidade utilizada:
           </Typography>
 
           <TextField
             fullWidth
+            value={quantidadePreparo}
+            onChange={(e) => setQuantidadePreparo(e.target.value)}
             placeholder="Insira a quantidade necessária para o preparo"
             size="small"
             type="number"
-            sx={{ mb: 4 }}
+            sx={{ mb: 3 }}
           />
+
+          <Typography variant="h6" sx={{ color: "#7996b4", mb: 1 }}>
+            Unidade da quantidade:
+          </Typography>
+
+          <RadioGroup
+            value={unidadePreparo}
+            onChange={(e) => setUnidadePreparo(e.target.value)}
+            row
+            sx={{ mb: 4 }}
+          >
+            <FormControlLabel value="kg" control={<Radio />} label="Kg" />
+            <FormControlLabel value="g" control={<Radio />} label="g" />
+            <FormControlLabel value="L" control={<Radio />} label="L" />
+            <FormControlLabel value="ml" control={<Radio />} label="ml" />
+          </RadioGroup>
 
           <Box display="flex" justifyContent="flex-end">
             <Button
-              onClick={() => setPopupAberto(false)}
+              onClick={continuarComFicha}
               sx={{
                 backgroundColor: "#7996b4",
                 color: "#fff",
