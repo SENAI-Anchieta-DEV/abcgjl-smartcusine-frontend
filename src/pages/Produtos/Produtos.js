@@ -10,6 +10,7 @@ import {
   RadioGroup,
   TextField,
   FormControlLabel,
+  MenuItem,
 } from "@mui/material";
 
 import AddCircleIcon from "@mui/icons-material/AddCircle";
@@ -193,11 +194,13 @@ async function carregarDados() {
 
       {dados[abaAtiva]?.map((item, index) => (
         <ProdutoCard
-      key={item.idInsumo || index}
-      nome={item.nome}
-      categoria={item.unidadeMedida || item.categoria}
-      data={item.dataValidade || item.data}
-      onEditar={() => abrirEditar(item)}
+  key={item.idInsumo || index}
+  nome={item.nome}
+  categoria={item.categoria}
+  quantidade={item.quantidadeEstoque}
+  unidade={item.unidadeMedida}
+  data={item.dataValidade}
+  onEditar={() => abrirEditar(item)}
 />
       ))}
 
@@ -307,17 +310,27 @@ async function carregarDados() {
           
 
           <TextField
-            fullWidth
-            label="Categoria"
-            value={produtoEditando?.categoria || ""}
-            onChange={(e) =>
-              setProdutoEditando({
-                ...produtoEditando,
-                categoria: e.target.value,
-              })
-            }
-            sx={{ mb: 3 }}
-          />
+  select
+  fullWidth
+  label="Categoria"
+  value={produtoEditando?.categoria || ""}
+  onChange={(e) =>
+    setProdutoEditando({
+      ...produtoEditando,
+      categoria: e.target.value,
+    })
+  }
+  sx={{ mb: 3 }}
+>
+  <MenuItem value="Carne">Carne</MenuItem>
+  <MenuItem value="Condimento">Condimento</MenuItem>
+  <MenuItem value="Laticínio">Laticínio</MenuItem>
+  <MenuItem value="Grão">Grão</MenuItem>
+  <MenuItem value="Verdura">Verdura</MenuItem>
+  <MenuItem value="Legume">Legume</MenuItem>
+  <MenuItem value="Bebida">Bebida</MenuItem>
+  <MenuItem value="Outro">Outro</MenuItem>
+</TextField>
 
           <TextField
             fullWidth
@@ -355,7 +368,7 @@ async function carregarDados() {
   );
 }
 
-function ProdutoCard({ nome, categoria, data, onEditar }) {
+function ProdutoCard({ nome, categoria, quantidade, unidade, data, onEditar }) {
   return (
     <Paper
       elevation={0}
@@ -368,24 +381,25 @@ function ProdutoCard({ nome, categoria, data, onEditar }) {
         boxShadow: "-18px 18px 0px #7996b4",
       }}
     >
-      <Typography
-        variant="h5"
-        sx={{
-          color: "#7996b4",
-        }}
-      >
+      <Typography variant="h5" sx={{ color: "#7996b4" }}>
         {nome}
       </Typography>
 
+      <Typography color="text.secondary" sx={{ mb: 1 }}>
+        Categoria: {categoria || "Sem categoria"}
+      </Typography>
+
       <Typography color="text.secondary" sx={{ mb: 4 }}>
-        {categoria}
+        Quantidade: {quantidade} {unidade}
       </Typography>
 
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Box display="flex" gap={1} alignItems="center">
           <CalendarTodayIcon fontSize="small" color="disabled" />
 
-          <Typography color="text.secondary">{data}</Typography>
+          <Typography color="text.secondary">
+            {data}
+          </Typography>
         </Box>
 
         <Button

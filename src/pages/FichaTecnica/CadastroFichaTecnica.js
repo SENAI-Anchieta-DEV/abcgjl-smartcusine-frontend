@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -15,21 +15,23 @@ import {
   TableRow,
 } from "@mui/material";
 
+import api from "../../services/api";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 function CadastroFichaTecnica() {
+  const [insumosCadastrados, setInsumosCadastrados] = useState([]);
   const [popupAberto, setPopupAberto] = useState(false);
 
   const [insumoSelecionado, setInsumoSelecionado] = useState("");
   const [quantidade, setQuantidade] = useState("");
   const [unidade, setUnidade] = useState("");
 
-const [nomePreparo, setNomePreparo] = useState("");
-const [tipoEquipamento, setTipoEquipamento] = useState("");
-const [temperaturaMinima, setTemperaturaMinima] = useState("");
-const [temperaturaMaxima, setTemperaturaMaxima] = useState("");
+  const [nomePreparo, setNomePreparo] = useState("");
+  const [tipoEquipamento, setTipoEquipamento] = useState("");
+  const [temperaturaMinima, setTemperaturaMinima] = useState("");
+  const [temperaturaMaxima, setTemperaturaMaxima] = useState("");
 
   const [insumosUtilizados, setInsumosUtilizados] = useState([
     { nome: "Maionese Helmans", quantidade: 300, unidade: "g" },
@@ -37,13 +39,18 @@ const [temperaturaMaxima, setTemperaturaMaxima] = useState("");
     { nome: "Cebola", quantidade: 200, unidade: "g" },
   ]);
 
-  const insumosCadastrados = [
-    "Maionese Helmans",
-    "Patinho moído",
-    "Cebola",
-    "Tomate",
-    "Arroz",
-  ];
+  useEffect(() => {
+  carregarInsumos();
+  }, []);
+
+  async function carregarInsumos() {
+  try {
+    const response = await api.get("/insumos");
+    setInsumosCadastrados(response.data);
+  } catch (error) {
+    console.error("Erro ao carregar insumos:", error);
+  }
+}
 
   function adicionarInsumo() {
     if (!insumoSelecionado || !quantidade || !unidade) {
@@ -52,7 +59,8 @@ const [temperaturaMaxima, setTemperaturaMaxima] = useState("");
     }
 
     const novoInsumo = {
-      nome: insumoSelecionado,
+      nome: insumoSelecionado.nome,
+      idInsumo: insumoSelecionado.idInsumo,
       quantidade,
       unidade,
     };
@@ -313,10 +321,10 @@ const [temperaturaMaxima, setTemperaturaMaxima] = useState("");
             sx={{ mb: 3 }}
           >
             {insumosCadastrados.map((insumo) => (
-              <MenuItem key={insumo} value={insumo}>
-                {insumo}
-              </MenuItem>
-            ))}
+           <MenuItem key={insumo.idInsumo} value={insumo}>
+             {insumo.nome}
+           </MenuItem>
+          ))}
           </TextField>
 
           <Typography sx={{ color: "#7996b4", mb: 1 }}>
