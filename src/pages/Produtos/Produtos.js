@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -14,6 +14,7 @@ import {
 
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import api from "../../services/api";
 
 import { useNavigate } from "react-router-dom";
 
@@ -26,6 +27,22 @@ function Produtos() {
 
   const [modalEditarAberto, setModalEditarAberto] = useState(false);
   const [produtoEditando, setProdutoEditando] = useState(null);
+
+  const [equipamentos, setEquipamentos] = useState([]);
+
+  useEffect(() => {
+    carregarEquipamentos();
+  }, []);
+
+  async function carregarEquipamentos() {
+    try {
+      const response = await api.get("/equipamentos");
+
+      setEquipamentos(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   function continuar() {
     if (tipoSelecionado === "insumo") {
@@ -173,7 +190,7 @@ function Produtos() {
           sx={{ cursor: "pointer" }}
         >
           <Typography fontWeight="bold" fontSize={24}>
-            {dados.equipamentos.length}
+            {equipamentos.length}
           </Typography>
 
           <Typography

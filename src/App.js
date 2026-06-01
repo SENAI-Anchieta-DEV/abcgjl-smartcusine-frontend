@@ -11,6 +11,7 @@ import EditarPerfil from "./pages/Auth/EditarPerfil";
 import AdicionarProduto from "./pages/AdicionarProduto/AdicionarProduto";
 import CadastroInsumo from "./pages/Insumos/CadastroInsumo";
 import CadastroFichaTecnica from "./pages/FichaTecnica/CadastroFichaTecnica";
+import CadastroEquipamentos from "./pages/Equipamentos/Equipamentos";
 import Produtos from "./pages/Produtos/Produtos";
 
 function AppContent() {
@@ -135,76 +136,95 @@ function AppContent() {
           } />
 
           <Route path="/produtos" element={
-  logado ? (
-    <>
-      <Menu 
-        onLogout={() => { setLogado(false); irParaBoasVindas(); }} 
-        setTelaAtiva={mudarTelaPorString} 
-        toggleTema={toggleTema} 
-        modo={modo} 
-      />
-      <main style={{ padding: "20px" }}>
-        <Produtos />
-      </main>
-    </>
-  ) : (
-    <Navigate to="/login" replace />
-  )
-} />
+            logado ? (
+              <>
+                <Menu 
+                  onLogout={() => { setLogado(false); irParaBoasVindas(); }} 
+                  setTelaAtiva={mudarTelaPorString} 
+                  toggleTema={toggleTema} 
+                  modo={modo} 
+                />
+                <main style={{ padding: "20px" }}>
+                  <Produtos />
+                </main>
+              </>
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          } />
 
           <Route path="/adicionar-produto" element={
-  logado ? (
-    <>
-      <Menu 
-        onLogout={() => { setLogado(false); irParaBoasVindas(); }} 
-        setTelaAtiva={mudarTelaPorString} 
-        toggleTema={toggleTema} 
-        modo={modo} 
-      />
-      <main style={{ padding: "20px" }}>
-        <AdicionarProduto />
-      </main>
-    </>
-  ) : (
-    <Navigate to="/login" replace />
-  )
-} />
+            logado ? (
+              <>
+                <Menu 
+                  onLogout={() => { setLogado(false); irParaBoasVindas(); }} 
+                  setTelaAtiva={mudarTelaPorString} 
+                  toggleTema={toggleTema} 
+                  modo={modo} 
+                />
+                <main style={{ padding: "20px" }}>
+                  <AdicionarProduto />
+                </main>
+              </>
+            ) : (
+              <Navigate to="/login" replace />
+            )
+        } />
 
-<Route path="/insumos/novo" element={
-  logado ? (
-    <>
-      <Menu 
-        onLogout={() => { setLogado(false); irParaBoasVindas(); }} 
-        setTelaAtiva={mudarTelaPorString} 
-        toggleTema={toggleTema} 
-        modo={modo} 
-      />
-      <main style={{ padding: "20px" }}>
-        <CadastroInsumo />
-      </main>
-    </>
-  ) : (
-    <Navigate to="/login" replace />
-  )
-} />
+        <Route path="/insumos/novo" element={
+          logado ? (
+            <>
+              <Menu 
+                onLogout={() => { setLogado(false); irParaBoasVindas(); }} 
+                setTelaAtiva={mudarTelaPorString} 
+                toggleTema={toggleTema} 
+                modo={modo} 
+              />
+              <main style={{ padding: "20px" }}>
+                <CadastroInsumo />
+              </main>
+            </>
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        } />
 
-<Route path="/fichas-tecnicas/novo" element={
-  logado ? (
-    <>
-      <Menu 
-        onLogout={() => { setLogado(false); irParaBoasVindas(); }} 
-        setTelaAtiva={mudarTelaPorString} 
-        toggleTema={toggleTema} 
-        modo={modo} 
-      />
-      <main style={{ padding: "20px" }}>
-        <CadastroFichaTecnica />
-      </main>
-    </>
-  ) : (
-    <Navigate to="/login" replace />
-  )
-} />
+        <Route path="/fichas-tecnicas/novo" element={
+          logado ? (
+            <>
+              <Menu 
+                onLogout={() => { setLogado(false); irParaBoasVindas(); }} 
+                setTelaAtiva={mudarTelaPorString} 
+                toggleTema={toggleTema} 
+                modo={modo} 
+              />
+              <main style={{ padding: "20px" }}>
+                <CadastroFichaTecnica />
+              </main>
+            </>
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        } />
+
+         <Route path="/equipamentos/novo" element={
+          logado ? (
+            <>
+              <Menu 
+                onLogout={() => { setLogado(false); irParaBoasVindas(); }} 
+                setTelaAtiva={mudarTelaPorString} 
+                toggleTema={toggleTema} 
+                modo={modo} 
+              />
+              <main style={{ padding: "20px" }}>
+                <CadastroEquipamentos />
+              </main>
+            </>
+          ) : (
+            <Navigate to="/login" replace />
+          )
+        } />
+
 
           <Route path="*" element={<Navigate to="/" replace />} />
 

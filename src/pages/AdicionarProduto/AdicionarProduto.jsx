@@ -2,6 +2,7 @@ import { Box, Button, Typography, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 function AdicionarProduto() {
+  
   const navigate = useNavigate();
 
   return (
