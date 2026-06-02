@@ -47,17 +47,27 @@ function Produtos() {
   }, []);
 
   async function carregarDados() {
-    const response = await api.get("/insumos");
+  const fichas =
+    JSON.parse(localStorage.getItem("fichasTecnicas")) || [];
 
-    const fichas =
-      JSON.parse(localStorage.getItem("fichasTecnicas")) || [];
+  try {
+    const response = await api.get("/insumos");
 
     setDados({
       insumos: response.data,
       equipamentos: [],
       fichas,
     });
+  } catch (error) {
+    console.error("Erro ao carregar insumos:", error);
+
+    setDados({
+      insumos: [],
+      equipamentos: [],
+      fichas,
+    });
   }
+}
 
   function continuar() {
     if (tipoSelecionado === "insumo") {
@@ -76,6 +86,12 @@ function Produtos() {
 
   async function salvarEdicao() {
     try {
+
+      if (Number(produtoEditando.quantidadeEstoque) <= 0) {
+  alert("A quantidade deve ser maior que zero!");
+  return;
+} 
+
       await api.put(`/insumos/${produtoEditando.idInsumo}`, {
         nome: produtoEditando.nome,
         unidadeMedida: produtoEditando.unidadeMedida,
@@ -151,6 +167,24 @@ function salvarEdicaoFicha() {
     alert("Preencha todos os campos da ficha!");
     return;
   }
+
+  if (
+  Number(fichaEditando.temperaturaMinima) <= 0 ||
+  Number(fichaEditando.temperaturaMaxima) <= 0
+) {
+  alert("As temperaturas devem ser maiores que zero!");
+  return;
+}
+
+if (
+  Number(fichaEditando.temperaturaMinima) >
+  Number(fichaEditando.temperaturaMaxima)
+) {
+  alert("A temperatura mínima não pode ser maior que a máxima!");
+  return;
+}
+
+
 
   const fichasSalvas =
     JSON.parse(localStorage.getItem("fichasTecnicas")) || [];

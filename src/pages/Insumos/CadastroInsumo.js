@@ -30,6 +30,11 @@ function CadastroInsumo() {
       return;
     }
 
+    if (Number(quantidadeInsumo) <= 0) {
+  alert("A quantidade deve ser maior que zero!");
+  return;
+}
+
     try {
       setCarregando(true);
 
@@ -39,6 +44,18 @@ function CadastroInsumo() {
         quantidadeEstoque: Number(quantidadeInsumo),
         dataValidade,
       };
+
+      const response = await api.get("/insumos");
+
+const insumoExiste = response.data.some(
+  (insumo) =>
+    insumo.nome.toLowerCase().trim() === nomeInsumo.toLowerCase().trim()
+);
+
+if (insumoExiste) {
+  alert("Já existe um insumo com esse nome!");
+  return;
+}
 
       await api.post("/insumos", novoInsumo);
 

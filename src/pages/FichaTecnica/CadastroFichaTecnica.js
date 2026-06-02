@@ -17,7 +17,6 @@ import {
 
 import api from "../../services/api";
 import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
@@ -47,9 +46,14 @@ function CadastroFichaTecnica() {
   async function carregarInsumos() {
   try {
     const response = await api.get("/insumos");
+
+    console.log("INSUMOS CARREGADOS:", response.data);
+
     setInsumosCadastrados(response.data);
   } catch (error) {
     console.error("Erro ao carregar insumos:", error);
+    console.error("Resposta:", error.response?.data);
+    alert("Erro ao carregar insumos cadastrados!");
   }
 }
 
@@ -70,10 +74,12 @@ function CadastroFichaTecnica() {
 function tiposCompativeis(unidadeEstoque, unidadeUsada) {
   const peso = ["kg", "g"];
   const volume = ["L", "ml", "ML"];
+  const unidade = ["UND", "und"];
 
   return (
     (peso.includes(unidadeEstoque) && peso.includes(unidadeUsada)) ||
-    (volume.includes(unidadeEstoque) && volume.includes(unidadeUsada))
+    (volume.includes(unidadeEstoque) && volume.includes(unidadeUsada)) ||
+    (unidade.includes(unidadeEstoque) && unidade.includes(unidadeUsada))
   );
 }
 
@@ -82,6 +88,20 @@ function tiposCompativeis(unidadeEstoque, unidadeUsada) {
     alert("Preencha todos os campos do insumo.");
     return;
   }
+
+  const insumoJaAdicionado = insumosUtilizados.some(
+  (insumo) => insumo.idInsumo === insumoSelecionado.idInsumo
+);
+
+if (insumoJaAdicionado) {
+  alert("Este insumo já foi adicionado à ficha técnica!");
+  return;
+}
+
+  if (Number(quantidade) <= 0) {
+  alert("A quantidade utilizada deve ser maior que zero!");
+  return;
+}
 
   if (!tiposCompativeis(insumoSelecionado.unidadeMedida, unidade)) {
     alert(
@@ -137,6 +157,23 @@ function tiposCompativeis(unidadeEstoque, unidadeUsada) {
     alert("Preencha todos os campos da ficha!");
     return;
   }
+
+  
+
+  if (Number(temperaturaMinima) <= 0 || Number(temperaturaMaxima) <= 0) {
+  alert("As temperaturas devem ser maiores que zero!");
+  return;
+}
+
+if (Number(temperaturaMinima) > Number(temperaturaMaxima)) {
+  alert("A temperatura mínima não pode ser maior que a máxima!");
+  return;
+}
+
+if (insumosUtilizados.length === 0) {
+  alert("Adicione pelo menos um insumo para cadastrar a ficha técnica!");
+  return;
+}
 
   const ficha = {
     id: Date.now(),
@@ -364,10 +401,6 @@ function tiposCompativeis(unidadeEstoque, unidadeUsada) {
         <TableCell>{insumo.quantidade}</TableCell>
         <TableCell>{insumo.unidade}</TableCell>
         <TableCell>
-          <Button sx={{ minWidth: 0, color: "#7996b4" }}>
-            <EditIcon />
-          </Button>
-
           <Button
             onClick={() => removerInsumo(index)}
             sx={{ minWidth: 0, color: "red" }}
@@ -420,14 +453,30 @@ function tiposCompativeis(unidadeEstoque, unidadeUsada) {
           <Typography sx={{ color: "#7996b4", mb: 1 }}>
             Selecione o insumo:
           </Typography>
+            
+  <TextField
+  select
+  fullWidth
+  value={insumoSelecionado}
+  onChange={(e) => setInsumoSelecionado(e.target.value)}
+>
+  
 
-          <TextField
-            select
-            fullWidth
-            value={insumoSelecionado}
-            onChange={(e) => setInsumoSelecionado(e.target.value)}
-            sx={{ mb: 3 }}
-          >
+            {insumoSelecionado && (
+  <Typography
+    sx={{
+      color: "#7996b4",
+      fontSize: "15px",
+      fontWeight: "bold",
+      mt: 1,
+      mb: 2,
+    }}
+  >
+    📦 Estoque disponível: {insumoSelecionado.quantidadeEstoque}{" "}
+    {insumoSelecionado.unidadeMedida}
+  </Typography>
+)}
+            
             {insumosCadastrados.map((insumo) => (
            <MenuItem key={insumo.idInsumo} value={insumo}>
              {insumo.nome}
