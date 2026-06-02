@@ -10,7 +10,6 @@ import {
   FormControlLabel,
   Dialog,
   DialogContent,
-  MenuItem,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useNavigate } from "react-router-dom";
@@ -18,8 +17,6 @@ import api from "../../services/api";
 
 function CadastroInsumo() {
   const navigate = useNavigate();
-
-  const [categoria, setCategoria] = useState("");
 
   const [nomeInsumo, setNomeInsumo] = useState("");
   const [quantidadeInsumo, setQuantidadeInsumo] = useState("");
@@ -31,23 +28,19 @@ function CadastroInsumo() {
   const [quantidadePreparo, setQuantidadePreparo] = useState("");
   const [unidadePreparo, setUnidadePreparo] = useState("");
 
- 
-
   async function cadastrarInsumo() {
     try {
-      if (!nomeInsumo || !unidade || !quantidadeInsumo || !dataValidade || !categoria) {
+      if (!nomeInsumo || !unidade || !quantidadeInsumo || !dataValidade) {
         alert("Preencha todos os campos!");
         return;
       }
 
-     await api.post("/insumos", {
-     nome: nomeInsumo,
-     categoria,
-     unidadeMedida: unidade,
-     quantidadeEstoque: Number(quantidadeInsumo),
-     dataValidade,
-    });
-
+      await api.post("/insumos", {
+        nome: nomeInsumo,
+        unidadeMedida: unidade,
+        quantidadeEstoque: Number(quantidadeInsumo),
+        dataValidade,
+      });
 
       alert("Insumo cadastrado com sucesso!");
       navigate("/produtos");
@@ -58,13 +51,13 @@ function CadastroInsumo() {
   }
 
   function abrirPopupFicha() {
-  if (!nomeInsumo || !unidade || !quantidadeInsumo || !dataValidade || !categoria) {
-  alert("Preencha todos os campos!");
-  return;
-}
+    if (!nomeInsumo || !unidade || !quantidadeInsumo || !dataValidade) {
+      alert("Preencha todos os campos!");
+      return;
+    }
 
-  setPopupAberto(true);
-}
+    setPopupAberto(true);
+  }
 
   async function continuarComFicha() {
     try {
@@ -130,6 +123,7 @@ function CadastroInsumo() {
           <Typography variant="h4" fontWeight="bold" sx={{ color: "#ff8c42" }}>
             Adicionar Insumo
           </Typography>
+
           <Typography fontSize={22}>
             Preencha todos os campos abaixo para cadastrar o insumo desejado
           </Typography>
@@ -142,12 +136,12 @@ function CadastroInsumo() {
         </Typography>
 
         <TextField
-        fullWidth
-        value={nomeInsumo}
-        onChange={(e) => setNomeInsumo(e.target.value)}
-        placeholder="Insira o nome do Insumo"
-        sx={{ backgroundColor: "#fff", borderRadius: 10, mb: 4 }}
-/>
+          fullWidth
+          value={nomeInsumo}
+          onChange={(e) => setNomeInsumo(e.target.value)}
+          placeholder="Insira o nome do Insumo"
+          sx={{ backgroundColor: "#fff", borderRadius: 10, mb: 4 }}
+        />
 
         <Typography variant="h5" sx={{ color: "#7996b4", mb: 1 }}>
           Unidade do Insumo:
@@ -169,13 +163,13 @@ function CadastroInsumo() {
         </Typography>
 
         <TextField
-  fullWidth
-  value={quantidadeInsumo}
-  onChange={(e) => setQuantidadeInsumo(e.target.value)}
-  placeholder="Insira a quantidade de Insumo"
-  type="number"
-  sx={{ backgroundColor: "#fff", borderRadius: 10, mb: 4 }}
-/>
+          fullWidth
+          value={quantidadeInsumo}
+          onChange={(e) => setQuantidadeInsumo(e.target.value)}
+          placeholder="Insira a quantidade de Insumo"
+          type="number"
+          sx={{ backgroundColor: "#fff", borderRadius: 10, mb: 4 }}
+        />
 
         <Typography variant="h5" sx={{ color: "#7996b4", mb: 1 }}>
           Data de validade:
@@ -188,27 +182,6 @@ function CadastroInsumo() {
           type="date"
           sx={{ backgroundColor: "#fff", borderRadius: 10, mb: 4 }}
         />
-
-        <Typography variant="h5" sx={{ color: "#7996b4", mb: 1 }}>
-  Categoria do Insumo:
-</Typography>
-
-<TextField
-  select
-  fullWidth
-  value={categoria}
-  onChange={(e) => setCategoria(e.target.value)}
-  sx={{ backgroundColor: "#fff", borderRadius: 10, mb: 4 }}
->
-  <MenuItem value="Carne">Carne</MenuItem>
-  <MenuItem value="Condimento">Condimento</MenuItem>
-  <MenuItem value="Laticínio">Laticínio</MenuItem>
-  <MenuItem value="Grão">Grão</MenuItem>
-  <MenuItem value="Verdura">Verdura</MenuItem>
-  <MenuItem value="Legume">Legume</MenuItem>
-  <MenuItem value="Bebida">Bebida</MenuItem>
-  <MenuItem value="Outro">Outro</MenuItem>
-</TextField>
 
         <Paper
           elevation={0}
@@ -322,7 +295,7 @@ function CadastroInsumo() {
             <FormControlLabel value="kg" control={<Radio />} label="Kg" />
             <FormControlLabel value="g" control={<Radio />} label="g" />
             <FormControlLabel value="L" control={<Radio />} label="L" />
-            <FormControlLabel value="ml" control={<Radio />} label="ml" />
+            <FormControlLabel value="ML" control={<Radio />} label="ml" />
           </RadioGroup>
 
           <Box display="flex" justifyContent="flex-end">

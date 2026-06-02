@@ -10,18 +10,21 @@ import {
   RadioGroup,
   TextField,
   FormControlLabel,
-  MenuItem,
 } from "@mui/material";
 
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 import { useNavigate } from "react-router-dom";
-
 import api from "../../services/api";
 
 function Produtos() {
   const navigate = useNavigate();
+
+  const [modalEditarFichaAberto, setModalEditarFichaAberto] = useState(false);
+  const [fichaEditando, setFichaEditando] = useState(null);
+  const [fichaEditandoIndex, setFichaEditandoIndex] = useState(null);
 
   const [modalAberto, setModalAberto] = useState(false);
   const [tipoSelecionado, setTipoSelecionado] = useState("");
@@ -29,6 +32,29 @@ function Produtos() {
 
   const [modalEditarAberto, setModalEditarAberto] = useState(false);
   const [produtoEditando, setProdutoEditando] = useState(null);
+
+  const [dados, setDados] = useState({
+    insumos: [],
+    equipamentos: [],
+    fichas: [],
+  });
+
+  useEffect(() => {
+    carregarDados();
+  }, []);
+
+  async function carregarDados() {
+    const response = await api.get("/insumos");
+
+    const fichas =
+      JSON.parse(localStorage.getItem("fichasTecnicas")) || [];
+
+    setDados({
+      insumos: response.data,
+      equipamentos: [],
+      fichas,
+    });
+  }
 
   function continuar() {
     if (tipoSelecionado === "insumo") {
@@ -45,34 +71,116 @@ function Produtos() {
     setModalEditarAberto(true);
   }
 
-  function salvarEdicao() {
-    console.log("Produto editado:", produtoEditando);
-    setModalEditarAberto(false);
+  async function salvarEdicao() {
+    try {
+      await api.put(`/insumos/${produtoEditando.idInsumo}`, {
+        nome: produtoEditando.nome,
+        unidadeMedida: produtoEditando.unidadeMedida,
+        quantidadeEstoque: Number(produtoEditando.quantidadeEstoque),
+        dataValidade: produtoEditando.dataValidade,
+      });
+
+      alert("Insumo atualizado com sucesso!");
+
+      setModalEditarAberto(false);
+      setProdutoEditando(null);
+      carregarDados();
+    } catch (error) {
+      console.error("Erro ao editar insumo:", error);
+      alert("Erro ao editar insumo!");
+    }
   }
 
-  useEffect(() => {
-  carregarDados();
-}, []);
+  async function deletarInsumo(item) {
+    const confirmar = window.confirm(
+      `Deseja realmente excluir ${item.nome}?`
+    );
 
-async function carregarDados() {
-  try {
-    const response = await api.get("/insumos");
+    if (!confirmar) return;
 
-    setDados({
-      insumos: response.data,
-      equipamentos: [],
-      fichas: [],
-    });
-  } catch (error) {
-    console.error("Erro ao carregar insumos:", error);
+    try {
+      await api.delete(`/insumos/${item.idInsumo}`);
+
+      alert("Insumo excluído com sucesso!");
+
+      carregarDados();
+    } catch (error) {
+      console.error("Erro ao excluir insumo:", error);
+      alert("Erro ao excluir insumo!");
+    }
   }
+
+  function excluirFicha(index) {
+  const confirmar = window.confirm(
+    "Deseja realmente excluir esta ficha técnica?"
+  );
+
+  if (!confirmar) return;
+
+  const novasFichas = [...dados.fichas];
+
+  novasFichas.splice(index, 1);
+
+  localStorage.setItem(
+    "fichasTecnicas",
+    JSON.stringify(novasFichas)
+  );
+
+  setDados({
+    ...dados,
+    fichas: novasFichas,
+  });
 }
 
-  const [dados, setDados] = useState({
-  insumos: [],
-  equipamentos: [],
-  fichas: [],
+function editarFicha(ficha, index) {
+  setFichaEditando(ficha);
+  setFichaEditandoIndex(index);
+  setModalEditarFichaAberto(true);
+}
+
+function salvarEdicaoFicha() {
+  if (
+    !fichaEditando.nomePreparo ||
+    !fichaEditando.tipoEquipamento ||
+    !fichaEditando.temperaturaMinima ||
+    !fichaEditando.temperaturaMaxima
+  ) {
+    alert("Preencha todos os campos da ficha!");
+    return;
+  }
+
+  const fichasSalvas =
+    JSON.parse(localStorage.getItem("fichasTecnicas")) || [];
+
+  const novasFichas = fichasSalvas.map((ficha, index) => {
+    if (index === fichaEditandoIndex) {
+      return {
+        ...ficha,
+        ...fichaEditando,
+        temperaturaMinima: Number(fichaEditando.temperaturaMinima),
+        temperaturaMaxima: Number(fichaEditando.temperaturaMaxima),
+      };
+    }
+
+    return ficha;
   });
+
+  localStorage.setItem(
+    "fichasTecnicas",
+    JSON.stringify(novasFichas)
+  );
+
+  setDados((prev) => ({
+    ...prev,
+    fichas: novasFichas,
+  }));
+
+  setModalEditarFichaAberto(false);
+  setFichaEditando(null);
+  setFichaEditandoIndex(null);
+
+  alert("Ficha técnica atualizada com sucesso!");
+}
 
   return (
     <Box
@@ -192,17 +300,124 @@ async function carregarDados() {
         </Box>
       </Paper>
 
-      {dados[abaAtiva]?.map((item, index) => (
-        <ProdutoCard
-  key={item.idInsumo || index}
-  nome={item.nome}
-  categoria={item.categoria}
-  quantidade={item.quantidadeEstoque}
-  unidade={item.unidadeMedida}
-  data={item.dataValidade}
-  onEditar={() => abrirEditar(item)}
-/>
-      ))}
+      {abaAtiva === "insumos" &&
+        dados.insumos.map((item, index) => (
+          <ProdutoCard
+            key={item.idInsumo || index}
+            nome={item.nome}
+            quantidade={item.quantidadeEstoque}
+            unidade={item.unidadeMedida}
+            data={item.dataValidade}
+            onEditar={() => abrirEditar(item)}
+            onExcluir={() => deletarInsumo(item)}
+          />
+        ))}
+
+      {abaAtiva === "fichas" &&
+  dados.fichas.map((ficha, index) => (
+
+    <Paper
+      key={index}
+      elevation={0}
+      sx={{
+        maxWidth: 800,
+        mx: "auto",
+        mb: 5,
+        borderRadius: 8,
+        p: 4,
+        boxShadow: "-18px 18px 0px #7996b4",
+      }}
+    >
+      <Typography
+        variant="h5"
+        sx={{
+          color: "#7996b4",
+          mb: 2,
+        }}
+      >
+        {ficha.nomePreparo}
+      </Typography>
+
+      <Typography
+        color="text.secondary"
+        sx={{ mt: 2 }}
+      >
+        Equipamento: {ficha.tipoEquipamento}
+      </Typography>
+
+      <Typography color="text.secondary">
+        Temperatura Ideal: {ficha.temperaturaMinima}°C até{" "}
+        {ficha.temperaturaMaxima}°C
+      </Typography>
+
+      <Typography color="text.secondary">
+  Insumos utilizados: {ficha.insumosUtilizados?.length || 0}
+</Typography>
+
+<Box
+  display="flex"
+  justifyContent="space-between"
+  alignItems="center"
+  sx={{ mt: 3 }}
+>
+  <Box
+    display="flex"
+    gap={1}
+    alignItems="center"
+  >
+    <CalendarTodayIcon
+      fontSize="small"
+      color="disabled"
+    />
+
+    <Typography color="text.secondary">
+      {ficha.dataCriacao?.split("-").reverse().join("/")}
+    </Typography>
+  </Box>
+
+  <Box
+    display="flex"
+    alignItems="center"
+    gap={0.5}
+  >
+    <DeleteIcon
+      sx={{
+        color: "red",
+        fontSize: 35,
+        cursor: "pointer",
+        "&:hover": {
+          transform: "scale(1.1)",
+        },
+      }}
+      onClick={() => excluirFicha(index)}
+    />
+
+    <Button
+      onClick={() => editarFicha(ficha, index)}
+      sx={{
+        backgroundColor: "#7996b4",
+        color: "#fff",
+        px: 3,
+        borderRadius: 2,
+        textTransform: "none",
+        minWidth: "100px",
+        "&:hover": {
+          backgroundColor: "#6f8aa5",
+        },
+      }}
+    >
+      Editar
+    </Button>
+  </Box>
+</Box>
+
+      <Typography
+        color="text.secondary"
+        sx={{ mt: 2 }}
+      >
+      </Typography>
+    </Paper>
+  ))}
 
       <Dialog
         open={modalAberto}
@@ -243,11 +458,7 @@ async function carregarDados() {
               label="Equipamento"
             />
 
-            <FormControlLabel
-              value="ficha"
-              control={<Radio />}
-              label="Ficha"
-            />
+            <FormControlLabel value="ficha" control={<Radio />} label="Ficha" />
           </RadioGroup>
 
           <Box display="flex" justifyContent="flex-end" mt={2}>
@@ -307,41 +518,45 @@ async function carregarDados() {
             sx={{ mb: 3 }}
           />
 
-          
-
-          <TextField
-  select
-  fullWidth
-  label="Categoria"
-  value={produtoEditando?.categoria || ""}
-  onChange={(e) =>
-    setProdutoEditando({
-      ...produtoEditando,
-      categoria: e.target.value,
-    })
-  }
-  sx={{ mb: 3 }}
->
-  <MenuItem value="Carne">Carne</MenuItem>
-  <MenuItem value="Condimento">Condimento</MenuItem>
-  <MenuItem value="Laticínio">Laticínio</MenuItem>
-  <MenuItem value="Grão">Grão</MenuItem>
-  <MenuItem value="Verdura">Verdura</MenuItem>
-  <MenuItem value="Legume">Legume</MenuItem>
-  <MenuItem value="Bebida">Bebida</MenuItem>
-  <MenuItem value="Outro">Outro</MenuItem>
-</TextField>
-
           <TextField
             fullWidth
-            label="Data"
-            value={produtoEditando?.data || ""}
+            label="Quantidade"
+            type="number"
+            value={produtoEditando?.quantidadeEstoque || ""}
             onChange={(e) =>
               setProdutoEditando({
                 ...produtoEditando,
-                data: e.target.value,
+                quantidadeEstoque: e.target.value,
               })
             }
+            sx={{ mb: 3 }}
+          />
+
+          <TextField
+            fullWidth
+            label="Unidade de medida"
+            value={produtoEditando?.unidadeMedida || ""}
+            onChange={(e) =>
+              setProdutoEditando({
+                ...produtoEditando,
+                unidadeMedida: e.target.value,
+              })
+            }
+            sx={{ mb: 3 }}
+          />
+
+          <TextField
+            fullWidth
+            label="Data de validade"
+            type="date"
+            value={produtoEditando?.dataValidade || ""}
+            onChange={(e) =>
+              setProdutoEditando({
+                ...produtoEditando,
+                dataValidade: e.target.value,
+              })
+            }
+            InputLabelProps={{ shrink: true }}
             sx={{ mb: 4 }}
           />
 
@@ -364,11 +579,114 @@ async function carregarDados() {
           </Box>
         </DialogContent>
       </Dialog>
+
+      <Dialog
+  open={modalEditarFichaAberto}
+  onClose={() => setModalEditarFichaAberto(false)}
+  PaperProps={{
+    sx: {
+      borderRadius: 5,
+      width: 500,
+      p: 2,
+      boxShadow: "-14px 14px 0px #7996b4",
+    },
+  }}
+>
+  <DialogContent>
+    <Typography
+      variant="h5"
+      fontWeight="bold"
+      sx={{ color: "#7996b4", mb: 3 }}
+    >
+      Editar Ficha Técnica
+    </Typography>
+
+    <TextField
+      fullWidth
+      label="Nome do preparo"
+      value={fichaEditando?.nomePreparo || ""}
+      onChange={(e) =>
+        setFichaEditando({
+          ...fichaEditando,
+          nomePreparo: e.target.value,
+        })
+      }
+      sx={{ mb: 3 }}
+    />
+
+    <TextField
+      fullWidth
+      label="Equipamento"
+      value={fichaEditando?.tipoEquipamento || ""}
+      onChange={(e) =>
+        setFichaEditando({
+          ...fichaEditando,
+          tipoEquipamento: e.target.value,
+        })
+      }
+      sx={{ mb: 3 }}
+    />
+
+    <TextField
+      fullWidth
+      label="Temperatura mínima"
+      type="number"
+      value={fichaEditando?.temperaturaMinima || ""}
+      onChange={(e) =>
+        setFichaEditando({
+          ...fichaEditando,
+          temperaturaMinima: e.target.value,
+        })
+      }
+      sx={{ mb: 3 }}
+    />
+
+    <TextField
+      fullWidth
+      label="Temperatura máxima"
+      type="number"
+      value={fichaEditando?.temperaturaMaxima || ""}
+      onChange={(e) =>
+        setFichaEditando({
+          ...fichaEditando,
+          temperaturaMaxima: e.target.value,
+        })
+      }
+      sx={{ mb: 4 }}
+    />
+
+    <Box display="flex" justifyContent="flex-end" gap={2}>
+      <Button onClick={() => setModalEditarFichaAberto(false)}>
+        Cancelar
+      </Button>
+
+      <Button
+        onClick={salvarEdicaoFicha}
+        sx={{
+          backgroundColor: "#ff8c42",
+          color: "#fff",
+          px: 4,
+          textTransform: "none",
+        }}
+      >
+        Salvar
+      </Button>
+    </Box>
+  </DialogContent>
+</Dialog>
+
     </Box>
   );
 }
 
-function ProdutoCard({ nome, categoria, quantidade, unidade, data, onEditar }) {
+function ProdutoCard({
+  nome,
+  quantidade,
+  unidade,
+  data,
+  onEditar,
+  onExcluir,
+}) {
   return (
     <Paper
       elevation={0}
@@ -385,10 +703,6 @@ function ProdutoCard({ nome, categoria, quantidade, unidade, data, onEditar }) {
         {nome}
       </Typography>
 
-      <Typography color="text.secondary" sx={{ mb: 1 }}>
-        Categoria: {categoria || "Sem categoria"}
-      </Typography>
-
       <Typography color="text.secondary" sx={{ mb: 4 }}>
         Quantidade: {quantidade} {unidade}
       </Typography>
@@ -398,22 +712,37 @@ function ProdutoCard({ nome, categoria, quantidade, unidade, data, onEditar }) {
           <CalendarTodayIcon fontSize="small" color="disabled" />
 
           <Typography color="text.secondary">
-            {data}
+            {data?.split("-").reverse().join("/")}
           </Typography>
         </Box>
 
-        <Button
-          onClick={onEditar}
-          sx={{
-            backgroundColor: "#7996b4",
-            color: "#fff",
-            px: 4,
-            borderRadius: 2,
-            textTransform: "none",
-          }}
-        >
-          Editar
-        </Button>
+        <Box display="flex" alignItems="center" gap={0.5}>
+          <DeleteIcon
+            onClick={onExcluir}
+            sx={{
+              color: "red",
+              fontSize: 35,
+              cursor: "pointer",
+              "&:hover": {
+                transform: "scale(1.1)",
+              },
+            }}
+          />
+
+          <Button
+            onClick={onEditar}
+            sx={{
+              backgroundColor: "#7996b4",
+              color: "#fff",
+              px: 3,
+              borderRadius: 2,
+              textTransform: "none",
+              minWidth: "100px",
+            }}
+          >
+            Editar
+          </Button>
+        </Box>
       </Box>
     </Paper>
   );

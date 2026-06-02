@@ -33,11 +33,7 @@ function CadastroFichaTecnica() {
   const [temperaturaMinima, setTemperaturaMinima] = useState("");
   const [temperaturaMaxima, setTemperaturaMaxima] = useState("");
 
-  const [insumosUtilizados, setInsumosUtilizados] = useState([
-    { nome: "Maionese Helmans", quantidade: 300, unidade: "g" },
-    { nome: "Patinho moído", quantidade: 1, unidade: "kg" },
-    { nome: "Cebola", quantidade: 200, unidade: "g" },
-  ]);
+  const [insumosUtilizados, setInsumosUtilizados] = useState([]);
 
   useEffect(() => {
   carregarInsumos();
@@ -78,16 +74,40 @@ function CadastroFichaTecnica() {
     setInsumosUtilizados(novaLista);
   }
 
-  function cadastrarFicha() {
+  async function cadastrarFicha() {
   const ficha = {
+    id: Date.now(),
     nomePreparo,
     tipoEquipamento,
     temperaturaMinima: Number(temperaturaMinima),
     temperaturaMaxima: Number(temperaturaMaxima),
     insumosUtilizados,
+    dataCriacao: new Date().toISOString().split("T")[0],
   };
 
-  console.log("Ficha técnica cadastrada:", ficha);
+  try {
+    const fichasSalvas =
+      JSON.parse(localStorage.getItem("fichasTecnicas")) || [];
+
+    fichasSalvas.push(ficha);
+
+    localStorage.setItem(
+      "fichasTecnicas",
+      JSON.stringify(fichasSalvas)
+    );
+
+    alert("Ficha técnica cadastrada com sucesso!");
+
+    setNomePreparo("");
+    setTipoEquipamento("");
+    setTemperaturaMinima("");
+    setTemperaturaMaxima("");
+    setInsumosUtilizados([]);
+
+  } catch (error) {
+    console.error(error);
+    alert("Erro ao cadastrar ficha");
+  }
 }
 
   return (
@@ -250,27 +270,35 @@ function CadastroFichaTecnica() {
               </TableRow>
             </TableHead>
 
-            <TableBody>
-              {insumosUtilizados.map((insumo, index) => (
-                <TableRow key={index}>
-                  <TableCell>{insumo.nome}</TableCell>
-                  <TableCell>{insumo.quantidade}</TableCell>
-                  <TableCell>{insumo.unidade}</TableCell>
-                  <TableCell>
-                    <Button sx={{ minWidth: 0, color: "#7996b4" }}>
-                      <EditIcon />
-                    </Button>
+           <TableBody>
+  {insumosUtilizados.length === 0 ? (
+    <TableRow>
+      <TableCell colSpan={4} align="center">
+        Nenhum insumo adicionado.
+      </TableCell>
+    </TableRow>
+  ) : (
+    insumosUtilizados.map((insumo, index) => (
+      <TableRow key={index}>
+        <TableCell>{insumo.nome}</TableCell>
+        <TableCell>{insumo.quantidade}</TableCell>
+        <TableCell>{insumo.unidade}</TableCell>
+        <TableCell>
+          <Button sx={{ minWidth: 0, color: "#7996b4" }}>
+            <EditIcon />
+          </Button>
 
-                    <Button
-                      onClick={() => removerInsumo(index)}
-                      sx={{ minWidth: 0, color: "red" }}
-                    >
-                      <DeleteIcon />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
+          <Button
+            onClick={() => removerInsumo(index)}
+            sx={{ minWidth: 0, color: "red" }}
+          >
+            <DeleteIcon />
+          </Button>
+        </TableCell>
+      </TableRow>
+    ))
+  )}
+</TableBody>
           </Table>
         </Paper>
 
