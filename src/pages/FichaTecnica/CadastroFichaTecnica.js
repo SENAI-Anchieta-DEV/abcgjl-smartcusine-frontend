@@ -19,8 +19,13 @@ import api from "../../services/api";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useNavigate } from "react-router-dom";
 
 function CadastroFichaTecnica() {
+
+  const navigate = useNavigate();
+
   const [insumosCadastrados, setInsumosCadastrados] = useState([]);
   const [popupAberto, setPopupAberto] = useState(false);
 
@@ -48,26 +53,74 @@ function CadastroFichaTecnica() {
   }
 }
 
+  function converterParaBase(quantidade, unidade) {
+  const valor = Number(quantidade);
+
+  if (unidade === "kg") return valor * 1000;
+  if (unidade === "g") return valor;
+
+  if (unidade === "L") return valor * 1000;
+  if (unidade === "ml" || unidade === "ML") return valor;
+
+  if (unidade === "UND") return valor;
+
+  return valor;
+}
+
+function tiposCompativeis(unidadeEstoque, unidadeUsada) {
+  const peso = ["kg", "g"];
+  const volume = ["L", "ml", "ML"];
+
+  return (
+    (peso.includes(unidadeEstoque) && peso.includes(unidadeUsada)) ||
+    (volume.includes(unidadeEstoque) && volume.includes(unidadeUsada))
+  );
+}
+
   function adicionarInsumo() {
-    if (!insumoSelecionado || !quantidade || !unidade) {
-      alert("Preencha todos os campos do insumo.");
-      return;
-    }
-
-    const novoInsumo = {
-      nome: insumoSelecionado.nome,
-      idInsumo: insumoSelecionado.idInsumo,
-      quantidade,
-      unidade,
-    };
-
-    setInsumosUtilizados([...insumosUtilizados, novoInsumo]);
-
-    setInsumoSelecionado("");
-    setQuantidade("");
-    setUnidade("");
-    setPopupAberto(false);
+  if (!insumoSelecionado || !quantidade || !unidade) {
+    alert("Preencha todos os campos do insumo.");
+    return;
   }
+
+  if (!tiposCompativeis(insumoSelecionado.unidadeMedida, unidade)) {
+    alert(
+      `Unidade incompatível! O insumo ${insumoSelecionado.nome} está cadastrado em ${insumoSelecionado.unidadeMedida}, mas você tentou usar ${unidade}.`
+    );
+    return;
+  }
+
+  const estoqueConvertido = converterParaBase(
+    insumoSelecionado.quantidadeEstoque,
+    insumoSelecionado.unidadeMedida
+  );
+
+  const quantidadeUsadaConvertida = converterParaBase(
+    quantidade,
+    unidade
+  );
+
+  if (quantidadeUsadaConvertida > estoqueConvertido) {
+    alert(
+      `Quantidade inválida! No estoque existem apenas ${insumoSelecionado.quantidadeEstoque} ${insumoSelecionado.unidadeMedida} de ${insumoSelecionado.nome}.`
+    );
+    return;
+  }
+
+  const novoInsumo = {
+    nome: insumoSelecionado.nome,
+    idInsumo: insumoSelecionado.idInsumo,
+    quantidade,
+    unidade,
+  };
+
+  setInsumosUtilizados([...insumosUtilizados, novoInsumo]);
+
+  setInsumoSelecionado("");
+  setQuantidade("");
+  setUnidade("");
+  setPopupAberto(false);
+}
 
   function removerInsumo(index) {
     const novaLista = insumosUtilizados.filter((_, i) => i !== index);
@@ -75,6 +128,16 @@ function CadastroFichaTecnica() {
   }
 
   async function cadastrarFicha() {
+  if (
+    !nomePreparo ||
+    !tipoEquipamento ||
+    !temperaturaMinima ||
+    !temperaturaMaxima
+  ) {
+    alert("Preencha todos os campos da ficha!");
+    return;
+  }
+
   const ficha = {
     id: Date.now(),
     nomePreparo,
@@ -97,13 +160,7 @@ function CadastroFichaTecnica() {
     );
 
     alert("Ficha técnica cadastrada com sucesso!");
-
-    setNomePreparo("");
-    setTipoEquipamento("");
-    setTemperaturaMinima("");
-    setTemperaturaMaxima("");
-    setInsumosUtilizados([]);
-
+    navigate("/produtos");
   } catch (error) {
     console.error(error);
     alert("Erro ao cadastrar ficha");
@@ -112,6 +169,29 @@ function CadastroFichaTecnica() {
 
   return (
     <Box sx={{ minHeight: "100vh", backgroundColor: "#b8ced8", p: 5 }}>
+
+     <Button
+  startIcon={
+    <ArrowBackIcon
+      sx={{
+        fontSize: 48,
+        stroke: "#7996b4",
+        strokeWidth: 2.5,
+      }}
+    />
+  }
+  onClick={() => navigate("/produtos")}
+  sx={{
+    color: "#7996b4",
+    textTransform: "none",
+    fontSize: "22px",
+    fontWeight: 700,
+    mb: 2,
+  }}
+>
+      Voltar
+      </Button>
+
       <Typography
         variant="h3"
         fontWeight="bold"
@@ -383,7 +463,7 @@ function CadastroFichaTecnica() {
             <MenuItem value="kg">kg</MenuItem>
             <MenuItem value="ml">ml</MenuItem>
             <MenuItem value="L">L</MenuItem>
-            <MenuItem value="un">un</MenuItem>
+            <MenuItem value="UND">UND</MenuItem>
           </TextField>
 
           <Box display="flex" justifyContent="flex-end">

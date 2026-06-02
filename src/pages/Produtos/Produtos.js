@@ -10,6 +10,7 @@ import {
   RadioGroup,
   TextField,
   FormControlLabel,
+  MenuItem,
 } from "@mui/material";
 
 import AddCircleIcon from "@mui/icons-material/AddCircle";
@@ -18,6 +19,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
+
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 function Produtos() {
   const navigate = useNavigate();
@@ -183,24 +186,46 @@ function salvarEdicaoFicha() {
 }
 
   return (
-    <Box
+  <Box
+    sx={{
+      minHeight: "100vh",
+      backgroundColor: "#b8ced8",
+      p: 5,
+    }}
+  >
+    <Button
+  startIcon={
+    <ArrowBackIcon
+  sx={{
+    fontSize: 28,
+    stroke: "#7996b4",
+    strokeWidth: 1.8,
+  }}
+/>
+  }
+  onClick={() => navigate("/dashboard")}
+  sx={{
+    color: "#7996b4",
+    textTransform: "none",
+    fontSize: "22px",
+    fontWeight: "bold",
+    mb: 2,
+  }}
+>
+  Home
+</Button>
+
+    <Typography
+      variant="h3"
+      fontWeight="bold"
+      textAlign="center"
       sx={{
-        minHeight: "100vh",
-        backgroundColor: "#b8ced8",
-        p: 5,
+        color: "#7996b4",
+        mb: 5,
       }}
     >
-      <Typography
-        variant="h3"
-        fontWeight="bold"
-        textAlign="center"
-        sx={{
-          color: "#7996b4",
-          mb: 5,
-        }}
-      >
-        Adicionar Produto
-      </Typography>
+      Adicionar Produto
+    </Typography>
 
       <Button
         onClick={() => setModalAberto(true)}
@@ -531,19 +556,25 @@ function salvarEdicaoFicha() {
             }
             sx={{ mb: 3 }}
           />
-
-          <TextField
-            fullWidth
-            label="Unidade de medida"
-            value={produtoEditando?.unidadeMedida || ""}
-            onChange={(e) =>
-              setProdutoEditando({
-                ...produtoEditando,
-                unidadeMedida: e.target.value,
-              })
-            }
-            sx={{ mb: 3 }}
-          />
+         <TextField
+          select
+          fullWidth
+          label="Unidade de medida"
+          value={produtoEditando?.unidadeMedida || ""}
+          onChange={(e) =>
+          setProdutoEditando({
+      ...produtoEditando,
+      unidadeMedida: e.target.value,
+    })
+  }
+  sx={{ mb: 3 }}
+>
+  <MenuItem value="kg">Kg</MenuItem>
+  <MenuItem value="g">g</MenuItem>
+  <MenuItem value="L">L</MenuItem>
+  <MenuItem value="ml">ml</MenuItem>
+  <MenuItem value="UND">UND</MenuItem>
+</TextField>
 
           <TextField
             fullWidth
