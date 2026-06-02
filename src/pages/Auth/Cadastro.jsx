@@ -240,7 +240,8 @@ function Cadastro({mudarTela}) {
               sx={{
                 fontFamily: "'Poppins', sans-serif",
                 mt: 1,
-                padding: 1.2,
+                padding: 1.5,
+                minHeight: 48,
                 borderRadius: 2,
                 backgroundColor: "#ff7a00",
                 fontWeight: "bold",
@@ -259,7 +260,8 @@ function Cadastro({mudarTela}) {
             >
               {loading ? (
                 <CircularProgress 
-                  size={24} 
+                   size={18}
+                   thickness={5} 
                   sx={{ 
                     color: 'white',
                     position: 'absolute',

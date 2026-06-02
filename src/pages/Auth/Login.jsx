@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import imagemLogin from "../../assets/images/logo/Logo_SmartCuisine.png";
 import { FiMail, FiLock } from 'react-icons/fi';
 import Checkbox from '@mui/material/Checkbox';
@@ -26,15 +26,29 @@ function Login({ onLogin, mudarTela }) {
     return regex.test(email);
   };
 
+  const senhaValida = senha.length >= 7;
+
   const handleChange = (event) => {
-    setLembreme(event.target.checked);
+    const valor = event.target.checked;
+
+    setLembreme(valor);
+
+    localStorage.setItem("lembreme", valor);
   };
+
+  useEffect(() => {
+    const valorSalvo = localStorage.getItem("lembreme");
+
+    if (valorSalvo !== null) {
+      setLembreme(valorSalvo === "true");
+    }
+  }, []);
 
   const autenticar = () => {
     setErro("");
     setTentouEnviar(true); 
 
-    if (!email || !senha) {
+    if (!email || !senha || senha.length < 7) {
       return; 
     }
 
@@ -176,8 +190,18 @@ function Login({ onLogin, mudarTela }) {
                 type="password"
                 variant="outlined"
                 required
-                error={tentouEnviar && !senha}
-                helperText={tentouEnviar && !senha ? "A senha é obrigatória" : ""}
+                error={
+                  tentouEnviar &&
+                  (!senha || senha.length < 7)
+                }
+
+                helperText={
+                  tentouEnviar && !senha
+                    ? "A senha é obrigatória"
+                    : tentouEnviar && senha.length < 7
+                    ? "A senha deve ter pelo menos 7 caracteres"
+                    : ""
+                }
                 size="small"
                 fullWidth
                 onChange={(e) => setSenha(e.target.value)}

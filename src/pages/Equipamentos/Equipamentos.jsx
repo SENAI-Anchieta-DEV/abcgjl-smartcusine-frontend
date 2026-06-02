@@ -15,34 +15,57 @@ import DeviceThermostatRoundedIcon from "@mui/icons-material/DeviceThermostatRou
 
 function Equipamentos() {
 
-    const navigate = useNavigate();
-    const [equipamento, setEquipamento] = useState("");
+  const navigate = useNavigate();
+  const [equipamento, setEquipamento] = useState("");
 
-    const equipamentos = {
-    freezer: {
-        categoria: "Refrigeração",
-        tempMin: -25,
-        tempMax: -18,
-    },
+  const equipamentos = {
+  freezer: {
+      categoria: "Refrigeração",
+      tempMin: -25,
+      tempMax: -18,
+  },
 
-    camara_fria: {
-        categoria: "Refrigeração",
-        tempMin: 0,
-        tempMax: 5,
-    },
+  camara_fria: {
+      categoria: "Refrigeração",
+      tempMin: 0,
+      tempMax: 5,
+  },
 
-    forno_combinado: {
-        categoria: "Aquecimento",
-        tempMin: 80,
-        tempMax: 250,
-    },
+  forno_combinado: {
+      categoria: "Aquecimento",
+      tempMin: 80,
+      tempMax: 250,
+  },
 
-    fogao_industrial: {
-        categoria: "Aquecimento",
-        tempMin: 100,
-        tempMax: 300,
-    },
+  fogao_industrial: {
+      categoria: "Aquecimento",
+      tempMin: 100,
+      tempMax: 300,
+  },
+  };
+
+  function cadastrarEquipamento() {
+    if (!equipamento) return;
+
+    const novoEquipamento = {
+      nome: equipamento,
+      categoria: equipamentos[equipamento].categoria,
+      tempMin: equipamentos[equipamento].tempMin,
+      tempMax: equipamentos[equipamento].tempMax,
     };
+
+    const equipamentosSalvos =
+      JSON.parse(localStorage.getItem("equipamentos")) || [];
+
+    equipamentosSalvos.push(novoEquipamento);
+
+    localStorage.setItem(
+      "equipamentos",
+      JSON.stringify(equipamentosSalvos)
+    );
+
+    navigate("/produtos");
+  }    
 
   return (
     <Box
@@ -314,7 +337,7 @@ function Equipamentos() {
           >
             <Button
               variant="contained"
-              onClick={() => navigate("/produtos")}
+              onClick={cadastrarEquipamento}
               sx={{
                 backgroundColor: "#ff8c42",
                 width: "150px",

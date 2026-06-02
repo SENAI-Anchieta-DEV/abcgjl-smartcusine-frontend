@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -14,9 +14,11 @@ import {
 
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import api from "../../services/api";
+import DeviceThermostatIcon from "@mui/icons-material/DeviceThermostat";
 
 import { useNavigate } from "react-router-dom";
+
+import api from "../../services/api";
 
 function Produtos() {
   const navigate = useNavigate();
@@ -27,22 +29,6 @@ function Produtos() {
 
   const [modalEditarAberto, setModalEditarAberto] = useState(false);
   const [produtoEditando, setProdutoEditando] = useState(null);
-
-  const [equipamentos, setEquipamentos] = useState([]);
-
-  useEffect(() => {
-    carregarEquipamentos();
-  }, []);
-
-  async function carregarEquipamentos() {
-    try {
-      const response = await api.get("/equipamentos");
-
-      setEquipamentos(response.data);
-    } catch (error) {
-      console.error(error);
-    }
-  }
 
   function continuar() {
     if (tipoSelecionado === "insumo") {
@@ -64,46 +50,32 @@ function Produtos() {
     setModalEditarAberto(false);
   }
 
-  const dados = {
-    insumos: [
-      {
-        nome: "Maionese Helmans",
-        categoria: "Condimento",
-        data: "31/08/2026",
-      },
-      {
-        nome: "Patinho moído",
-        categoria: "Carne",
-        data: "31/08/2026",
-      },
-    ],
+  useEffect(() => {
+  carregarDados();
+}, []);
 
-    equipamentos: [
-      {
-        nome: "Freezer Vertical",
-        categoria: "Refrigeração",
-        data: "01/09/2026",
-      },
-      {
-        nome: "Balança Digital",
-        categoria: "Medição",
-        data: "10/09/2026",
-      },
-    ],
+async function carregarDados() {
+  try {
+    const response = await api.get("/insumos");
 
-    fichas: [
-      {
-        nome: "Bolo de Chocolate",
-        categoria: "Ficha Técnica",
-        data: "15/09/2026",
-      },
-      {
-        nome: "Molho Branco",
-        categoria: "Ficha Técnica",
-        data: "18/09/2026",
-      },
-    ],
-  };
+    const equipamentosSalvos =
+      JSON.parse(localStorage.getItem("equipamentos")) || [];
+
+    setDados({
+      insumos: response.data,
+      equipamentos: equipamentosSalvos,
+      fichas: [],
+    });
+  } catch (error) {
+    console.error("Erro ao carregar dados:", error);
+  }
+}
+
+  const [dados, setDados] = useState({
+  insumos: [],
+  equipamentos: [],
+  fichas: [],
+  });
 
   return (
     <Box
@@ -190,7 +162,7 @@ function Produtos() {
           sx={{ cursor: "pointer" }}
         >
           <Typography fontWeight="bold" fontSize={24}>
-            {equipamentos.length}
+            {dados.equipamentos.length}
           </Typography>
 
           <Typography
@@ -223,12 +195,17 @@ function Produtos() {
         </Box>
       </Paper>
 
-      {dados[abaAtiva].map((item, index) => (
+      {dados[abaAtiva]?.map((item, index) => (
         <ProdutoCard
-          key={index}
+          key={item.idInsumo || index}
           nome={item.nome}
-          categoria={item.categoria}
-          data={item.data}
+          categoria={item.unidadeMedida || item.categoria}
+          data={
+            item.tempMin !== undefined
+              ? `${item.tempMin}°C até ${item.tempMax}°C`
+              : item.dataValidade || item.data
+          }
+          isEquipamento={item.tempMin !== undefined}
           onEditar={() => abrirEditar(item)}
         />
       ))}
@@ -336,6 +313,8 @@ function Produtos() {
             sx={{ mb: 3 }}
           />
 
+          
+
           <TextField
             fullWidth
             label="Categoria"
@@ -385,7 +364,7 @@ function Produtos() {
   );
 }
 
-function ProdutoCard({ nome, categoria, data, onEditar }) {
+function ProdutoCard({ nome, categoria, data, isEquipamento, onEditar}) {
   return (
     <Paper
       elevation={0}
@@ -413,7 +392,11 @@ function ProdutoCard({ nome, categoria, data, onEditar }) {
 
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Box display="flex" gap={1} alignItems="center">
-          <CalendarTodayIcon fontSize="small" color="disabled" />
+          {isEquipamento ? (
+            <DeviceThermostatIcon fontSize="small" color="disabled" />
+          ) : (
+            <CalendarTodayIcon fontSize="small" color="disabled" />
+          )}
 
           <Typography color="text.secondary">{data}</Typography>
         </Box>
