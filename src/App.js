@@ -12,6 +12,8 @@ import AdicionarProduto from "./pages/AdicionarProduto/AdicionarProduto";
 import CadastroInsumo from "./pages/Insumos/CadastroInsumo";
 import CadastroFichaTecnica from "./pages/FichaTecnica/CadastroFichaTecnica";
 import Produtos from "./pages/Produtos/Produtos";
+import Equipamentos from "./pages/Equipamentos/Equipamentos";
+
 
 function AppContent() {
   const navigate = useNavigate(); 
@@ -208,6 +210,23 @@ function AppContent() {
 
           <Route path="*" element={<Navigate to="/" replace />} />
 
+<Route path="/equipamentos/novo" element={
+  logado ? (
+    <>
+      <Menu 
+        onLogout={() => { setLogado(false); irParaBoasVindas(); }} 
+        setTelaAtiva={mudarTelaPorString} 
+        toggleTema={toggleTema} 
+        modo={modo} 
+      />
+      <main style={{ padding: "20px" }}>
+        <Equipamentos />
+      </main>
+    </>
+  ) : (
+    <Navigate to="/login" replace />
+  )
+} />
         </Routes>
       </Box>
     </ThemeProvider>
