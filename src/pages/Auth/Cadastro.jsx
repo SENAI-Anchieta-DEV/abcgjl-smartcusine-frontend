@@ -38,6 +38,11 @@ function Cadastro({mudarTela}) {
     return;
   }
 
+  if (senha.length < 7) {
+    setErro("A senha deve possuir no mínimo 7 caracteres.");
+    return;
+  }
+
   if (senha !== confirmarSenha) {
     setErro("As senhas não coincidem");
     return;
@@ -192,8 +197,17 @@ function Cadastro({mudarTela}) {
                 label="Senha"
                 type="password"
                 required
-                error={tentouEnviar && !senha}
-                helperText={tentouEnviar && !senha ? "A senha é obrigatória" : ""}
+                error={
+                  tentouEnviar &&
+                  (!senha || senha.length < 7)
+                }
+                helperText={
+                  tentouEnviar && !senha
+                    ? "A senha é obrigatória"
+                    : tentouEnviar && senha.length < 7
+                    ? "Mínimo de 7 caracteres"
+                    : ""
+                }
                 size="small"
                 fullWidth
                 onChange={(e) => setSenha(e.target.value)}

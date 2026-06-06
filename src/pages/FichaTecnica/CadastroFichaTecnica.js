@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Typography,
@@ -15,75 +15,220 @@ import {
   TableRow,
 } from "@mui/material";
 
+import api from "../../services/api";
 import AddIcon from "@mui/icons-material/Add";
-import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useNavigate } from "react-router-dom";
 
 function CadastroFichaTecnica() {
+
+  const navigate = useNavigate();
+
+  const [insumosCadastrados, setInsumosCadastrados] = useState([]);
   const [popupAberto, setPopupAberto] = useState(false);
 
   const [insumoSelecionado, setInsumoSelecionado] = useState("");
   const [quantidade, setQuantidade] = useState("");
   const [unidade, setUnidade] = useState("");
 
-const [nomePreparo, setNomePreparo] = useState("");
-const [tipoEquipamento, setTipoEquipamento] = useState("");
-const [temperaturaMinima, setTemperaturaMinima] = useState("");
-const [temperaturaMaxima, setTemperaturaMaxima] = useState("");
+  const [nomePreparo, setNomePreparo] = useState("");
+  const [tipoEquipamento, setTipoEquipamento] = useState("");
+  const [temperaturaMinima, setTemperaturaMinima] = useState("");
+  const [temperaturaMaxima, setTemperaturaMaxima] = useState("");
 
-  const [insumosUtilizados, setInsumosUtilizados] = useState([
-    { nome: "Maionese Helmans", quantidade: 300, unidade: "g" },
-    { nome: "Patinho moído", quantidade: 1, unidade: "kg" },
-    { nome: "Cebola", quantidade: 200, unidade: "g" },
-  ]);
+  const [insumosUtilizados, setInsumosUtilizados] = useState([]);
 
-  const insumosCadastrados = [
-    "Maionese Helmans",
-    "Patinho moído",
-    "Cebola",
-    "Tomate",
-    "Arroz",
-  ];
+  useEffect(() => {
+  carregarInsumos();
+  }, []);
+
+  async function carregarInsumos() {
+  try {
+    const response = await api.get("/insumos");
+
+    console.log("INSUMOS CARREGADOS:", response.data);
+
+    setInsumosCadastrados(response.data);
+  } catch (error) {
+    console.error("Erro ao carregar insumos:", error);
+    console.error("Resposta:", error.response?.data);
+    alert("Erro ao carregar insumos cadastrados!");
+  }
+}
+
+  function converterParaBase(quantidade, unidade) {
+  const valor = Number(quantidade);
+
+  if (unidade === "kg") return valor * 1000;
+  if (unidade === "g") return valor;
+
+  if (unidade === "L") return valor * 1000;
+  if (unidade === "ml" || unidade === "ML") return valor;
+
+  if (unidade === "UND") return valor;
+
+  return valor;
+}
+
+function tiposCompativeis(unidadeEstoque, unidadeUsada) {
+  const peso = ["kg", "g"];
+  const volume = ["L", "ml", "ML"];
+  const unidade = ["UND", "und"];
+
+  return (
+    (peso.includes(unidadeEstoque) && peso.includes(unidadeUsada)) ||
+    (volume.includes(unidadeEstoque) && volume.includes(unidadeUsada)) ||
+    (unidade.includes(unidadeEstoque) && unidade.includes(unidadeUsada))
+  );
+}
 
   function adicionarInsumo() {
-    if (!insumoSelecionado || !quantidade || !unidade) {
-      alert("Preencha todos os campos do insumo.");
-      return;
-    }
-
-    const novoInsumo = {
-      nome: insumoSelecionado,
-      quantidade,
-      unidade,
-    };
-
-    setInsumosUtilizados([...insumosUtilizados, novoInsumo]);
-
-    setInsumoSelecionado("");
-    setQuantidade("");
-    setUnidade("");
-    setPopupAberto(false);
+  if (!insumoSelecionado || !quantidade || !unidade) {
+    alert("Preencha todos os campos do insumo.");
+    return;
   }
+
+  const insumoJaAdicionado = insumosUtilizados.some(
+  (insumo) => insumo.idInsumo === insumoSelecionado.idInsumo
+);
+
+if (insumoJaAdicionado) {
+  alert("Este insumo já foi adicionado à ficha técnica!");
+  return;
+}
+
+  if (Number(quantidade) <= 0) {
+  alert("A quantidade utilizada deve ser maior que zero!");
+  return;
+}
+
+  if (!tiposCompativeis(insumoSelecionado.unidadeMedida, unidade)) {
+    alert(
+      `Unidade incompatível! O insumo ${insumoSelecionado.nome} está cadastrado em ${insumoSelecionado.unidadeMedida}, mas você tentou usar ${unidade}.`
+    );
+    return;
+  }
+
+  const estoqueConvertido = converterParaBase(
+    insumoSelecionado.quantidadeEstoque,
+    insumoSelecionado.unidadeMedida
+  );
+
+  const quantidadeUsadaConvertida = converterParaBase(
+    quantidade,
+    unidade
+  );
+
+  if (quantidadeUsadaConvertida > estoqueConvertido) {
+    alert(
+      `Quantidade inválida! No estoque existem apenas ${insumoSelecionado.quantidadeEstoque} ${insumoSelecionado.unidadeMedida} de ${insumoSelecionado.nome}.`
+    );
+    return;
+  }
+
+  const novoInsumo = {
+    nome: insumoSelecionado.nome,
+    idInsumo: insumoSelecionado.idInsumo,
+    quantidade,
+    unidade,
+  };
+
+  setInsumosUtilizados([...insumosUtilizados, novoInsumo]);
+
+  setInsumoSelecionado("");
+  setQuantidade("");
+  setUnidade("");
+  setPopupAberto(false);
+}
 
   function removerInsumo(index) {
     const novaLista = insumosUtilizados.filter((_, i) => i !== index);
     setInsumosUtilizados(novaLista);
   }
 
-  function cadastrarFicha() {
+  async function cadastrarFicha() {
+  if (
+    !nomePreparo ||
+    !tipoEquipamento ||
+    !temperaturaMinima ||
+    !temperaturaMaxima
+  ) {
+    alert("Preencha todos os campos da ficha!");
+    return;
+  }
+
+  
+
+  if (Number(temperaturaMinima) <= 0 || Number(temperaturaMaxima) <= 0) {
+  alert("As temperaturas devem ser maiores que zero!");
+  return;
+}
+
+if (Number(temperaturaMinima) > Number(temperaturaMaxima)) {
+  alert("A temperatura mínima não pode ser maior que a máxima!");
+  return;
+}
+
+if (insumosUtilizados.length === 0) {
+  alert("Adicione pelo menos um insumo para cadastrar a ficha técnica!");
+  return;
+}
+
   const ficha = {
+    id: Date.now(),
     nomePreparo,
     tipoEquipamento,
     temperaturaMinima: Number(temperaturaMinima),
     temperaturaMaxima: Number(temperaturaMaxima),
     insumosUtilizados,
+    dataCriacao: new Date().toISOString().split("T")[0],
   };
 
-  console.log("Ficha técnica cadastrada:", ficha);
+  try {
+    const fichasSalvas =
+      JSON.parse(localStorage.getItem("fichasTecnicas")) || [];
+
+    fichasSalvas.push(ficha);
+
+    localStorage.setItem(
+      "fichasTecnicas",
+      JSON.stringify(fichasSalvas)
+    );
+
+    alert("Ficha técnica cadastrada com sucesso!");
+    navigate("/produtos");
+  } catch (error) {
+    console.error(error);
+    alert("Erro ao cadastrar ficha");
+  }
 }
 
   return (
     <Box sx={{ minHeight: "100vh", backgroundColor: "#b8ced8", p: 5 }}>
+
+     <Button
+  startIcon={
+    <ArrowBackIcon
+      sx={{
+        fontSize: 48,
+        stroke: "#7996b4",
+        strokeWidth: 2.5,
+      }}
+    />
+  }
+  onClick={() => navigate("/produtos")}
+  sx={{
+    color: "#7996b4",
+    textTransform: "none",
+    fontSize: "22px",
+    fontWeight: 700,
+    mb: 2,
+  }}
+>
+      Voltar
+      </Button>
+
       <Typography
         variant="h3"
         fontWeight="bold"
@@ -242,27 +387,31 @@ const [temperaturaMaxima, setTemperaturaMaxima] = useState("");
               </TableRow>
             </TableHead>
 
-            <TableBody>
-              {insumosUtilizados.map((insumo, index) => (
-                <TableRow key={index}>
-                  <TableCell>{insumo.nome}</TableCell>
-                  <TableCell>{insumo.quantidade}</TableCell>
-                  <TableCell>{insumo.unidade}</TableCell>
-                  <TableCell>
-                    <Button sx={{ minWidth: 0, color: "#7996b4" }}>
-                      <EditIcon />
-                    </Button>
-
-                    <Button
-                      onClick={() => removerInsumo(index)}
-                      sx={{ minWidth: 0, color: "red" }}
-                    >
-                      <DeleteIcon />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
+           <TableBody>
+  {insumosUtilizados.length === 0 ? (
+    <TableRow>
+      <TableCell colSpan={4} align="center">
+        Nenhum insumo adicionado.
+      </TableCell>
+    </TableRow>
+  ) : (
+    insumosUtilizados.map((insumo, index) => (
+      <TableRow key={index}>
+        <TableCell>{insumo.nome}</TableCell>
+        <TableCell>{insumo.quantidade}</TableCell>
+        <TableCell>{insumo.unidade}</TableCell>
+        <TableCell>
+          <Button
+            onClick={() => removerInsumo(index)}
+            sx={{ minWidth: 0, color: "red" }}
+          >
+            <DeleteIcon />
+          </Button>
+        </TableCell>
+      </TableRow>
+    ))
+  )}
+</TableBody>
           </Table>
         </Paper>
 
@@ -304,19 +453,35 @@ const [temperaturaMaxima, setTemperaturaMaxima] = useState("");
           <Typography sx={{ color: "#7996b4", mb: 1 }}>
             Selecione o insumo:
           </Typography>
+            
+  <TextField
+  select
+  fullWidth
+  value={insumoSelecionado}
+  onChange={(e) => setInsumoSelecionado(e.target.value)}
+>
+  
 
-          <TextField
-            select
-            fullWidth
-            value={insumoSelecionado}
-            onChange={(e) => setInsumoSelecionado(e.target.value)}
-            sx={{ mb: 3 }}
-          >
+            {insumoSelecionado && (
+  <Typography
+    sx={{
+      color: "#7996b4",
+      fontSize: "15px",
+      fontWeight: "bold",
+      mt: 1,
+      mb: 2,
+    }}
+  >
+    📦 Estoque disponível: {insumoSelecionado.quantidadeEstoque}{" "}
+    {insumoSelecionado.unidadeMedida}
+  </Typography>
+)}
+            
             {insumosCadastrados.map((insumo) => (
-              <MenuItem key={insumo} value={insumo}>
-                {insumo}
-              </MenuItem>
-            ))}
+           <MenuItem key={insumo.idInsumo} value={insumo}>
+             {insumo.nome}
+           </MenuItem>
+          ))}
           </TextField>
 
           <Typography sx={{ color: "#7996b4", mb: 1 }}>
@@ -347,7 +512,7 @@ const [temperaturaMaxima, setTemperaturaMaxima] = useState("");
             <MenuItem value="kg">kg</MenuItem>
             <MenuItem value="ml">ml</MenuItem>
             <MenuItem value="L">L</MenuItem>
-            <MenuItem value="un">un</MenuItem>
+            <MenuItem value="UND">UND</MenuItem>
           </TextField>
 
           <Box display="flex" justifyContent="flex-end">

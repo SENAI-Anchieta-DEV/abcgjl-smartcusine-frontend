@@ -26,8 +26,6 @@ function Login({ onLogin, mudarTela }) {
     return regex.test(email);
   };
 
-  const senhaValida = senha.length >= 7;
-
   const handleChange = (event) => {
     const valor = event.target.checked;
 

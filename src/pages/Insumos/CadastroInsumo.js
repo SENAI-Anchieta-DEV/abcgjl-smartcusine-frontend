@@ -8,17 +8,93 @@ import {
   Radio,
   RadioGroup,
   FormControlLabel,
-  Dialog,
-  DialogContent
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import { useNavigate } from "react-router-dom";
+import api from "../../services/api";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+
 
 function CadastroInsumo() {
-  const [unidade, setUnidade] = useState("");
-  const [popupAberto, setPopupAberto] = useState(false);
+  const navigate = useNavigate();
+
+  const [nomeInsumo, setNomeInsumo] = useState("");
+  const [quantidadeInsumo, setQuantidadeInsumo] = useState("");
+  const [dataValidade, setDataValidade] = useState("");
+  const [unidade, setUnidade] = useState("kg");
+  const [carregando, setCarregando] = useState(false);
+
+  async function cadastrarInsumo() {
+    if (!nomeInsumo || !unidade || !quantidadeInsumo || !dataValidade) {
+      alert("Preencha todos os campos!");
+      return;
+    }
+
+    if (Number(quantidadeInsumo) <= 0) {
+  alert("A quantidade deve ser maior que zero!");
+  return;
+}
+
+    try {
+      setCarregando(true);
+
+      const novoInsumo = {
+        nome: nomeInsumo.trim(),
+        unidadeMedida: unidade,
+        quantidadeEstoque: Number(quantidadeInsumo),
+        dataValidade,
+      };
+
+      const response = await api.get("/insumos");
+
+const insumoExiste = response.data.some(
+  (insumo) =>
+    insumo.nome.toLowerCase().trim() === nomeInsumo.toLowerCase().trim()
+);
+
+if (insumoExiste) {
+  alert("Já existe um insumo com esse nome!");
+  return;
+}
+
+      await api.post("/insumos", novoInsumo);
+
+      alert("Insumo cadastrado com sucesso!");
+      navigate("/produtos");
+    } catch (error) {
+      console.error("Erro ao cadastrar insumo:", error);
+      console.error("Resposta do backend:", error.response?.data);
+      alert("Erro ao cadastrar insumo!");
+    } finally {
+      setCarregando(false);
+    }
+  }
 
   return (
     <Box sx={{ minHeight: "100vh", backgroundColor: "#b8ced8", p: 5 }}>
+
+      <Button
+  startIcon={
+    <ArrowBackIcon
+      sx={{
+        fontSize: 48,
+        stroke: "#7996b4",
+        strokeWidth: 2.5,
+      }}
+    />
+  }
+  onClick={() => navigate("/produtos")}
+  sx={{
+    color: "#7996b4",
+    textTransform: "none",
+    fontSize: "22px",
+    fontWeight: 700,
+    mb: 2,
+  }}
+>
+       Voltar
+      </Button>
+
       <Typography
         variant="h3"
         fontWeight="bold"
@@ -61,6 +137,7 @@ function CadastroInsumo() {
           <Typography variant="h4" fontWeight="bold" sx={{ color: "#ff8c42" }}>
             Adicionar Insumo
           </Typography>
+
           <Typography fontSize={22}>
             Preencha todos os campos abaixo para cadastrar o insumo desejado
           </Typography>
@@ -74,6 +151,8 @@ function CadastroInsumo() {
 
         <TextField
           fullWidth
+          value={nomeInsumo}
+          onChange={(e) => setNomeInsumo(e.target.value)}
           placeholder="Insira o nome do Insumo"
           sx={{ backgroundColor: "#fff", borderRadius: 10, mb: 4 }}
         />
@@ -87,8 +166,11 @@ function CadastroInsumo() {
           onChange={(e) => setUnidade(e.target.value)}
           sx={{ mb: 4 }}
         >
-          <FormControlLabel value="kg" control={<Radio />} label="Quilograma" />
-          <FormControlLabel value="mg" control={<Radio />} label="Miligrama" />
+          <FormControlLabel value="kg" control={<Radio />} label="Kg" />
+          <FormControlLabel value="L" control={<Radio />} label="L" />
+          <FormControlLabel value="g" control={<Radio />} label="g" />
+          <FormControlLabel value="ml" control={<Radio />} label="ml" />
+          <FormControlLabel value="UND" control={<Radio />} label="UND" />
         </RadioGroup>
 
         <Typography variant="h5" sx={{ color: "#7996b4", mb: 1 }}>
@@ -97,6 +179,8 @@ function CadastroInsumo() {
 
         <TextField
           fullWidth
+          value={quantidadeInsumo}
+          onChange={(e) => setQuantidadeInsumo(e.target.value)}
           placeholder="Insira a quantidade de Insumo"
           type="number"
           sx={{ backgroundColor: "#fff", borderRadius: 10, mb: 4 }}
@@ -108,52 +192,16 @@ function CadastroInsumo() {
 
         <TextField
           fullWidth
+          value={dataValidade}
+          onChange={(e) => setDataValidade(e.target.value)}
           type="date"
           sx={{ backgroundColor: "#fff", borderRadius: 10, mb: 4 }}
         />
 
-        <Paper
-          elevation={0}
-          sx={{
-            backgroundColor: "#efbc97",
-            borderRadius: 6,
-            p: 3,
-            textAlign: "center",
-            mb: 6,
-          }}
-        >
-          <Typography variant="h5" color="#fff" mb={3}>
-            Esse insumo vai para algum preparo específico?
-          </Typography>
-
-          <Box display="flex" justifyContent="center" gap={20}>
-            <Button
-              sx={{
-                backgroundColor: "#ff2d2d",
-                color: "#fff",
-                px: 5,
-                textTransform: "none",
-              }}
-            >
-              Não
-            </Button>
-
-            <Button
-              onClick={() => setPopupAberto(true)}
-              sx={{
-                backgroundColor: "#ff8c42",
-                color: "#fff",
-                px: 5,
-                textTransform: "none",
-              }}
-            >
-              Sim
-            </Button>
-          </Box>
-        </Paper>
-
         <Box display="flex" justifyContent="flex-end">
           <Button
+            onClick={cadastrarInsumo}
+            disabled={carregando}
             sx={{
               backgroundColor: "#ff8c42",
               color: "#fff",
@@ -162,64 +210,15 @@ function CadastroInsumo() {
               borderRadius: 3,
               fontSize: 20,
               textTransform: "none",
+              "&:hover": {
+                backgroundColor: "#f47c2d",
+              },
             }}
           >
-            Cadastrar
+            {carregando ? "Cadastrando..." : "Cadastrar"}
           </Button>
         </Box>
       </Box>
-
-      <Dialog
-        open={popupAberto}
-        onClose={() => setPopupAberto(false)}
-        PaperProps={{
-          sx: {
-            borderRadius: 8,
-            width: 560,
-            p: 2,
-            boxShadow: "-14px 14px 0px #7996b4",
-          },
-        }}
-      >
-        <DialogContent>
-          <Typography variant="h6" sx={{ color: "#7996b4", mb: 1 }}>
-            Nome do preparo:
-          </Typography>
-
-          <TextField
-            fullWidth
-            placeholder="Insira o nome do preparo"
-            size="small"
-            sx={{ mb: 3 }}
-          />
-
-          <Typography variant="h6" sx={{ color: "#7996b4", mb: 1 }}>
-            Quantidade que vai para esse preparo:
-          </Typography>
-
-          <TextField
-            fullWidth
-            placeholder="Insira a quantidade necessária para o preparo"
-            size="small"
-            type="number"
-            sx={{ mb: 4 }}
-          />
-
-          <Box display="flex" justifyContent="flex-end">
-            <Button
-              onClick={() => setPopupAberto(false)}
-              sx={{
-                backgroundColor: "#7996b4",
-                color: "#fff",
-                textTransform: "none",
-                px: 4,
-              }}
-            >
-              Continuar
-            </Button>
-          </Box>
-        </DialogContent>
-      </Dialog>
     </Box>
   );
 }
