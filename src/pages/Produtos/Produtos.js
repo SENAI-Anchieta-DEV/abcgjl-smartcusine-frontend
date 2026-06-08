@@ -222,10 +222,15 @@ if (
   return (
   <Box
     sx={{
-      minHeight: "100vh",
-      backgroundColor: "#b8ced8",
-      p: 5,
-    }}
+    minHeight: "100vh",
+    backgroundColor: "#b8ced8",
+    p: 5,
+    width: "85%",
+    maxWidth: "1000px",
+    mx: "auto",
+    borderRadius: "20px",
+    mt: 2,
+  }}
   >
     <Button
   startIcon={
@@ -234,17 +239,20 @@ if (
     fontSize: 28,
     stroke: "#7996b4",
     strokeWidth: 1.8,
+    
   }}
 />
   }
   onClick={() => navigate("/dashboard")}
   sx={{
-    color: "#7996b4",
-    textTransform: "none",
-    fontSize: "22px",
-    fontWeight: "bold",
-    mb: 2,
-  }}
+  border: "3px solid #7996b4",
+  backgroundColor: "#ffffff90",
+  borderRadius: "12px",
+  color: "#7996b4",
+  fontWeight: 700,
+  px: 2,
+  py: 1,
+}}
 >
   Home
 </Button>
@@ -265,7 +273,8 @@ if (
         onClick={() => setModalAberto(true)}
         fullWidth
         sx={{
-          maxWidth: 900,
+          maxWidth: 1200,
+          width: "100%",
           mx: "auto",
           mb: 4,
           display: "flex",
@@ -379,7 +388,8 @@ if (
       key={index}
       elevation={0}
       sx={{
-        maxWidth: 800,
+        maxWidth: 900,
+        width: "80%",
         mx: "auto",
         mb: 5,
         borderRadius: 8,
@@ -756,7 +766,8 @@ function ProdutoCard({
     <Paper
       elevation={0}
       sx={{
-        maxWidth: 800,
+        maxWidth: 900,
+        width: "80%",
         mx: "auto",
         mb: 5,
         borderRadius: 8,

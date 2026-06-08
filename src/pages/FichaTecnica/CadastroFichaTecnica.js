@@ -205,9 +205,19 @@ if (insumosUtilizados.length === 0) {
 }
 
   return (
-    <Box sx={{ minHeight: "100vh", backgroundColor: "#b8ced8", p: 5 }}>
+    <Box
+  sx={{
+    minHeight: "100vh",
+    backgroundColor: "#b8ced8",
+    p: 5,
+    width: "100%",
+    maxWidth: "1000px",
+    borderRadius: "20px",
+    mt: 2,
+  }}
+>
 
-     <Button
+    <Button
   startIcon={
     <ArrowBackIcon
       sx={{
@@ -219,14 +229,16 @@ if (insumosUtilizados.length === 0) {
   }
   onClick={() => navigate("/produtos")}
   sx={{
-    color: "#7996b4",
-    textTransform: "none",
-    fontSize: "22px",
-    fontWeight: 700,
-    mb: 2,
-  }}
+  border: "3px solid #7996b4",
+  backgroundColor: "#ffffff90",
+  borderRadius: "12px",
+  color: "#7996b4",
+  fontWeight: 700,
+  px: 2,
+  py: 1,
+}}
 >
-      Voltar
+       Voltar
       </Button>
 
       <Typography

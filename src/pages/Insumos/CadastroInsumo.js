@@ -71,7 +71,17 @@ if (insumoExiste) {
   }
 
   return (
-    <Box sx={{ minHeight: "100vh", backgroundColor: "#b8ced8", p: 5 }}>
+    <Box
+  sx={{
+    minHeight: "100vh",
+    backgroundColor: "#b8ced8",
+    p: 5,
+    width: "100%",
+    maxWidth: "1000px",
+    borderRadius: "20px",
+    mt: 2,
+  }}
+>
 
       <Button
   startIcon={
@@ -85,12 +95,14 @@ if (insumoExiste) {
   }
   onClick={() => navigate("/produtos")}
   sx={{
-    color: "#7996b4",
-    textTransform: "none",
-    fontSize: "22px",
-    fontWeight: 700,
-    mb: 2,
-  }}
+  border: "3px solid #7996b4",
+  backgroundColor: "#ffffff90",
+  borderRadius: "12px",
+  color: "#7996b4",
+  fontWeight: 700,
+  px: 2,
+  py: 1,
+}}
 >
        Voltar
       </Button>
@@ -107,7 +119,8 @@ if (insumoExiste) {
       <Paper
         elevation={0}
         sx={{
-          maxWidth: 850,
+          maxWidth: 1000,
+          width: "90%",
           mx: "auto",
           p: 4,
           borderRadius: 8,
@@ -144,7 +157,13 @@ if (insumoExiste) {
         </Box>
       </Paper>
 
-      <Box sx={{ maxWidth: 950, mx: "auto" }}>
+      <Box
+  sx={{
+    maxWidth: 1000,
+    width: "90%",
+    mx: "auto",
+  }}
+>
         <Typography variant="h5" sx={{ color: "#7996b4", mb: 1 }}>
           Nome do Insumo:
         </Typography>
