@@ -230,7 +230,12 @@ function AppContent() {
         toggleTema={toggleTema} 
         modo={modo} 
       />
-      <main style={{ padding: "20px" }}>
+      <main 
+  style={{
+    padding: "20px",
+    display: "flex",
+    justifyContent: "center",
+  }}>
         <Equipamentos />
       </main>
     </>

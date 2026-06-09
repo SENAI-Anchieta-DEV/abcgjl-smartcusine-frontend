@@ -12,6 +12,7 @@ import {
 
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import DeviceThermostatRoundedIcon from "@mui/icons-material/DeviceThermostatRounded";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 function Equipamentos() {
 
@@ -48,10 +49,38 @@ function Equipamentos() {
     <Box
       sx={{
         minHeight: "100vh",
-        background:
-          "linear-gradient(180deg, #c9d9e7 0%, #b7c9d9 100%)",
+        backgroundColor: "#b8ced8",
+        p: 5,
+        width: "100%",
+        maxWidth: "1000px",
+        borderRadius: "20px",
+        mt: 2,
       }}
     >
+
+      <Button
+  startIcon={
+    <ArrowBackIcon
+      sx={{
+        fontSize: 48,
+        stroke: "#7996b4",
+        strokeWidth: 2.5,
+      }}
+    />
+  }
+  onClick={() => navigate("/produtos")}
+  sx={{
+  border: "3px solid #7996b4",
+  backgroundColor: "#ffffff90",
+  borderRadius: "12px",
+  color: "#7996b4",
+  fontWeight: 700,
+  px: 2,
+  py: 1,
+}}
+>
+       Voltar
+      </Button>
       
       <Box
         sx={{
@@ -313,26 +342,51 @@ function Equipamentos() {
             }}
           >
             <Button
-              variant="contained"
-              onClick={() => navigate("/produtos")}
-              sx={{
-                backgroundColor: "#ff8c42",
-                width: "150px",
-                height: "45px",
-                borderRadius: "12px",
-                fontSize: "1rem",
-                textTransform: "none",
-                fontWeight: "bold",
-                boxShadow: "none",
+  variant="contained"
+  onClick={() => {
+    if (!equipamento) {
+      alert("Selecione um equipamento!");
+      return;
+    }
 
-                "&:hover": {
-                  backgroundColor: "#ef7f2d",
-                  boxShadow: "none",
-                },
-              }}
-            >
-              Cadastrar
-            </Button>
+    const equipamentosSalvos =
+      JSON.parse(localStorage.getItem("equipamentos")) || [];
+
+    const novoEquipamento = {
+      nome: equipamento
+        .replace("_", " ")
+        .replace(/\b\w/g, (letra) => letra.toUpperCase()),
+      categoria: equipamentos[equipamento].categoria,
+      tempMin: equipamentos[equipamento].tempMin,
+      tempMax: equipamentos[equipamento].tempMax,
+    };
+
+    localStorage.setItem(
+      "equipamentos",
+      JSON.stringify([...equipamentosSalvos, novoEquipamento])
+    );
+
+    alert("Equipamento cadastrado com sucesso!");
+    navigate("/produtos");
+  }}
+  sx={{
+    backgroundColor: "#ff8c42",
+    width: "150px",
+    height: "45px",
+    borderRadius: "12px",
+    fontSize: "1rem",
+    textTransform: "none",
+    fontWeight: "bold",
+    boxShadow: "none",
+
+    "&:hover": {
+      backgroundColor: "#ef7f2d",
+      boxShadow: "none",
+    },
+  }}
+>
+  Cadastrar
+</Button>
           </Box>
         </Box>
       </Box>
