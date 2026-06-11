@@ -25,10 +25,15 @@ function Cadastro({mudarTela}) {
   const cadastrar = () => {
   setErro("");
 
-  if (senha !== confirmarSenha) {
-    setErro("As senhas não coincidem");
-    return;
-  }
+  if (senha.length < 7) {
+  setErro("A senha deve possuir no mínimo 7 caracteres.");
+  return;
+}
+
+if (senha !== confirmarSenha) {
+  setErro("As senhas não coincidem");
+  return;
+}
 
   fetch("https://abcgjl-smartcusine-backend-api.onrender.com/usuarios", {
     method: "POST",
