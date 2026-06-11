@@ -419,7 +419,7 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
               }}
               src="https://www.youtube.com/embed/g0HONsygJ_0?si=BMhTNrVmThVhUKxq" 
               title="Pitch do SmartCuisine"
-              frameborder="0" 
+              frameBorder="0" 
               allow="accelerometer; 
               autoplay; 
               clipboard-write; 
