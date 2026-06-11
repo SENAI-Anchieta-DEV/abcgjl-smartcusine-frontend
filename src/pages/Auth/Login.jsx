@@ -1,8 +1,8 @@
 import { useState } from "react";
 import imagemLogin from "../../assets/images/logo/Logo_SmartCuisine.png";
-import { FiMail, FiLock } from 'react-icons/fi';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
+import { FiMail, FiLock } from "react-icons/fi";
+import Checkbox from "@mui/material/Checkbox";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import {
   Container,
   TextField,
@@ -30,45 +30,59 @@ function Login({ onLogin, mudarTela }) {
     setLembreme(event.target.checked);
   };
 
-  const autenticar = () => {
-    setErro("");
-    setTentouEnviar(true); 
+  const autenticar = async () => {
+  setErro("");
+  setTentouEnviar(true);
 
-    if (!email || !senha) {
-      return; 
-    }
+  if (!email || !senha) return;
 
-    fetch("https://abcgjl-smartcusine-backend-api.onrender.com/auth/login", {
-    method: "POST",
-    headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify({
-    email,
-    senha,
-    tipoUsuario: "ADMIN"
-  })
-})
-  .then(res => {
-    if (!res.ok) throw new Error("Erro no login");
-    return res.json();
-  })
-  .then(data => {
-    if (data.token) {
-      localStorage.setItem("token", data.token);
-      onLogin();
-    } else {
+  try {
+    const res = await fetch(
+      "https://abcgjl-smartcusine-backend-api.onrender.com/auth/login",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, senha })
+      }
+    );
+
+    const texto = await res.text();
+
+    if (!res.ok) {
       setErro("Email ou senha inválidos");
+      return;
     }
-  })
-  .catch(() => {
-    setErro("Não foi possível conectar ao servidor.");
-  });
 
+    const data = JSON.parse(texto);
+    localStorage.setItem("token", data.token);
+
+    const usuarioSalvo = localStorage.getItem(`usuario_${email}`);
+
+    const usuarioLogado = usuarioSalvo
+      ? JSON.parse(usuarioSalvo)
+      : {
+          nome: email.split("@")[0],
+          email: email,
+          tipo: "USUARIO"
+        };
+
+    localStorage.setItem("usuario", JSON.stringify(usuarioLogado));
+
+    if (usuarioLogado.id) {
+      localStorage.setItem("usuarioId", usuarioLogado.id);
+    }
+
+    window.dispatchEvent(new Event("usuarioAtualizado"));
+
+    onLogin();
+  } catch (error) {
+    console.error(error);
+    setErro("Não foi possível conectar ao servidor.");
+  }
 };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       autenticar();
     }
   };
@@ -95,48 +109,49 @@ function Login({ onLogin, mudarTela }) {
             boxShadow: "0 8px 32px rgba(0,0,0,0.1)"
           }}
         >
-          {/* LADO ESQUERDO */}
           <Box
             sx={{
               flex: 1,
               display: { xs: "none", md: "flex" },
               alignItems: "center",
               justifyContent: "center",
-              background: "linear-gradient(135deg, #BFA2FF80, #AEDCFF80, #EB863A80)",
-                padding: 4
+              background:
+                "linear-gradient(135deg, #BFA2FF80, #AEDCFF80, #EB863A80)",
+              padding: 4
             }}
           >
             <img
-              src={imagemLogin} 
+              src={imagemLogin}
               alt="logo smartcuisine"
               style={{ width: "200px" }}
             />
           </Box>
 
-          {/* LADO DIREITO */}
           <Box
             sx={{
               flex: 1,
               padding: 5,
-              backgroundColor: "#ffff",
+              backgroundColor: "#ffff"
             }}
           >
             <Typography
               variant="h3"
-              sx={{ 
+              sx={{
                 fontFamily: "'Glacial Indifference', sans-serif",
-                fontWeight: 700, 
-                marginBottom: 1 }}
+                fontWeight: 700,
+                marginBottom: 1
+              }}
             >
               Login
             </Typography>
 
             <Typography
               variant="body2"
-              sx={{ 
+              sx={{
                 fontFamily: "'Glacial Indifference', sans-serif",
-                color: "#666", 
-                marginBottom: 3 }}
+                color: "#666",
+                marginBottom: 3
+              }}
             >
               Bem-vindo de volta! Insira suas credenciais.
             </Typography>
@@ -147,15 +162,17 @@ function Login({ onLogin, mudarTela }) {
                 type="email"
                 variant="outlined"
                 required
-                error={tentouEnviar && !email}
-                helperText={tentouEnviar && !email 
-                  ? "O e-mail é obrigatório" 
-                  : tentouEnviar && !emailValido(email) 
-                    ? "Digite um e-mail válido (ex: julia@email.com)" 
+                error={tentouEnviar && (!email || !emailValido(email))}
+                helperText={
+                  tentouEnviar && !email
+                    ? "O e-mail é obrigatório"
+                    : tentouEnviar && !emailValido(email)
+                    ? "Digite um e-mail válido (ex: julia@email.com)"
                     : ""
                 }
                 size="small"
                 fullWidth
+                value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 onKeyDown={handleKeyDown}
                 InputProps={{
@@ -163,7 +180,7 @@ function Login({ onLogin, mudarTela }) {
                     <InputAdornment position="start">
                       <FiMail />
                     </InputAdornment>
-                  ),
+                  )
                 }}
                 sx={{
                   backgroundColor: "#f5f5f5",
@@ -180,6 +197,7 @@ function Login({ onLogin, mudarTela }) {
                 helperText={tentouEnviar && !senha ? "A senha é obrigatória" : ""}
                 size="small"
                 fullWidth
+                value={senha}
                 onChange={(e) => setSenha(e.target.value)}
                 onKeyDown={handleKeyDown}
                 InputProps={{
@@ -187,7 +205,7 @@ function Login({ onLogin, mudarTela }) {
                     <InputAdornment position="start">
                       <FiLock />
                     </InputAdornment>
-                  ),
+                  )
                 }}
                 sx={{
                   backgroundColor: "#f5f5f5",
@@ -203,18 +221,18 @@ function Login({ onLogin, mudarTela }) {
                   mt: 1
                 }}
               >
-
-              <FormControlLabel
-                control={
-                  <Checkbox 
-                    size="small"
-                    sx={{padding: "4px"}}
-                    checked={lembreme}
-                    onChange={handleChange}
-                  />
-                }
-                label="Me lembre"
-                sx={{margin: 0}}/>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      size="small"
+                      sx={{ padding: "4px" }}
+                      checked={lembreme}
+                      onChange={handleChange}
+                    />
+                  }
+                  label="Me lembre"
+                  sx={{ margin: 0 }}
+                />
               </Box>
 
               <Button
@@ -248,7 +266,7 @@ function Login({ onLogin, mudarTela }) {
                   <Link
                     component="button"
                     type="button"
-                    onClick={() => mudarTela("cadastro")} 
+                    onClick={() => mudarTela("cadastro")}
                     sx={{
                       color: "#ff7a00",
                       fontWeight: "bold",

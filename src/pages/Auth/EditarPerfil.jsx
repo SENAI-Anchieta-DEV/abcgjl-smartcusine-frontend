@@ -12,175 +12,196 @@ import {
 } from "@mui/material";
 
 function EditarPerfil() {
-  const [nome, setNome] = useState("");
-  const [senha, setSenha] = useState("");
-  const [confirmarSenha, setConfirmarSenha] = useState("");
-  const [foto, setFoto] = useState(null);
-  const [preview, setPreview] = useState(null);
   const navigate = useNavigate();
 
-  const handleImagem = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setFoto(file);
-      setPreview(URL.createObjectURL(file));
+  const usuarioString = localStorage.getItem("usuario");
+  const usuario = usuarioString ? JSON.parse(usuarioString) : null;
+  const token = localStorage.getItem("token");
+
+  const id = usuario?.id;
+
+  const [nome, setNome] = useState(usuario?.nome || "");
+  const [senha, setSenha] = useState("");
+  const [confirmarSenha, setConfirmarSenha] = useState("");
+
+  if (!usuario) {
+    navigate("/login");
+    return null;
+  }
+
+  const salvar = async () => {
+    if (!id) {
+      alert("Não foi possível identificar o usuário logado. Faça login novamente.");
+      return;
+    }
+
+    if (senha && senha !== confirmarSenha) {
+      alert("As senhas não coincidem!");
+      return;
+    }
+
+    try {
+      const body = {
+        nome,
+        email: usuario.email,
+        tipo: usuario.tipo
+      };
+
+      if (senha.trim()) {
+        body.senha = senha;
+      }
+
+      const resposta = await fetch(
+        `https://abcgjl-smartcusine-backend-api.onrender.com/usuarios/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify(body)
+        }
+      );
+
+      if (!resposta.ok) {
+        const erro = await resposta.text();
+        throw new Error(erro);
+      }
+
+      const usuarioAtualizado = {
+        ...usuario,
+        nome,
+        email: usuario.email,
+        tipo: usuario.tipo
+      };
+
+      localStorage.setItem("usuario", JSON.stringify(usuarioAtualizado));
+
+      localStorage.setItem(
+        `usuario_${usuario.email}`,
+        JSON.stringify(usuarioAtualizado)
+      );
+
+      window.dispatchEvent(new Event("usuarioAtualizado"));
+
+      alert("Perfil atualizado com sucesso!");
+      navigate("/dashboard");
+    } catch (error) {
+      console.error(error);
+      alert(error.message);
     }
   };
 
-  const salvar = async () => {
-
-  if (senha && senha !== confirmarSenha) {
-    alert("As senhas não coincidem!");
-    return;
-  }
-
-  const token = localStorage.getItem("token");
-  const id = localStorage.getItem("usuarioId");
-
-  try {
-
-    const resposta = await fetch(
-      `https://abcgjl-smartcusine-backend-api.onrender.com/usuarios/${id}`,
-      {
-        method: "PUT",
-
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-
-        body: JSON.stringify({
-          nome,
-          senha,
-          foto
-        })
-      }
-    );
-
-    if (!resposta.ok) {
-      throw new Error("Erro ao salvar");
-    }
-
-    alert("Perfil atualizado com sucesso!");
-
-    navigate("/dashboard");
-
-  } catch (error) {
-
-    alert("Erro ao atualizar perfil!");
-
-  }
-};
-
   return (
-    <Container maxWidth="md">
+    <Box
+      sx={{
+        backgroundColor: "background.default",
+        minHeight: "100vh",
+        py: 4
+      }}
+    >
+      <Container maxWidth="md">
+        <Typography variant="h4" fontWeight="bold" gutterBottom>
+          Editar Perfil
+        </Typography>
 
-      <Typography variant="h4" fontWeight="bold" gutterBottom>
-        Editar Perfil
-      </Typography>
+        <Typography color="text.secondary" mb={3}>
+          Atualize suas informações pessoais
+        </Typography>
 
-      <Typography color="text.secondary" mb={3}>
-        Atualize suas informações pessoais
-      </Typography>
+        <Paper
+          sx={{
+            p: 4,
+            borderRadius: 4,
+            backgroundColor: "background.paper"
+          }}
+        >
+          <Stack spacing={4} alignItems="center">
+            <Typography fontWeight="bold">Perfil</Typography>
 
-      <Paper
-        sx={{
-          p: 4,
-          borderRadius: 4,
-          backgroundColor: "background.paper"
-        }}
-      >
-        <Stack spacing={4} alignItems="center">
+            <Avatar
+              sx={{
+                width: 80,
+                height: 80,
+                fontSize: "3rem",
+                fontWeight: "bold",
+                bgcolor: "primary.main"
+              }}
+            >
+              {nome?.charAt(0).toUpperCase()}
+            </Avatar>
 
-          <Typography fontWeight="bold">
-            Foto de Perfil
-          </Typography>
+            <Box
+              sx={{
+                width: "100%",
+                height: "1px",
+                backgroundColor: "divider"
+              }}
+            />
 
-          <Avatar
-            src={preview}
-            sx={{ width: 100, height: 100 }}
-          />
+            <Box width="100%">
+              <Typography fontWeight="bold" mb={2}>
+                Informações Pessoais
+              </Typography>
 
-          <Button 
-            variant="outlined"
-            color="primary"
-            component="label"
-          >
-            Alterar Foto
-            <input hidden type="file" onChange={handleImagem} />
-            
-          </Button>
+              <Stack spacing={2}>
+                <TextField
+                  label="Nome Completo"
+                  value={nome}
+                  onChange={(e) => setNome(e.target.value)}
+                  fullWidth
+                />
 
-          <Typography variant="body2" color="text.secondary">
-            PNG, JPG ou GIF. Máx. 5MB.
-          </Typography>
+                <TextField
+                  label="Nova Senha"
+                  type="password"
+                  value={senha}
+                  onChange={(e) => setSenha(e.target.value)}
+                  fullWidth
+                  helperText="Deixe em branco para manter a senha atual"
+                />
 
-          <Box
-            sx={{
-              width: "100%",
-              height: "1px",
-              backgroundColor: "divider"
-            }}
-          />
+                <TextField
+                  label="Confirmar Nova Senha"
+                  type="password"
+                  value={confirmarSenha}
+                  onChange={(e) => setConfirmarSenha(e.target.value)}
+                  fullWidth
+                />
+              </Stack>
+            </Box>
 
-          <Box width="100%">
-            <Typography fontWeight="bold" mb={2}>
-              Informações Pessoais
-            </Typography>
+            <Stack
+              direction="row"
+              spacing={2}
+              width="100%"
+              justifyContent="flex-end"
+            >
+              <Button
+                variant="outlined"
+                color="secondary"
+                sx={{ borderRadius: 3 }}
+                onClick={() => navigate("/dashboard")}
+              >
+                Cancelar
+              </Button>
 
-            <Stack spacing={2}>
-
-              <TextField
-                label="Nome Completo"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-                fullWidth
-              />
-
-              <TextField
-                label="Nova Senha"
-                type="password"
-                value={senha}
-                onChange={(e) => setSenha(e.target.value)}
-                fullWidth
-                helperText="Deixe em branco para manter a senha atual"
-              />
-
-              <TextField
-                label="Confirmar Nova Senha"
-                type="password"
-                value={confirmarSenha}
-                onChange={(e) => setConfirmarSenha(e.target.value)}
-                fullWidth
-              />
-
+              <Button
+                variant="contained"
+                color="secondary"
+                sx={{
+                  borderRadius: 3,
+                  color: "#fff"
+                }}
+                onClick={salvar}
+              >
+                Salvar
+              </Button>
             </Stack>
-          </Box>
-
-          <Stack direction="row" spacing={2} width="100%" justifyContent="flex-end">
-            
-            <Button
-              variant="outlined"
-              color="secondary"
-              sx={{ borderRadius: 3 }}
-            >
-              Cancelar
-            </Button>
-
-            <Button
-              variant="contained"
-              color="secondary"
-              sx={{ borderRadius: 3,color: "#fff" }}
-              onClick={salvar}
-            >
-              Salvar Alterações
-            </Button>
-
           </Stack>
-
-        </Stack>
-      </Paper>
-    </Container>
+        </Paper>
+      </Container>
+    </Box>
   );
 }
 
