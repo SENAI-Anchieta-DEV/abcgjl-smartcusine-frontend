@@ -7,8 +7,9 @@ import {
   AppBar, 
   Container, 
   Toolbar, 
-  Paper,       
+  Paper,      
   Divider,
+  Chip
 } from '@mui/material';
 import { useState } from 'react';
 import { Drawer, IconButton } from '@mui/material';
@@ -23,11 +24,13 @@ import cozinhaImg from "../../assets/images/backgrounds/cozinha.webp";
 function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
 
   const [open, setOpen] = useState(false);
+  
   const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
     }
+    setOpen(false); 
   };
 
   return (
@@ -49,7 +52,6 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
             px: { xs: 2, md: 8 } 
           }}>
 
-          {/* Logo */}
           <Box 
             sx={{ 
               display: 'flex', 
@@ -69,7 +71,20 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
             </Typography>
           </Box>
 
+          {/* MENU DESKTOP */}
           <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 4 }}>
+            {/* BOTÃO SOBRE NÓS ADICIONADO AQUI */}
+            <Button onClick={() => scrollToSection('sobre-nos')} 
+              sx={{ 
+                color: '#1a1a1a', 
+                '&:hover': {
+                  backgroundColor: 'transparent',
+                  color: '#EF6C00'
+                }
+              }}>
+              Sobre Nós
+            </Button>
+
             <Button onClick={() => scrollToSection('funcionalidades')} 
               sx={{ 
                 color: '#1a1a1a', 
@@ -98,11 +113,9 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
                 backgroundColor: '#ff8b31', 
                 color: '#ffff' 
               }}>
-
               Entrar
             </Button>
           </Box>
-
 
           <IconButton 
             sx={{ 
@@ -116,19 +129,33 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
         </Toolbar>
       </AppBar>
 
+
       <Drawer anchor="right" open={open} onClose={() => setOpen(false)}>
         <Box sx={{ width: 250, p: 2 }}>
           
           <Button fullWidth 
-            onClick={() => scrollToSection('funcionalidades')}
+            onClick={() => scrollToSection('sobre-nos')}
             sx={{ 
               color: '#1a1a1a', 
+              mb: 1,
               '&:hover': {
                 backgroundColor: 'transparent',
                 color: '#EF6C00'
               }
             }}>
-              
+            Sobre Nós
+          </Button>
+
+          <Button fullWidth 
+            onClick={() => scrollToSection('funcionalidades')}
+            sx={{ 
+              color: '#1a1a1a', 
+              mb: 1,
+              '&:hover': {
+                backgroundColor: 'transparent',
+                color: '#EF6C00'
+              }
+            }}>
             Funcionalidades
           </Button>
 
@@ -136,12 +163,12 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
             onClick={() => scrollToSection('como-funciona')}
             sx={{ 
               color: '#1a1a1a', 
+              mb: 2,
               '&:hover': {
                 backgroundColor: 'transparent',
                 color: '#EF6C00'
               }
             }}>
-            
             Como Funciona
           </Button>
 
@@ -151,7 +178,6 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
               backgroundColor: '#ff8b31', 
               color: '#ffff' 
             }}>
-
             Entrar
           </Button>
 
@@ -215,7 +241,6 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
                 fontWeight: 'bold',  
                 color: '#EF6C00'
               }}>
-
               Sua Cozinha Inteligente
             </Typography>
           </Box>
@@ -228,7 +253,6 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
               lineHeight: 1.1,
               mb: 3
             }}>
-
             Chega de desperdício: <br />
             <span style={{ color: '#EF6C00' }}>
               Organize a sua cozinha com inteligência!
@@ -243,9 +267,124 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
         </Box>
       </Box>
 
-  
       <Box 
-        id= "funcionalidades" 
+        id="sobre-nos" 
+        sx={{ 
+          py: { xs: 10, md: 14 }, 
+          px: { xs: 3, md: 10 }, 
+          backgroundColor: '#fff' 
+        }}
+      >
+        <Container maxWidth="lg">
+          <Grid container spacing={6} alignItems="center">
+            
+            <Grid item xs={12} md={6}>
+              <Typography variant="caption" sx={{ color: '#ff8b31', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: 1 }}>
+                Sobre o SmartCuisine
+              </Typography>
+              
+              <Typography variant="h3" sx={{ fontWeight: 800, mt: 1, mb: 3, color: '#1a1a1a', fontSize: { xs: '2rem', md: '2.8rem' }, lineHeight: 1.2 }}>
+                Um sistema criado para quem não pode errar na cozinha
+              </Typography>
+              
+              <Typography sx={{ color: '#555', mb: 2, fontSize: '1.05rem', lineHeight: 1.7 }}>
+                O SmartCuisine nasceu da necessidade de cozinhas profissionais padronizarem processos, controlarem insumos com maestria e eliminarem falhas de comunicação que geram desperdício e prejuízos operacionais.
+              </Typography>
+              
+              <Typography sx={{ color: '#555', mb: 4, fontSize: '1.05rem', lineHeight: 1.7 }}>
+                Não importa se o seu negócio lida com alta rotatividade de insumos ou rotinas rígidas de vigilância sanitária: nossa plataforma te dá visão em tempo real do gerenciamento interno, gerando relatórios automáticos semanais e segurança da operação.
+              </Typography>
+
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1.5, justifyContent: 'center', mb: 6 }}>
+                {[
+                  "Controle de temperatura", 
+                  "Padronização de processos", 
+                  "Comunicação entre equipes", 
+                  "Gestão de equipamentos", 
+                  "Redução de desperdícios"
+                  ].map((tag, idx) => (
+
+                  <Chip 
+                    key={idx} 
+                    label={tag} 
+                    sx={{ 
+                      bgcolor: '#fff3e0', 
+                      color: '#e65100', 
+                      fontWeight: 600, 
+                      fontSize: '0.85rem',
+                      border: '1px solid #ffe0b2',
+                      p: 0.5
+                    }} 
+                  />
+                ))}
+              </Box>
+            </Grid>
+
+            
+            <Grid item xs={12}>
+              <Grid container spacing={3} justifyContent="center">
+                {[
+                  { 
+                    numero: "+40%", 
+                    titulo: "Economia de Insumos", 
+                    desc: "Redução média no desperdício de alimentos com alertas preditivos." 
+                  },
+                  { 
+                    numero: "100%", 
+                    titulo: "Adequação ANVISA", 
+                    desc: "Relatórios automáticos prontos para exigências sanitárias." 
+                  },
+                  { 
+                    numero: "24/7", 
+                    titulo: "Monitoramento Ativo", 
+                    desc: "Sua cozinha vigiada e segura, mesmo fora do horário de expediente." 
+                  },
+                  { 
+                    numero: "0%", 
+                    titulo: "Falhas de Papel", 
+                    desc: "Chega de planilhas impressas perdidas ou rasuradas na bancada." 
+                  }
+                ].map((card, index) => (
+                  <Grid item xs={12} sm={6} key={index}>
+                    <Paper 
+                      elevation={0} 
+                      sx={{ 
+                        p: 3, 
+                        bgcolor: '#FAF9F6', 
+                        border: '1px solid #f0f0f0', 
+                        borderRadius: '20px',
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        transition: 'transform 0.2s',
+                        '&:hover': {
+                          transform: 'scale(1.03)',
+                          borderColor: '#ffe0b2'
+                        }
+                      }}
+                    >
+                      <Typography variant="h3" sx={{ fontWeight: 900, color: '#EF6C00', mb: 0.5 }}>
+                        {card.numero}
+                      </Typography>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 700, color: '#1a1a1a', mb: 1 }}>
+                        {card.titulo}
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: '#666', lineHeight: 1.5 }}>
+                        {card.desc}
+                      </Typography>
+                    </Paper>
+                  </Grid>
+                ))}
+              </Grid>
+            </Grid>
+
+          </Grid>
+        </Container>
+      </Box>
+  
+
+      <Box 
+        id="funcionalidades" 
         sx={{ 
           py: 20, 
           px: { xs: 2, md: 4 }, 
@@ -253,10 +392,9 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
           backgroundColor: '#fcfcfc' 
         }}>
 
-
         <Box 
           sx={{ 
-            maxWidth: '800px', 
+            maxWidth: '600px', 
             mx: 'auto', 
             mb: 8 
           }}>
@@ -267,7 +405,6 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
               mb: 1, 
               fontSize: { xs: '2rem', md: '3rem' } 
             }}>
-
             Sua cozinha tecnológica
           </Typography>
 
@@ -276,7 +413,6 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
           </Typography>
         </Box>
 
-        
         <Grid 
           container 
           spacing={2} 
@@ -297,7 +433,7 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
             },
             {
               title: 'Relatórios Semanais',
-              desc: 'Acompanhe o desempenho da sua cozinha \n com relatórios automáticos e insights.',
+              desc: 'Acompanhe o desempenho da sua cozinha \n com relatórios automáticos and insights.',
               icon: <BarChartIcon />,
               color: '#5C6BC0'
             },
@@ -362,7 +498,6 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
                     flexGrow: 1,
                     whiteSpace: 'pre-line'
                   }}>
-
                   {item.desc}
                 </Typography>
 
@@ -372,6 +507,7 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
         </Grid>
       </Box>
 
+      
       <Box 
         id="como-funciona"
         sx={{ 
@@ -383,7 +519,6 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
         }}
       >
         <Container maxWidth="lg">
-          {/* Título e Subtítulo da Seção */}
           <Box sx={{ textAlign: 'center', mb: 6 }}>
             <Typography variant="h4" sx={{ fontWeight: 800, mb: 2, color: '#1a1a1a' }}>
               Veja como o SmartCuisine funciona
@@ -393,7 +528,6 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
               revolucionar a gestão da sua cozinha.
             </Typography>
           </Box>
-
 
           <Paper 
             elevation={6}
@@ -420,21 +554,16 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
               src="https://www.youtube.com/embed/g0HONsygJ_0?si=BMhTNrVmThVhUKxq" 
               title="Pitch do SmartCuisine"
               frameborder="0" 
-              allow="accelerometer; 
-              autoplay; 
-              clipboard-write; 
-              encrypted-media; 
-              gyroscope; 
-              picture-in-picture; 
-              web-share" referrerpolicy="strict-origin-when-cross-origin" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+              referrerpolicy="strict-origin-when-cross-origin" 
               allowfullscreen>
             </iframe>
           </Paper>
         </Container>
       </Box>
      
+      {/* CTA */}
       <Box 
-
         sx={{ 
           py: { xs: 10, md: 15 },
           textAlign: 'center', 
@@ -444,7 +573,6 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
           overflow: 'hidden'
         }}
       >
-        
         <Box sx={{
           position: 'absolute',
           top: -50,
@@ -501,7 +629,7 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
         </Container>
       </Box>
 
-
+      
       <Box component="footer" 
         sx={{ 
           bgcolor: '#121212', 
@@ -512,7 +640,6 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
         <Container maxWidth="lg">
           <Grid container spacing={4} justifyContent="space-between">
             <Grid item xs={12} md={4}>
-
               <Typography variant="h6" 
                 sx={{ 
                   fontWeight: 800, 
@@ -526,7 +653,6 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
                   opacity: 0.6, 
                   maxWidth: '300px' 
                 }}>
-
                 Tecnologia e inteligência aplicadas à segurança alimentar e gestão de cozinhas profissionais.
               </Typography>
             </Grid>
@@ -548,13 +674,8 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
               gap: 2, 
               opacity: 0.5 
             }}>
-            <Typography variant="caption">© {new Date().getFullYear()} 
-              SmartCuisine. Todos os direitos reservados.
-            </Typography>
-
-            <Typography variant="caption">
-              Feito com foco em eficiência e segurança.
-            </Typography>
+            <Typography variant="caption">© {new Date().getFullYear()} SmartCuisine. Todos os direitos reservados.</Typography>
+            <Typography variant="caption">Feito com foco em eficiência e segurança.</Typography>
           </Box>
         </Container>
       </Box>
