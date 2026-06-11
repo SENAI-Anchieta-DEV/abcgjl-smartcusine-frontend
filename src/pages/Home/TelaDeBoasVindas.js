@@ -7,10 +7,8 @@ import {
   AppBar, 
   Container, 
   Toolbar, 
-  Paper,
-  Stack,   
-  Link,    
-  Divider 
+  Paper,       
+  Divider,
 } from '@mui/material';
 import { useState } from 'react';
 import { Drawer, IconButton } from '@mui/material';
@@ -531,14 +529,6 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
 
                 Tecnologia e inteligência aplicadas à segurança alimentar e gestão de cozinhas profissionais.
               </Typography>
-            </Grid>
-
-            <Grid item xs={12} md={6}>
-              <Stack direction="row" spacing={4} justifyContent={{ xs: 'flex-start', md: 'flex-end' }}>
-                <Link href="#" color="inherit" underline="hover" sx={{ opacity: 0.8 }}>Privacidade</Link>
-                <Link href="#" color="inherit" underline="hover" sx={{ opacity: 0.8 }}>Termos de Uso</Link>
-                <Link href="#" color="inherit" underline="hover" sx={{ opacity: 0.8 }}>Contato</Link>
-              </Stack>
             </Grid>
           </Grid>
 
