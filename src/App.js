@@ -12,6 +12,8 @@ import AdicionarProduto from "./pages/AdicionarProduto/AdicionarProduto";
 import CadastroInsumo from "./pages/Insumos/CadastroInsumo";
 import CadastroFichaTecnica from "./pages/FichaTecnica/CadastroFichaTecnica";
 import Produtos from "./pages/Produtos/Produtos";
+import Equipamentos from "./pages/Equipamentos/Equipamentos";
+
 
 function AppContent() {
   const navigate = useNavigate(); 
@@ -179,9 +181,15 @@ function AppContent() {
         toggleTema={toggleTema} 
         modo={modo} 
       />
-      <main style={{ padding: "20px" }}>
-        <CadastroInsumo />
-      </main>
+      <main
+  style={{
+    padding: "20px",
+    display: "flex",
+    justifyContent: "center",
+  }}
+>
+  <CadastroInsumo />
+</main>
     </>
   ) : (
     <Navigate to="/login" replace />
@@ -197,7 +205,12 @@ function AppContent() {
         toggleTema={toggleTema} 
         modo={modo} 
       />
-      <main style={{ padding: "20px" }}>
+      <main 
+  style={{
+    padding: "20px",
+    display: "flex",
+    justifyContent: "center",
+  }}>
         <CadastroFichaTecnica />
       </main>
     </>
@@ -208,6 +221,28 @@ function AppContent() {
 
           <Route path="*" element={<Navigate to="/" replace />} />
 
+<Route path="/equipamentos/novo" element={
+  logado ? (
+    <>
+      <Menu 
+        onLogout={() => { setLogado(false); irParaBoasVindas(); }} 
+        setTelaAtiva={mudarTelaPorString} 
+        toggleTema={toggleTema} 
+        modo={modo} 
+      />
+      <main 
+  style={{
+    padding: "20px",
+    display: "flex",
+    justifyContent: "center",
+  }}>
+        <Equipamentos />
+      </main>
+    </>
+  ) : (
+    <Navigate to="/login" replace />
+  )
+} />
         </Routes>
       </Box>
     </ThemeProvider>

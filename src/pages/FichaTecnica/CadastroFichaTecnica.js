@@ -34,6 +34,7 @@ function CadastroFichaTecnica() {
 
   const [nomePreparo, setNomePreparo] = useState("");
   const [tipoEquipamento, setTipoEquipamento] = useState("");
+  const [equipamentosCadastrados, setEquipamentosCadastrados] = useState([]);
   const [temperaturaMinima, setTemperaturaMinima] = useState("");
   const [temperaturaMaxima, setTemperaturaMaxima] = useState("");
 
@@ -41,7 +42,13 @@ function CadastroFichaTecnica() {
 
   useEffect(() => {
   carregarInsumos();
-  }, []);
+
+  const equipamentos =
+    JSON.parse(localStorage.getItem("equipamentos")) || [];
+
+  setEquipamentosCadastrados(equipamentos);
+
+}, []);
 
   async function carregarInsumos() {
   try {
@@ -205,9 +212,19 @@ if (insumosUtilizados.length === 0) {
 }
 
   return (
-    <Box sx={{ minHeight: "100vh", backgroundColor: "#b8ced8", p: 5 }}>
+    <Box
+  sx={{
+    minHeight: "100vh",
+    backgroundColor: "#b8ced8",
+    p: 5,
+    width: "100%",
+    maxWidth: "1000px",
+    borderRadius: "20px",
+    mt: 2,
+  }}
+>
 
-     <Button
+    <Button
   startIcon={
     <ArrowBackIcon
       sx={{
@@ -219,14 +236,16 @@ if (insumosUtilizados.length === 0) {
   }
   onClick={() => navigate("/produtos")}
   sx={{
-    color: "#7996b4",
-    textTransform: "none",
-    fontSize: "22px",
-    fontWeight: 700,
-    mb: 2,
-  }}
+  border: "3px solid #7996b4",
+  backgroundColor: "#ffffff90",
+  borderRadius: "12px",
+  color: "#7996b4",
+  fontWeight: 700,
+  px: 2,
+  py: 1,
+}}
 >
-      Voltar
+       Voltar
       </Button>
 
       <Typography
@@ -296,12 +315,29 @@ if (insumosUtilizados.length === 0) {
         </Typography>
 
         <TextField
+  select
   fullWidth
-  placeholder="Insira o tipo de equipamento"
   value={tipoEquipamento}
-  onChange={(e) => setTipoEquipamento(e.target.value)}
+  onChange={(e) => {
+    const equipamento = equipamentosCadastrados.find(
+      (eq) => eq.nome === e.target.value
+    );
+
+    setTipoEquipamento(e.target.value);
+
+    if (equipamento) {
+      setTemperaturaMinima(equipamento.tempMin);
+      setTemperaturaMaxima(equipamento.tempMax);
+    }
+  }}
   sx={{ backgroundColor: "#fff", borderRadius: 10, mb: 4 }}
-/>
+>
+  {equipamentosCadastrados.map((eq, index) => (
+    <MenuItem key={index} value={eq.nome}>
+      {eq.nome}
+    </MenuItem>
+  ))}
+</TextField>
 
         <Typography variant="h5" sx={{ color: "#7996b4", mb: 1 }}>
           Temperatura Ideal:

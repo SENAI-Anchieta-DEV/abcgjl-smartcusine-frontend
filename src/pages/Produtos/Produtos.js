@@ -15,6 +15,7 @@ import {
 
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import DeviceThermostatIcon from "@mui/icons-material/DeviceThermostat";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 import { useNavigate } from "react-router-dom";
@@ -50,20 +51,23 @@ function Produtos() {
   const fichas =
     JSON.parse(localStorage.getItem("fichasTecnicas")) || [];
 
+  const equipamentos =
+    JSON.parse(localStorage.getItem("equipamentos")) || [];
+
   try {
     const response = await api.get("/insumos");
 
     setDados({
       insumos: response.data,
-      equipamentos: [],
+      equipamentos,
       fichas,
     });
   } catch (error) {
-    console.error("Erro ao carregar insumos:", error);
+    console.error("Erro ao carregar dados:", error);
 
     setDados({
       insumos: [],
-      equipamentos: [],
+      equipamentos,
       fichas,
     });
   }
@@ -85,19 +89,29 @@ function Produtos() {
   }
 
   async function salvarEdicao() {
+    
     try {
 
       if (Number(produtoEditando.quantidadeEstoque) <= 0) {
   alert("A quantidade deve ser maior que zero!");
   return;
 } 
+    
+      console.log("ENVIANDO:", {
+  nome: produtoEditando.nome,
+  unidadeMedida: produtoEditando.unidadeMedida,
+  quantidadeEstoque: Number(produtoEditando.quantidadeEstoque),
+  dataValidade: produtoEditando.dataValidade,
+});
 
       await api.put(`/insumos/${produtoEditando.idInsumo}`, {
-        nome: produtoEditando.nome,
-        unidadeMedida: produtoEditando.unidadeMedida,
-        quantidadeEstoque: Number(produtoEditando.quantidadeEstoque),
-        dataValidade: produtoEditando.dataValidade,
-      });
+  nome: produtoEditando.nome,
+  unidadeMedida: produtoEditando.unidadeMedida?.toLowerCase(),
+  quantidadeEstoque: Number(produtoEditando.quantidadeEstoque),
+  dataValidade: produtoEditando.dataValidade?.includes("/")
+    ? produtoEditando.dataValidade.split("/").reverse().join("-")
+    : produtoEditando.dataValidade,
+});
 
       alert("Insumo atualizado com sucesso!");
 
@@ -105,9 +119,15 @@ function Produtos() {
       setProdutoEditando(null);
       carregarDados();
     } catch (error) {
-      console.error("Erro ao editar insumo:", error);
-      alert("Erro ao editar insumo!");
-    }
+  console.error("ERRO COMPLETO:", error);
+  console.error("RESPOSTA DO BACKEND:", error.response?.data);
+
+  alert(
+    typeof error.response?.data === "string"
+      ? error.response.data
+      : JSON.stringify(error.response?.data)
+  );
+}
   }
 
   async function deletarInsumo(item) {
@@ -128,6 +148,27 @@ function Produtos() {
       alert("Erro ao excluir insumo!");
     }
   }
+
+  function excluirEquipamento(index) {
+  const confirmar = window.confirm(
+    "Deseja realmente excluir este equipamento?"
+  );
+
+  if (!confirmar) return;
+
+  const novosEquipamentos = [...dados.equipamentos];
+
+  novosEquipamentos.splice(index, 1);
+
+  localStorage.setItem("equipamentos", JSON.stringify(novosEquipamentos));
+
+  setDados({
+    ...dados,
+    equipamentos: novosEquipamentos,
+  });
+
+  alert("Equipamento excluído com sucesso!");
+}
 
   function excluirFicha(index) {
   const confirmar = window.confirm(
@@ -157,30 +198,31 @@ function editarFicha(ficha, index) {
   setModalEditarFichaAberto(true);
 }
 
+
 function salvarEdicaoFicha() {
   if (
-    !fichaEditando.nomePreparo ||
-    !fichaEditando.tipoEquipamento ||
-    !fichaEditando.temperaturaMinima ||
-    !fichaEditando.temperaturaMaxima
-  ) {
-    alert("Preencha todos os campos da ficha!");
-    return;
-  }
-
-  if (
-  Number(fichaEditando.temperaturaMinima) <= 0 ||
-  Number(fichaEditando.temperaturaMaxima) <= 0
+  !fichaEditando.nomePreparo ||
+  !fichaEditando.tipoEquipamento ||
+  fichaEditando.temperaturaMinima == null ||
+  fichaEditando.temperaturaMaxima == null
 ) {
-  alert("As temperaturas devem ser maiores que zero!");
+  alert("Preencha todos os campos da ficha!");
   return;
 }
 
+const equipamentoSelecionado = fichaEditando.tipoEquipamento?.toLowerCase();
+
+const equipamentoAquecimento =
+  equipamentoSelecionado.includes("forno") ||
+  equipamentoSelecionado.includes("fogão") ||
+  equipamentoSelecionado.includes("fogao");
+
 if (
-  Number(fichaEditando.temperaturaMinima) >
-  Number(fichaEditando.temperaturaMaxima)
+  equipamentoAquecimento &&
+  (Number(fichaEditando.temperaturaMinima) <= 0 ||
+    Number(fichaEditando.temperaturaMaxima) <= 0)
 ) {
-  alert("A temperatura mínima não pode ser maior que a máxima!");
+  alert("Forno e fogão devem ter temperaturas maiores que zero!");
   return;
 }
 
@@ -219,13 +261,19 @@ if (
   alert("Ficha técnica atualizada com sucesso!");
 }
 
+
   return (
   <Box
     sx={{
-      minHeight: "100vh",
-      backgroundColor: "#b8ced8",
-      p: 5,
-    }}
+    minHeight: "100vh",
+    backgroundColor: "#b8ced8",
+    p: 5,
+    width: "85%",
+    maxWidth: "1000px",
+    mx: "auto",
+    borderRadius: "20px",
+    mt: 2,
+  }}
   >
     <Button
   startIcon={
@@ -234,17 +282,20 @@ if (
     fontSize: 28,
     stroke: "#7996b4",
     strokeWidth: 1.8,
+    
   }}
 />
   }
   onClick={() => navigate("/dashboard")}
   sx={{
-    color: "#7996b4",
-    textTransform: "none",
-    fontSize: "22px",
-    fontWeight: "bold",
-    mb: 2,
-  }}
+  border: "3px solid #7996b4",
+  backgroundColor: "#ffffff90",
+  borderRadius: "12px",
+  color: "#7996b4",
+  fontWeight: 700,
+  px: 2,
+  py: 1,
+}}
 >
   Home
 </Button>
@@ -265,7 +316,8 @@ if (
         onClick={() => setModalAberto(true)}
         fullWidth
         sx={{
-          maxWidth: 900,
+          maxWidth: 1200,
+          width: "100%",
           mx: "auto",
           mb: 4,
           display: "flex",
@@ -362,15 +414,27 @@ if (
       {abaAtiva === "insumos" &&
         dados.insumos.map((item, index) => (
           <ProdutoCard
-            key={item.idInsumo || index}
-            nome={item.nome}
-            quantidade={item.quantidadeEstoque}
-            unidade={item.unidadeMedida}
-            data={item.dataValidade}
-            onEditar={() => abrirEditar(item)}
-            onExcluir={() => deletarInsumo(item)}
-          />
+  key={item.idInsumo || index}
+  nome={item.nome}
+  quantidade={item.quantidadeEstoque}
+  unidade={item.unidadeMedida}
+  data={item.dataValidade}
+  onEditar={() => abrirEditar(item)}
+  onExcluir={() => deletarInsumo(item)}
+/>
         ))}
+
+        {abaAtiva === "equipamentos" &&
+  dados.equipamentos.map((item, index) => (
+    <ProdutoCard
+      key={index}
+      nome={item.nome}
+      categoria={item.categoria}
+      data={`${item.tempMin}°C até ${item.tempMax}°C`}
+      isEquipamento
+      onExcluir={() => excluirEquipamento(index)}
+    />
+  ))}
 
       {abaAtiva === "fichas" &&
   dados.fichas.map((ficha, index) => (
@@ -379,7 +443,8 @@ if (
       key={index}
       elevation={0}
       sx={{
-        maxWidth: 800,
+        maxWidth: 900,
+        width: "80%",
         mx: "auto",
         mb: 5,
         borderRadius: 8,
@@ -594,7 +659,7 @@ if (
           select
           fullWidth
           label="Unidade de medida"
-          value={produtoEditando?.unidadeMedida || ""}
+          value={produtoEditando?.unidadeMedida?.toLowerCase() || ""}
           onChange={(e) =>
           setProdutoEditando({
       ...produtoEditando,
@@ -680,23 +745,41 @@ if (
     />
 
     <TextField
-      fullWidth
-      label="Equipamento"
-      value={fichaEditando?.tipoEquipamento || ""}
-      onChange={(e) =>
-        setFichaEditando({
-          ...fichaEditando,
-          tipoEquipamento: e.target.value,
-        })
-      }
-      sx={{ mb: 3 }}
-    />
+  select
+  fullWidth
+  label="Equipamento"
+  value={fichaEditando?.tipoEquipamento || ""}
+  onChange={(e) => {
+    const equipamentos =
+      JSON.parse(localStorage.getItem("equipamentos")) || [];
+
+    const equipamentoSelecionado = equipamentos.find(
+      (eq) => eq.nome === e.target.value
+    );
+
+    setFichaEditando({
+      ...fichaEditando,
+      tipoEquipamento: e.target.value,
+      temperaturaMinima: equipamentoSelecionado?.tempMin ?? "",
+      temperaturaMaxima: equipamentoSelecionado?.tempMax ?? "",
+    });
+  }}
+  sx={{ mb: 3 }}
+>
+  {(JSON.parse(localStorage.getItem("equipamentos")) || []).map(
+    (eq, index) => (
+      <MenuItem key={index} value={eq.nome}>
+        {eq.nome}
+      </MenuItem>
+    )
+  )}
+</TextField>
 
     <TextField
       fullWidth
       label="Temperatura mínima"
       type="number"
-      value={fichaEditando?.temperaturaMinima || ""}
+      value={fichaEditando?.temperaturaMinima ?? ""}
       onChange={(e) =>
         setFichaEditando({
           ...fichaEditando,
@@ -710,7 +793,7 @@ if (
       fullWidth
       label="Temperatura máxima"
       type="number"
-      value={fichaEditando?.temperaturaMaxima || ""}
+      value={fichaEditando?.temperaturaMaxima ?? ""}
       onChange={(e) =>
         setFichaEditando({
           ...fichaEditando,
@@ -748,7 +831,9 @@ function ProdutoCard({
   nome,
   quantidade,
   unidade,
+  categoria,
   data,
+  isEquipamento,
   onEditar,
   onExcluir,
 }) {
@@ -756,7 +841,8 @@ function ProdutoCard({
     <Paper
       elevation={0}
       sx={{
-        maxWidth: 800,
+        maxWidth: 900,
+        width: "80%",
         mx: "auto",
         mb: 5,
         borderRadius: 8,
@@ -769,16 +855,26 @@ function ProdutoCard({
       </Typography>
 
       <Typography color="text.secondary" sx={{ mb: 4 }}>
-        Quantidade: {quantidade} {unidade}
+        {isEquipamento
+          ? `Categoria: ${categoria}`
+          : `Quantidade: ${quantidade} ${unidade}`}
       </Typography>
 
       <Box display="flex" justifyContent="space-between" alignItems="center">
         <Box display="flex" gap={1} alignItems="center">
-          <CalendarTodayIcon fontSize="small" color="disabled" />
+
+          {isEquipamento ? (
+            <DeviceThermostatIcon fontSize="small" color="disabled" />
+          ) : (
+            <CalendarTodayIcon fontSize="small" color="disabled" />
+          )}
 
           <Typography color="text.secondary">
-            {data?.split("-").reverse().join("/")}
+            {isEquipamento
+              ? data
+              : data?.split("-").reverse().join("/")}
           </Typography>
+
         </Box>
 
         <Box display="flex" alignItems="center" gap={0.5}>
@@ -794,19 +890,21 @@ function ProdutoCard({
             }}
           />
 
-          <Button
-            onClick={onEditar}
-            sx={{
-              backgroundColor: "#7996b4",
-              color: "#fff",
-              px: 3,
-              borderRadius: 2,
-              textTransform: "none",
-              minWidth: "100px",
-            }}
-          >
-            Editar
-          </Button>
+          {!isEquipamento && (
+            <Button
+              onClick={onEditar}
+              sx={{
+                backgroundColor: "#7996b4",
+                color: "#fff",
+                px: 3,
+                borderRadius: 2,
+                textTransform: "none",
+                minWidth: "100px",
+              }}
+            >
+              Editar
+            </Button>
+          )}
         </Box>
       </Box>
     </Paper>
