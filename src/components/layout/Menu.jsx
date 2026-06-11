@@ -92,6 +92,7 @@ function Menu({ onLogout, setTelaAtiva, toggleTema, modo, mudarTela}) {
           
           <Button
             startIcon={<AssessmentIcon />}
+            onClick={() => setTelaAtiva("relatorio-semanal")}
             sx={{
               fontSize: { xs: '0.75rem', sm: '0.875rem' },
               padding: { xs: '6px 12px', sm: '8px 16px' },
