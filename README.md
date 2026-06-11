@@ -1,70 +1,208 @@
-# Getting Started with Create React App
+# SmartCuisine Web 🍽️
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Frontend web do projeto SmartCuisine, desenvolvido para auxiliar no gerenciamento inteligente de cozinhas industriais e hospitalares, permitindo o controle de alimentos, temperatura, validade e relatórios de forma prática e intuitiva.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 📌 Sobre o Projeto
 
-### `npm start`
+O SmartCuisine Web é a interface web do sistema SmartCuisine, criada para facilitar o monitoramento e gerenciamento de insumos alimentícios em cozinhas profissionais.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## O sistema permite:
 
-### `npm test`
+- Controle de alimentos cadastrados
+- Monitoramento de temperatura
+- Gestão de validade dos produtos
+- Visualização de relatórios
+- Controle de usuários
+- Navegação intuitiva e responsiva
+- Integração com API REST
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## 🚀 Tecnologias Utilizadas:
+### Frontend:
+- React
+- JavaScript
+- React Router DOM
+- Material UI (MUI)
+- Lucide React (biblioteca de ícones para React)
+- CSS / Styled Components
 
-### `npm run build`
+### Integração:
+- Axios (biblioteca usada para fazer requisições HTTP no frontend)
+- API REST
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Ferramentas:
+- Node.js
+- npm
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+---
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# 📂 Estrutura do Projeto:
 
-### `npm run eject`
+src/
+│
+├── app/
+│   ├── routes/
+│   │   └── AppRoutes.jsx
+│   │
+│   ├── providers/
+│   │   └── ThemeProvider.jsx
+│   │
+│   └── layouts/
+│       └── MainLayout.jsx
+│
+├── assets/
+│   ├── images/
+│   │   ├── logo/
+│   │   │   ├── Logo_SmartCuisine.png
+│   │   │   └── logo.svg
+│   │   │
+│   │   ├── backgrounds/
+│   │   │   ├── cozinha.webp
+│   │   │   └── tela_home_smartcuisine.png
+│
+├── components/
+│   ├── common/
+│   │   ├── Button.jsx
+│   │   ├── Card.jsx
+│   │   └── Loading.jsx
+│   │
+│   └── layout/
+│       ├── Menu.jsx
+│       └── Navbar.jsx
+│
+├── pages/
+│   ├── Auth/
+│   │   ├── Login.jsx
+│   │   ├── Cadastro.jsx
+│   │   └── EditarPerfil.jsx
+│   │
+│   ├── Dashboard/
+│   │   └── Dashboard.jsx
+│   │
+│   ├── Usuarios/
+│   │   └── Usuarios.jsx
+│   │
+│   └── Home/
+│       └── TelaDeBoasVindas.jsx
+│
+├── services/
+│   ├── api.js
+│   ├── authService.js
+│   └── usuarioService.js
+│
+├── hooks/
+│   ├── useAuth.js
+│   └── useTheme.js
+│
+├── contexts/
+│   └── AuthContext.jsx
+│
+├── styles/
+│   ├── global.css
+│   ├── theme.js
+│   └── variables.css
+│
+├── utils/
+│   ├── formatDate.js
+│   └── validators.js
+│
+├── App.jsx
+├── main.jsx
+└── index.js
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+---
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## ⚙️ Funcionalidades:
+### 👤 Autenticação:
+- Login de usuários
+- Cadastro
+- Controle de sessão
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### 📦 Gestão de Alimentos:
+- Cadastro de alimentos
+- Edição e exclusão
+- Controle de validade
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### 🌡️ Monitoramento:
+- Controle de temperatura
+- Alertas visuais
 
-## Learn More
+### 📊 Dashboard:
+- Indicadores em tempo real
+- Relatórios semanais
+- Visualização de métricas
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### 👥 Usuários:
+- Gerenciamento de perfis
+- Edição de informações
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+---
 
-### Code Splitting
+# 🖥️ Como Executar o Projeto:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Pré-requisitos
+Antes de começar, você precisará ter instalado:
+- Node.js
+- npm 
 
-### Analyzing the Bundle Size
+## Clone o repositório:
+`md
+bash
+https://github.com/SENAI-Anchieta-DEV/abcgjl-smartcusine-frontend.git
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
 
-### Making a Progressive Web App
+## Acesse a pasta do projeto:
+bash
+cd abcgjl-smartcusine-frontend
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
 
-### Advanced Configuration
+## Instale as dependências:
+bash
+npm install
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
 
-### Deployment
+## Execute o projeto:
+bash
+npm start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+---
 
-### `npm run build` fails to minify
+# 🔗 Integração com Backend:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## O frontend consome uma API REST responsável pelo gerenciamento de:
+- Usuários
+- Alimentos
+- Temperaturas
+- Relatórios
+- Autenticação
+
+---
+
+# 🎨 Usabilidade e Interface:
+- Interface intuitiva
+- Redução de cliques
+- Feedback visual ao usuário
+- Responsividade
+- Prevenção de erros
+- Clareza nas informações
+
+---
+
+# 🧪 Testes e Qualidade:
+
+## Durante o desenvolvimento foram aplicadas práticas como:
+- Validação de formulários
+- Tratamento de exceções
+- Controle de status HTTP
+- Organização de componentes
+- Separação de responsabilidades
+
+---
+
+Projeto desenvolvido para fins acadêmicos no SENAI, com foco em desenvolvimento full stack e integração entre frontend web, mobile e backend.
+
+Este projeto possui finalidade educacional.

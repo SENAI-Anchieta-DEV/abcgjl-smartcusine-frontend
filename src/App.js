@@ -13,7 +13,7 @@ import CadastroInsumo from "./pages/Insumos/CadastroInsumo";
 import CadastroFichaTecnica from "./pages/FichaTecnica/CadastroFichaTecnica";
 import Produtos from "./pages/Produtos/Produtos";
 import Equipamentos from "./pages/Equipamentos/Equipamentos";
-
+import RelatorioSemanal from "./pages/RelatorioSemanal/RelatorioSemanal";
 
 function AppContent() {
   const navigate = useNavigate(); 
@@ -44,6 +44,7 @@ function AppContent() {
     else if (tela === "boas-vindas") navigate("/teladeboasvindas");
     else if (tela === "adicionar-produto") navigate("/adicionar-produto");
     else if (tela === "produtos") navigate("/produtos");
+    else if (tela === "relatorio-semanal") navigate("/relatorio-semanal");
     else navigate(`/${tela}`);
   };
 
@@ -82,6 +83,25 @@ function AppContent() {
 
 
           {/* ---- ROTAS PROTEGIDAS ---- */}
+
+             <Route path="/relatorio-semanal" element={
+            logado ? (
+              <>
+                <Menu 
+                  onLogout={() => { setLogado(false); irParaBoasVindas(); }} 
+                  setTelaAtiva={mudarTelaPorString} 
+                  toggleTema={toggleTema} 
+                  modo={modo} 
+                />
+                <main style={{ padding: "20px" }}>
+                  <RelatorioSemanal />
+                </main>
+              </>
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          } />
+
           <Route path="/dashboard" element={
             logado ? (
               <>
