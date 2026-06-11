@@ -22,7 +22,6 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { useNavigate } from "react-router-dom";
 
 function CadastroFichaTecnica() {
-
   const navigate = useNavigate();
 
   const [insumosCadastrados, setInsumosCadastrados] = useState([]);
@@ -40,107 +39,101 @@ function CadastroFichaTecnica() {
   const [insumosUtilizados, setInsumosUtilizados] = useState([]);
 
   useEffect(() => {
-  carregarInsumos();
+    carregarInsumos();
   }, []);
 
   async function carregarInsumos() {
-  try {
-    const response = await api.get("/insumos");
-
-    console.log("INSUMOS CARREGADOS:", response.data);
-
-    setInsumosCadastrados(response.data);
-  } catch (error) {
-    console.error("Erro ao carregar insumos:", error);
-    console.error("Resposta:", error.response?.data);
-    alert("Erro ao carregar insumos cadastrados!");
+    try {
+      const response = await api.get("/insumos");
+      setInsumosCadastrados(response.data);
+    } catch (error) {
+      console.error("Erro ao carregar insumos:", error);
+      alert("Erro ao carregar insumos cadastrados!");
+    }
   }
-}
 
   function converterParaBase(quantidade, unidade) {
-  const valor = Number(quantidade);
+    const valor = Number(quantidade);
+    if (unidade === "kg") return valor * 1000;
+    if (unidade === "g") return valor;
+    if (unidade === "L") return valor * 1000;
+    if (unidade === "ml" || unidade === "ML") return valor;
+    if (unidade === "UND") return valor;
+    return valor;
+  }
 
-  if (unidade === "kg") return valor * 1000;
-  if (unidade === "g") return valor;
+  function tiposCompativeis(unidadeEstoque, unidadeUsada) {
+    const peso = ["kg", "g"];
+    const volume = ["L", "ml", "ML"];
+    const unidade = ["UND", "und"];
 
-  if (unidade === "L") return valor * 1000;
-  if (unidade === "ml" || unidade === "ML") return valor;
-
-  if (unidade === "UND") return valor;
-
-  return valor;
-}
-
-function tiposCompativeis(unidadeEstoque, unidadeUsada) {
-  const peso = ["kg", "g"];
-  const volume = ["L", "ml", "ML"];
-  const unidade = ["UND", "und"];
-
-  return (
-    (peso.includes(unidadeEstoque) && peso.includes(unidadeUsada)) ||
-    (volume.includes(unidadeEstoque) && volume.includes(unidadeUsada)) ||
-    (unidade.includes(unidadeEstoque) && unidade.includes(unidadeUsada))
-  );
-}
+    return (
+      (peso.includes(unidadeEstoque) && peso.includes(unidadeUsada)) ||
+      (volume.includes(unidadeEstoque) && volume.includes(unidadeUsada)) ||
+      (unidade.includes(unidadeEstoque) && unidade.includes(unidadeUsada))
+    );
+  }
 
   function adicionarInsumo() {
-  if (!insumoSelecionado || !quantidade || !unidade) {
-    alert("Preencha todos os campos do insumo.");
-    return;
-  }
+    if (!insumoSelecionado || !quantidade || !unidade) {
+      alert("Preencha todos os campos do insumo.");
+      return;
+    }
 
-  const insumoJaAdicionado = insumosUtilizados.some(
-  (insumo) => insumo.idInsumo === insumoSelecionado.idInsumo
-);
-
-if (insumoJaAdicionado) {
-  alert("Este insumo já foi adicionado à ficha técnica!");
-  return;
-}
-
-  if (Number(quantidade) <= 0) {
-  alert("A quantidade utilizada deve ser maior que zero!");
-  return;
-}
-
-  if (!tiposCompativeis(insumoSelecionado.unidadeMedida, unidade)) {
-    alert(
-      `Unidade incompatível! O insumo ${insumoSelecionado.nome} está cadastrado em ${insumoSelecionado.unidadeMedida}, mas você tentou usar ${unidade}.`
+    const insumoJaAdicionado = insumosUtilizados.some(
+      (insumo) => insumo.idInsumo === insumoSelecionado.idInsumo
     );
-    return;
-  }
 
-  const estoqueConvertido = converterParaBase(
-    insumoSelecionado.quantidadeEstoque,
-    insumoSelecionado.unidadeMedida
-  );
+    if (insumoJaAdicionado) {
+      alert("Este insumo já foi adicionado à ficha técnica!");
+      return;
+    }
 
-  const quantidadeUsadaConvertida = converterParaBase(
-    quantidade,
-    unidade
-  );
+    if (Number(quantidade) <= 0) {
+      alert("A quantidade utilizada deve ser maior que zero!");
+      return;
+    }
 
-  if (quantidadeUsadaConvertida > estoqueConvertido) {
-    alert(
-      `Quantidade inválida! No estoque existem apenas ${insumoSelecionado.quantidadeEstoque} ${insumoSelecionado.unidadeMedida} de ${insumoSelecionado.nome}.`
+    if (!tiposCompativeis(insumoSelecionado.unidadeMedida, unidade)) {
+      alert(
+        `Unidade incompatível! O insumo 
+        ${insumoSelecionado.nome} está cadastrado em 
+        ${insumoSelecionado.unidadeMedida}, 
+        mas você tentou usar ${unidade}.`
+      );
+      return;
+    }
+
+    const estoqueConvertido = converterParaBase(
+      insumoSelecionado.quantidadeEstoque,
+      insumoSelecionado.unidadeMedida
     );
-    return;
+
+    const quantidadeUsadaConvertida = converterParaBase(quantidade, unidade);
+
+    if (quantidadeUsadaConvertida > estoqueConvertido) {
+      alert(
+        `Quantidade inválida! No estoque existem apenas 
+        ${insumoSelecionado.quantidadeEstoque} 
+        ${insumoSelecionado.unidadeMedida} 
+        de ${insumoSelecionado.nome}.`
+      );
+      return;
+    }
+
+    const novoInsumo = {
+      nome: insumoSelecionado.nome,
+      idInsumo: insumoSelecionado.idInsumo,
+      quantidade,
+      unidade,
+    };
+
+    setInsumosUtilizados([...insumosUtilizados, novoInsumo]);
+    setInsumoSelecionado("");
+    setQuantidade("");
+    setUnidade("");
+    setPopupAberto(false);
   }
-
-  const novoInsumo = {
-    nome: insumoSelecionado.nome,
-    idInsumo: insumoSelecionado.idInsumo,
-    quantidade,
-    unidade,
-  };
-
-  setInsumosUtilizados([...insumosUtilizados, novoInsumo]);
-
-  setInsumoSelecionado("");
-  setQuantidade("");
-  setUnidade("");
-  setPopupAberto(false);
-}
 
   function removerInsumo(index) {
     const novaLista = insumosUtilizados.filter((_, i) => i !== index);
@@ -148,208 +141,260 @@ if (insumoJaAdicionado) {
   }
 
   async function cadastrarFicha() {
-  if (
-    !nomePreparo ||
-    !tipoEquipamento ||
-    !temperaturaMinima ||
-    !temperaturaMaxima
-  ) {
-    alert("Preencha todos os campos da ficha!");
-    return;
+    if (!nomePreparo || !tipoEquipamento || !temperaturaMinima || !temperaturaMaxima) {
+      alert("Preencha todos os campos da ficha!");
+      return;
+    }
+
+    if (Number(temperaturaMinima) <= 0 || Number(temperaturaMaxima) <= 0) {
+      alert("As temperaturas devem ser maiores que zero!");
+      return;
+    }
+
+    if (Number(temperaturaMinima) > Number(temperaturaMaxima)) {
+      alert("A temperatura mínima não pode ser maior que a máxima!");
+      return;
+    }
+
+    if (insumosUtilizados.length === 0) {
+      alert("Adicione pelo menos um insumo para cadastrar a ficha técnica!");
+      return;
+    }
+
+    const ficha = {
+      id: Date.now(),
+      nomePreparo,
+      tipoEquipamento,
+      temperaturaMinima: Number(temperaturaMinima),
+      temperaturaMaxima: Number(temperaturaMaxima),
+      insumosUtilizados,
+      dataCriacao: new Date().toISOString().split("T")[0],
+    };
+
+    try {
+      const fichasSalvas = JSON.parse(localStorage.getItem("fichasTecnicas")) || [];
+      fichasSalvas.push(ficha);
+      localStorage.setItem("fichasTecnicas", JSON.stringify(fichasSalvas));
+
+      alert("Ficha técnica cadastrada com sucesso!");
+      navigate("/produtos");
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao cadastrar ficha");
+    }
   }
-
-  
-
-  if (Number(temperaturaMinima) <= 0 || Number(temperaturaMaxima) <= 0) {
-  alert("As temperaturas devem ser maiores que zero!");
-  return;
-}
-
-if (Number(temperaturaMinima) > Number(temperaturaMaxima)) {
-  alert("A temperatura mínima não pode ser maior que a máxima!");
-  return;
-}
-
-if (insumosUtilizados.length === 0) {
-  alert("Adicione pelo menos um insumo para cadastrar a ficha técnica!");
-  return;
-}
-
-  const ficha = {
-    id: Date.now(),
-    nomePreparo,
-    tipoEquipamento,
-    temperaturaMinima: Number(temperaturaMinima),
-    temperaturaMaxima: Number(temperaturaMaxima),
-    insumosUtilizados,
-    dataCriacao: new Date().toISOString().split("T")[0],
-  };
-
-  try {
-    const fichasSalvas =
-      JSON.parse(localStorage.getItem("fichasTecnicas")) || [];
-
-    fichasSalvas.push(ficha);
-
-    localStorage.setItem(
-      "fichasTecnicas",
-      JSON.stringify(fichasSalvas)
-    );
-
-    alert("Ficha técnica cadastrada com sucesso!");
-    navigate("/produtos");
-  } catch (error) {
-    console.error(error);
-    alert("Erro ao cadastrar ficha");
-  }
-}
 
   return (
-    <Box sx={{ minHeight: "100vh", backgroundColor: "#b8ced8", p: 5 }}>
-
-     <Button
-  startIcon={
-    <ArrowBackIcon
-      sx={{
-        fontSize: 48,
-        stroke: "#7996b4",
-        strokeWidth: 2.5,
+    <Box 
+      sx={{ 
+        minHeight: "100vh", 
+        backgroundColor: "#b8ced8", 
+        p: { xs: 2, sm: 5 },
+        boxSizing: "border-box"
       }}
-    />
-  }
-  onClick={() => navigate("/produtos")}
-  sx={{
-    color: "#7996b4",
-    textTransform: "none",
-    fontSize: "22px",
-    fontWeight: 700,
-    mb: 2,
-  }}
->
-      Voltar
+    >
+      <Button
+        startIcon={
+          <ArrowBackIcon
+            sx={{
+              fontSize: { xs: 28, sm: 36 },
+              stroke: "#2C3E50",
+              strokeWidth: 2.5,
+            }}
+          />
+        }
+        onClick={() => navigate("/produtos")}
+        sx={{
+          color: "#2C3E50",
+          textTransform: "none",
+          fontSize: { xs: "18px", sm: "22px" },
+          fontWeight: 700,
+          mb: 2,
+        }}
+      >
+        Voltar
       </Button>
 
+      
       <Typography
         variant="h3"
         fontWeight="bold"
         textAlign="center"
-        sx={{ color: "#7996b4", mb: 5 }}
+        sx={{ 
+          color: "#2C3E50", 
+          mb: { xs: 3, sm: 5 },
+          fontSize: { xs: "26px", sm: "40px" } 
+        }}
       >
         Adicionar Ficha Técnica
       </Typography>
 
+      
       <Paper
         elevation={0}
         sx={{
           maxWidth: 850,
           mx: "auto",
-          p: 4,
-          borderRadius: 8,
+          p: { xs: 3, sm: 4 },
+          borderRadius: { xs: 4, sm: 6 },
           backgroundColor: "#efbc97",
           display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
           alignItems: "center",
-          gap: 4,
+          textAlign: { xs: "center", sm: "left" },
+          gap: { xs: 2, sm: 4 },
           mb: 5,
+          boxSizing: "border-box"
         }}
       >
         <Box
           sx={{
-            width: 110,
-            height: 110,
-            borderRadius: 4,
+            width: { xs: 80, sm: 110 },
+            height: { xs: 80, sm: 110 },
+            borderRadius: 3,
             backgroundColor: "#ff8c42",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             color: "#fff",
+            flexShrink: 0
           }}
         >
-          <AddIcon sx={{ fontSize: 90 }} />
+          <AddIcon sx={{ fontSize: { xs: 50, sm: 70 } }} />
         </Box>
 
         <Box>
-          <Typography variant="h4" fontWeight="bold" sx={{ color: "#ff8c42" }}>
+          <Typography 
+            variant="h4" 
+            fontWeight="bold" 
+            sx={{ 
+              color: "#d35400", 
+              fontSize: { xs: "22px", sm: "30px" },
+              mb: 0.5
+            }}
+          >
             Adicionar Ficha Técnica
           </Typography>
 
-          <Typography fontSize={22}>
+          <Typography sx={{ fontSize: { xs: 15, sm: 18 }, color: "#2C3E50", fontWeight: 500 }}>
             Preencha todos os campos abaixo para cadastrar o preparo desejado
           </Typography>
         </Box>
       </Paper>
 
-      <Box sx={{ maxWidth: 950, mx: "auto" }}>
-        <Typography variant="h5" sx={{ color: "#7996b4", mb: 1 }}>
+
+      <Box sx={{ maxWidth: 850, mx: "auto" }}>
+        
+        <Typography 
+          variant="h5" 
+          sx={{ 
+            color: "#2C3E50", 
+            mb: 1, 
+            fontWeight: 600, 
+            fontSize: { xs: "16px", sm: "20px" } 
+          }}>
           Nome do preparo:
         </Typography>
-
         <TextField
-  fullWidth
-  placeholder="Insira o nome do preparo"
-  value={nomePreparo}
-  onChange={(e) => setNomePreparo(e.target.value)}
-  sx={{ backgroundColor: "#fff", borderRadius: 10, mb: 4 }}
-/>
+          fullWidth
+          placeholder="Insira o nome do preparo"
+          value={nomePreparo}
+          onChange={(e) => setNomePreparo(e.target.value)}
+          slotProps={{ input: { style: { color: "#2C3E50", fontWeight: 500, borderRadius: "8px" } } }}
+          sx={{ 
+            backgroundColor: "#fff", borderRadius: "8px", mb: 4,
+            "& .MuiOutlinedInput-root": { "& fieldset": { border: "none" } }
+          }}
+        />
 
-        <Typography variant="h5" sx={{ color: "#7996b4", mb: 1 }}>
+        
+        <Typography variant="h5" 
+          sx={{ 
+            color: "#2C3E50", 
+            mb: 1, 
+            fontWeight: 600, 
+            fontSize: { xs: "16px", sm: "20px" } 
+          }}>
           Tipo de equipamento:
         </Typography>
-
         <TextField
-  fullWidth
-  placeholder="Insira o tipo de equipamento"
-  value={tipoEquipamento}
-  onChange={(e) => setTipoEquipamento(e.target.value)}
-  sx={{ backgroundColor: "#fff", borderRadius: 10, mb: 4 }}
-/>
+          fullWidth
+          placeholder="Insira o tipo de equipamento"
+          value={tipoEquipamento}
+          onChange={(e) => setTipoEquipamento(e.target.value)}
+          slotProps={{ input: { style: { color: "#2C3E50", fontWeight: 500, borderRadius: "8px" } } }}
+          sx={{ 
+            backgroundColor: "#fff", borderRadius: "8px", mb: 4,
+            "& .MuiOutlinedInput-root": { "& fieldset": { border: "none" } }
+          }}
+        />
 
-        <Typography variant="h5" sx={{ color: "#7996b4", mb: 1 }}>
+        
+        <Typography variant="h5" sx={{ color: "#2C3E50", mb: 1, fontWeight: 600, fontSize: { xs: "16px", sm: "20px" } }}>
           Temperatura Ideal:
         </Typography>
-
         <Paper
-  elevation={0}
-  sx={{
-    backgroundColor: "#efbc97",
-    borderRadius: 6,
-    p: 4,
-    mb: 5,
-  }}
->
-  <Box display="flex" justifyContent="center" alignItems="center" gap={3}>
-    <TextField
-      label="Mínima °C"
-      type="number"
-      value={temperaturaMinima}
-      onChange={(e) => setTemperaturaMinima(e.target.value)}
-      sx={{ backgroundColor: "#fff", borderRadius: 3, width: 180 }}
-    />
+          elevation={0}
+          sx={{
+            backgroundColor: "#efbc97",
+            borderRadius: 4,
+            p: { xs: 2, sm: 4 },
+            mb: 5,
+          }}
+        >
+          <Box 
+            display="flex" 
+            flexDirection={{ xs: "column", sm: "row" }} 
+            justifyContent="center" 
+            alignItems="center" 
+            gap={2}
+          >
+            <TextField
+              label="Mínima °C"
+              type="number"
+              value={temperaturaMinima}
+              onChange={(e) => setTemperaturaMinima(e.target.value)}
+              sx={{ backgroundColor: "#fff", borderRadius: 2, width: { xs: "100%", sm: 180 } }}
+            />
 
-    <Typography fontSize={32} fontWeight="bold">
-      até
-    </Typography>
+            <Typography sx={{ fontSize: { xs: 20, sm: 26 }, fontWeight: "bold", color: "#2C3E50" }}>
+              até
+            </Typography>
 
-    <TextField
-      label="Máxima °C"
-      type="number"
-      value={temperaturaMaxima}
-      onChange={(e) => setTemperaturaMaxima(e.target.value)}
-      sx={{ backgroundColor: "#fff", borderRadius: 3, width: 180 }}
-    />
-  </Box>
-</Paper>
+            <TextField
+              label="Máxima °C"
+              type="number"
+              value={temperaturaMaxima}
+              onChange={(e) => setTemperaturaMaxima(e.target.value)}
+              sx={{ backgroundColor: "#fff", borderRadius: 2, width: { xs: "100%", sm: 180 } }}
+            />
+          </Box>
+        </Paper>
 
+        
         <Paper
           elevation={0}
           sx={{
             backgroundColor: "#fff",
-            borderRadius: 5,
-            p: 3,
+            borderRadius: 4,
+            p: { xs: 2, sm: 3 },
             mb: 5,
+            boxSizing: "border-box"
           }}
         >
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-            <Typography variant="h5" fontWeight="bold" sx={{ color: "#7996b4" }}>
+          <Box 
+            display="flex" 
+            flexDirection={{ xs: "column", sm: "row" }} 
+            justifyContent="space-between" 
+            alignItems={{ xs: "stretch", sm: "center" }} 
+            gap={2} 
+            mb={3}
+          >
+            <Typography variant="h5" fontWeight="bold" 
+              sx={{ 
+                color: "#2C3E50", 
+                fontSize: { xs: "18px", sm: "22px" } 
+              }}>
               Insumos utilizados
             </Typography>
 
@@ -359,8 +404,9 @@ if (insumosUtilizados.length === 0) {
               sx={{
                 border: "2px solid #ff8c42",
                 color: "#ff8c42",
-                borderRadius: 3,
+                borderRadius: 2,
                 px: 3,
+                py: { xs: 1, sm: 0.5 },
                 textTransform: "none",
                 fontWeight: "bold",
               }}
@@ -369,125 +415,173 @@ if (insumosUtilizados.length === 0) {
             </Button>
           </Box>
 
-          <Table>
-            <TableHead sx={{ backgroundColor: "#7996b4" }}>
-              <TableRow>
-                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
-                  INSUMO
-                </TableCell>
-                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
-                  QUANTIDADE
-                </TableCell>
-                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
-                  UNIDADE
-                </TableCell>
-                <TableCell sx={{ color: "#fff", fontWeight: "bold" }}>
-                  AÇÕES
-                </TableCell>
-              </TableRow>
-            </TableHead>
+          
+          <Box sx={{ width: "100%", overflowX: "auto" }}>
+            <Table sx={{ minWidth: { xs: 500, sm: "100%" } }}>
+              <TableHead sx={{ backgroundColor: "#7996b4" }}>
+                <TableRow>
+                  <TableCell 
+                    sx={{ 
+                    color: "#fff", 
+                    fontWeight: "bold" 
+                    }}>
+                    INSUMO
+                  </TableCell>
 
-           <TableBody>
-  {insumosUtilizados.length === 0 ? (
-    <TableRow>
-      <TableCell colSpan={4} align="center">
-        Nenhum insumo adicionado.
-      </TableCell>
-    </TableRow>
-  ) : (
-    insumosUtilizados.map((insumo, index) => (
-      <TableRow key={index}>
-        <TableCell>{insumo.nome}</TableCell>
-        <TableCell>{insumo.quantidade}</TableCell>
-        <TableCell>{insumo.unidade}</TableCell>
-        <TableCell>
-          <Button
-            onClick={() => removerInsumo(index)}
-            sx={{ minWidth: 0, color: "red" }}
-          >
-            <DeleteIcon />
-          </Button>
-        </TableCell>
-      </TableRow>
-    ))
-  )}
-</TableBody>
-          </Table>
+                  <TableCell 
+                    sx={{ 
+                    color: "#fff", 
+                    fontWeight: "bold" 
+                    }}>
+                    QUANTIDADE
+                  </TableCell>
+
+                  <TableCell 
+                    sx={{ 
+                    color: "#fff", 
+                    fontWeight: "bold" 
+                    }}>
+                    UNIDADE
+                  </TableCell>
+
+                  <TableCell 
+                    sx={{ 
+                    color: "#fff", 
+                    fontWeight: "bold" 
+                    }}>
+                    AÇÕES
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {insumosUtilizados.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={4} align="center" sx={{ color: "#2C3E50", py: 4 }}>
+                      Nenhum insumo adicionado.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  insumosUtilizados.map((insumo, index) => (
+                    <TableRow key={index}>
+                      <TableCell 
+                        sx={{ 
+                        color: "#2C3E50", 
+                        fontWeight: 500 
+                        }}>
+                        {insumo.nome}
+                      </TableCell>
+
+                      <TableCell 
+                        sx={{ 
+                          color: "#2C3E50", 
+                          fontWeight: 500 
+                        }}>
+                        {insumo.quantidade}
+                      </TableCell>
+
+                      <TableCell 
+                        sx={{ 
+                        color: "#2C3E50", 
+                        fontWeight: 500 
+                        }}>
+                        {insumo.unidade}
+                      </TableCell>
+
+                      <TableCell>
+                        <Button
+                          onClick={() => removerInsumo(index)}
+                          sx={{ minWidth: 0, color: "#E8534A" }}
+                        >
+                          <DeleteIcon />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </Box>
         </Paper>
 
-        <Box display="flex" justifyContent="flex-end">
+        
+        <Box display="flex" justifyContent={{ xs: "stretch", sm: "flex-end" }}>
           <Button
-  onClick={cadastrarFicha}
-  sx={{
-    backgroundColor: "#ff8c42",
-    color: "#fff",
-    px: 8,
-    py: 1.5,
-    borderRadius: 3,
-    fontSize: 20,
-    textTransform: "none",
-  }}
->
-  Cadastrar
-</Button>
+            onClick={cadastrarFicha}
+            fullWidth={{ xs: true, sm: false }}
+            sx={{
+              backgroundColor: "#ff8c42",
+              color: "#fff",
+              px: { xs: 4, sm: 8 },
+              py: 1.5,
+              borderRadius: 2,
+              fontSize: { xs: 16, sm: 18 },
+              fontWeight: 700,
+              textTransform: "none",
+              boxShadow: "0 4px 10px rgba(255,140,66,0.3)",
+              "&:hover": {
+                backgroundColor: "#f47c2d",
+              },
+            }}
+          >
+            Cadastrar Ficha
+          </Button>
         </Box>
       </Box>
 
+      
       <Dialog
         open={popupAberto}
         onClose={() => setPopupAberto(false)}
         PaperProps={{
           sx: {
-            borderRadius: 5,
-            width: 500,
-            p: 2,
-            boxShadow: "-14px 14px 0px #7996b4",
+            borderRadius: 4,
+            width: { xs: "95%", sm: 460 },
+            mx: "auto",
+            p: { xs: 1, sm: 2 },
+            boxShadow: { xs: "0px 8px 24px rgba(0,0,0,0.15)", sm: "-12px 12px 0px #7996b4" },
           },
         }}
       >
         <DialogContent>
-          <Typography variant="h5" fontWeight="bold" sx={{ color: "#7996b4", mb: 3 }}>
+          <Typography variant="h5" fontWeight="bold" sx={{ color: "#2C3E50", mb: 3, fontSize: "20px" }}>
             Adicionar Insumo
           </Typography>
 
-          <Typography sx={{ color: "#7996b4", mb: 1 }}>
+          <Typography sx={{ color: "#2C3E50", mb: 1, fontWeight: 500 }}>
             Selecione o insumo:
           </Typography>
             
-  <TextField
-  select
-  fullWidth
-  value={insumoSelecionado}
-  onChange={(e) => setInsumoSelecionado(e.target.value)}
->
-  
-
-            {insumoSelecionado && (
-  <Typography
-    sx={{
-      color: "#7996b4",
-      fontSize: "15px",
-      fontWeight: "bold",
-      mt: 1,
-      mb: 2,
-    }}
-  >
-    📦 Estoque disponível: {insumoSelecionado.quantidadeEstoque}{" "}
-    {insumoSelecionado.unidadeMedida}
-  </Typography>
-)}
-            
+          <TextField
+            select
+            fullWidth
+            value={insumoSelecionado}
+            onChange={(e) => setInsumoSelecionado(e.target.value)}
+            sx={{ mb: 2 }}
+          >
             {insumosCadastrados.map((insumo) => (
-           <MenuItem key={insumo.idInsumo} value={insumo}>
-             {insumo.nome}
-           </MenuItem>
-          ))}
+              <MenuItem key={insumo.idInsumo} value={insumo}>
+                {insumo.nome}
+              </MenuItem>
+            ))}
           </TextField>
 
-          <Typography sx={{ color: "#7996b4", mb: 1 }}>
+          {insumoSelecionado && (
+            <Typography
+              sx={{
+                color: "#d35400",
+                fontSize: "14px",
+                fontWeight: "bold",
+                mb: 3,
+                mt: -1
+              }}
+            >
+              Estoque disponível: {insumoSelecionado.quantidadeEstoque} {insumoSelecionado.unidadeMedida}
+            </Typography>
+          )}
+
+          <Typography sx={{ color: "#2C3E50", mb: 1, fontWeight: 500 }}>
             Quantidade:
           </Typography>
-
           <TextField
             fullWidth
             type="number"
@@ -497,10 +591,9 @@ if (insumosUtilizados.length === 0) {
             sx={{ mb: 3 }}
           />
 
-          <Typography sx={{ color: "#7996b4", mb: 1 }}>
+          <Typography sx={{ color: "#2C3E50", mb: 1, fontWeight: 500 }}>
             Unidade:
           </Typography>
-
           <TextField
             select
             fullWidth
@@ -515,16 +608,21 @@ if (insumosUtilizados.length === 0) {
             <MenuItem value="UND">UND</MenuItem>
           </TextField>
 
-          <Box display="flex" justifyContent="flex-end">
+          <Box display="flex" justifyContent={{ xs: "stretch", sm: "flex-end" }}>
             <Button
               onClick={adicionarInsumo}
+              fullWidth={{ xs: true, sm: false }}
               sx={{
                 backgroundColor: "#ff8c42",
                 color: "#fff",
-                px: 4,
-                py: 1,
+                px: 5,
+                py: 1.2,
                 borderRadius: 2,
+                fontWeight: 700,
                 textTransform: "none",
+                "&:hover": {
+                  backgroundColor: "#f47c2d",
+                },
               }}
             >
               Adicionar

@@ -97,7 +97,7 @@ function Dashboard() {
     };
   });
 
-  // Ajustando os contadores dos Alertas Superiores para lerem os dados dinâmicos
+  
   const totalVencidos = alimentosCalculados.filter(item => item.status === 'Vencido').length;
   const totalCriticos = alimentosCalculados.filter(item => item.status === 'Crítico').length;
 
@@ -152,8 +152,13 @@ function Dashboard() {
                 variant="outlined" 
                 sx={{ backgroundColor: 'background.paper', borderRadius: 2 }}
               >
-                <Typography fontWeight="bold">Alimentos Vencidos</Typography>
-                {totalVencidos} {totalVencidos === 1 ? 'item vencido precisa' : 'itens vencidos precisam'} ser removidos da cozinha.
+                <Typography fontWeight="bold">
+                  Alimentos Vencidos
+                </Typography>
+
+                {totalVencidos} 
+                {totalVencidos === 1 ? 'item vencido precisa' : 'itens vencidos precisam'} 
+                ser removidos da cozinha.
               </Alert>
             )}
               
@@ -163,13 +168,24 @@ function Dashboard() {
                 variant="outlined" 
                 sx={{ backgroundColor: 'background.paper', borderRadius: 2 }}
               >
-                <Typography fontWeight="bold">Atenção: Validade Próxima</Typography>
-                {totalCriticos} {totalCriticos === 1 ? 'item com validade próxima precisa' : 'itens com validade próxima precisam'} de atenção.
+                <Typography fontWeight="bold">
+                  Atenção: Validade Próxima
+                </Typography>
+                {totalCriticos} 
+                {totalCriticos === 1 ? 'item com validade próxima precisa' : 'itens com validade próxima precisam'} 
+                de atenção.
               </Alert>
             )}
           </Stack>
 
-          <Typography variant="h5" fontWeight="bold" gutterBottom sx={{ color: 'text.primary', mb: 3 }}>
+          <Typography 
+            variant="h5" 
+            fontWeight="bold"   
+            gutterBottom 
+            sx={{ 
+              color: "#2C3E50", 
+              mb: 3 
+            }}>
             Monitoramento de Temperatura
           </Typography>
               
@@ -178,11 +194,17 @@ function Dashboard() {
             <Grid item xs={12} sm={6} md={3} key={index}>
               <Card 
                 sx={{ 
-                    borderRadius: '24px', boxShadow: '0px 10px 30px rgba(0,0,0,0.04)',
-                    border: '1px solid rgba(0,0,0,0.05)', height: '100%',
-                    overflow: 'hidden', backgroundColor: 'background.paper',
-                    display: 'flex', flexDirection: 'column', transition: 'all 0.3s ease',
-                    '&:hover': { transform: 'translateY(-5px)', boxShadow: '0px 15px 35px rgba(0,0,0,0.1)' }
+                    borderRadius: '24px', 
+                    boxShadow: '0px 10px 30px rgba(0,0,0,0.04)',
+                    border: '1px solid rgba(0,0,0,0.05)',
+                    height: '100%',
+                    overflow: 'hidden', 
+                    backgroundColor: 'background.paper',
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    transition: 'all 0.3s ease',
+                    '&:hover': { transform: 'translateY(-5px)', 
+                    boxShadow: '0px 15px 35px rgba(0,0,0,0.1)' }
                 }}
                 >
                 <Box sx={{ height: '6px', backgroundColor: temp.color, width: '100%' }} />
@@ -218,7 +240,14 @@ function Dashboard() {
           </Grid>
 
           
-          <Typography variant="h5" fontWeight="bold" gutterBottom sx={{ color: 'text.primary', mb: 1 }}>
+          <Typography 
+            variant="h5" 
+            fontWeight="bold" 
+            gutterBottom 
+            sx={{ 
+              color: "#2C3E50", 
+              mb: 1 
+            }}>
             Controle de Validade e Estoque
           </Typography>
 

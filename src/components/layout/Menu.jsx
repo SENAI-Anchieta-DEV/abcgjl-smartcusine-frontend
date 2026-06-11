@@ -7,23 +7,22 @@ import {
   Box,
   Avatar,
   MenuItem,
-  Divider
+  Divider,
+  Tooltip
 } from "@mui/material";
 import { useState } from "react";
 import imagemLogin from "../../assets/images/logo/Logo_SmartCuisine.png";
-import Brightness4Icon from "@mui/icons-material/Brightness4";
-import Brightness7Icon from "@mui/icons-material/Brightness7";
+// import Brightness4Icon from "@mui/icons-material/Brightness4";
+// import Brightness7Icon from "@mui/icons-material/Brightness7";
 import EditIcon from "@mui/icons-material/Edit";
 import LogoutIcon from "@mui/icons-material/Logout";
 import GroupsIcon from "@mui/icons-material/Groups";
 import AssessmentIcon from '@mui/icons-material/Assessment';
+import AddIcon from '@mui/icons-material/Add'; 
 import { Menu as MenuDropdown } from "@mui/material";
-// import { useNavigate } from "react-router-dom";
 
-function Menu({ onLogout, setTelaAtiva, toggleTema, modo, mudarTela}) {
+function Menu({ onLogout, setTelaAtiva, toggleTema, modo }) {
   const [anchorEl, setAnchorEl] = useState(null);
-
-  // const navigate = useNavigate();
 
   const abrirMenu = (event) => setAnchorEl(event.currentTarget);
   const fecharMenu = () => setAnchorEl(null);
@@ -39,100 +38,129 @@ function Menu({ onLogout, setTelaAtiva, toggleTema, modo, mudarTela}) {
         borderColor: "divider", 
       }}
     >
-      <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+      <Toolbar sx={{ display: "flex", justifyContent: "space-between", px: { xs: 1, sm: 2 } }}>
         
+        {/* LOGO E TITULO */}
         <Box 
-            sx={{ 
-                display: "flex", 
-                flexDirection: "row", 
-                alignItems: "center", 
-                gap: 1.5, 
-                cursor: "pointer"
+          onClick={() => setTelaAtiva("dashboard")} 
+          sx={{ 
+            display: "flex", 
+            flexDirection: "row", 
+            alignItems: "center", 
+            gap: { xs: 1, sm: 1.5 }, 
+            cursor: "pointer"
+          }}
+        >
+          <Box
+            component="img"
+            src={imagemLogin} 
+            alt="Logo"
+            sx={{
+              width: { xs: 40, sm: 50 },
+              height: 'auto',
+              borderRadius: '4px'
             }}
+          />
+
+          <Box sx={{ display: "flex", flexDirection: "column" }}>
+            <Typography 
+              variant="h6" 
+              fontWeight="bold"
+              sx={{ 
+                fontSize: { xs: '0.9rem', sm: '1.2rem' }, 
+                lineHeight: 1.1 
+              }}
             >
-           
-            <Box
-                onClick={() => setTelaAtiva("dashboard")} 
-                component="img"
-                src={imagemLogin} 
-                alt="Logo"
-                sx={{
-                width: { xs: 60, sm: 50 },
-                height: 'auto',
-                borderRadius: '4px'
-                }}
-            />
+              SmartCuisine
+            </Typography>
 
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
-                <Typography 
-                variant="h6" 
-                fontWeight="bold"
-                sx={{ 
-                    fontSize: { xs: '0.9rem', sm: '1.2rem' }, 
-                    lineHeight: 1.1 
-                }}
-                >
-                SmartCuisine
-                </Typography>
-
-                <Typography 
-                variant="body2" 
-                color="text.secondary"
-                sx={{ 
-                    fontSize: { xs: '0.7rem', sm: '0.875rem' },
-                    display: { xs: 'none', md: 'block' } 
-                }}
-                >
-                Bem vindo(a), administrador!
-                </Typography>
-            </Box>
+            <Typography 
+              variant="body2" 
+              color="text.secondary"
+              sx={{ 
+                fontSize: '0.875rem',
+                display: { xs: 'none', md: 'block' } 
+              }}
+            >
+              Bem vindo(a), administrador!
+            </Typography>
+          </Box>
         </Box>
 
-        <Box display="flex" alignItems="center" gap={2}>
+        <Box display="flex" alignItems="center" gap={{ xs: 0.5, sm: 1.5, md: 2 }}>
           
           <Button
             startIcon={<AssessmentIcon />}
             onClick={() => setTelaAtiva("relatorio-semanal")}
             sx={{
-              fontSize: { xs: '0.75rem', sm: '0.875rem' },
-              padding: { xs: '6px 12px', sm: '8px 16px' },
-              minWidth: { xs: '120px', sm: '150px' },
-              whiteSpace: 'nowrap',
+              display: { xs: 'none', sm: 'inline-flex' }, // Some no mobile, aparece do 'sm' para cima
+              fontSize: '0.875rem',
               borderRadius: 3,
               textTransform: "none",
               backgroundColor: "#7996b4", 
               color: "#fff",
               px: 2,
+              whiteSpace: 'nowrap',
               '&:hover': { backgroundColor: "#94a8bd" }
-            }}>
+            }}
+          >
             Relatório Semanal
           </Button>
+          
+          <Tooltip title="Relatório Semanal">
+            <IconButton 
+              onClick={() => setTelaAtiva("relatorio-semanal")}
+              sx={{ 
+                display: { xs: 'inline-flex', sm: 'none' },
+                backgroundColor: "#7996b4",
+                color: "#fff",
+                '&:hover': { backgroundColor: "#94a8bd" }
+              }}
+            >
+              <AssessmentIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+
 
           <Button
+            startIcon={<AddIcon />}
             onClick={() => setTelaAtiva("produtos")}
             sx={{
-              fontSize: { xs: '0.75rem', sm: '0.875rem' },
-              padding: { xs: '6px 12px', sm: '8px 16px' },
-              minWidth: { xs: '120px', sm: '150px' },
-              whiteSpace: 'nowrap',
+              display: { xs: 'none', sm: 'inline-flex' }, // Some no mobile
+              fontSize: '0.875rem',
               borderRadius: 3,
               textTransform: "none",
               backgroundColor: "#ff8c42",
               color: "#fff",
               px: 2,
+              whiteSpace: 'nowrap',
               '&:hover': { backgroundColor: "#e67e3a" }
-            }}>
-            + Adicionar Produto
+            }}
+          >
+            Adicionar Produto
           </Button>
-          
-          
-          <IconButton onClick={toggleTema} color="inherit">
-            {modo === "dark" ? <Brightness7Icon /> : <Brightness4Icon />}
-          </IconButton>
 
+
+          <Tooltip title="Adicionar Produto">
+            <IconButton 
+              onClick={() => setTelaAtiva("produtos")}
+              sx={{ 
+                display: { xs: 'inline-flex', sm: 'none' },
+                backgroundColor: "#ff8c42",
+                color: "#fff",
+                '&:hover': { backgroundColor: "#e67e3a" }
+              }}
+            >
+              <AddIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
           
-          <IconButton onClick={abrirMenu}>
-            <Avatar sx={{ bgcolor: "primary.main", width: 35, height: 35 }} />
+          {/* <IconButton onClick={toggleTema} color="inherit" size="small">
+            {modo === "dark" ? <Brightness7Icon /> : <Brightness4Icon />}
+          </IconButton> */}
+
+          <IconButton onClick={abrirMenu} sx={{ p: 0.5 }}>
+            <Avatar sx={{ bgcolor: "primary.main", width: { xs: 30, sm: 35 }, height: { xs: 30, sm: 35 } }} />
           </IconButton>
 
           <MenuDropdown
@@ -148,8 +176,8 @@ function Menu({ onLogout, setTelaAtiva, toggleTema, modo, mudarTela}) {
                 p: 1,
                 backgroundColor: "background.paper", 
               }
-            }}>
-
+            }}
+          >
             <Box px={2} py={1}>
               <Typography fontWeight="bold" color="text.primary">
                 Amanda Marques

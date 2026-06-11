@@ -1,366 +1,250 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-
 import {
   Box,
   Typography,
   TextField,
   Button,
   Paper,
-  MenuItem,
 } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { useNavigate } from "react-router-dom";
+import api from "../../services/api";
 
-import AddRoundedIcon from "@mui/icons-material/AddRounded";
-import DeviceThermostatRoundedIcon from "@mui/icons-material/DeviceThermostatRounded";
-
-function Equipamentos() {
-
+function CadastroEquipamento() {
   const navigate = useNavigate();
-  const [equipamento, setEquipamento] = useState("");
 
-  const equipamentos = {
-  freezer: {
-      categoria: "Refrigeração",
-      tempMin: -25,
-      tempMax: -18,
-  },
+  const [nomeEquipamento, setNomeEquipamento] = useState("");
+  const [marcaModelo, setMarcaModelo] = useState("");
+  const [numeroPatrimonio, setNumeroPatrimonio] = useState("");
+  const [carregando, setCarregando] = useState(false);
 
-  camara_fria: {
-      categoria: "Refrigeração",
-      tempMin: 0,
-      tempMax: 5,
-  },
+  async function cadastrarEquipamento() {
+    if (!nomeEquipamento || !marcaModelo) {
+      alert("Preencha os campos obrigatórios!");
+      return;
+    }
 
-  forno_combinado: {
-      categoria: "Aquecimento",
-      tempMin: 80,
-      tempMax: 250,
-  },
+    try {
+      setCarregando(true);
 
-  fogao_industrial: {
-      categoria: "Aquecimento",
-      tempMin: 100,
-      tempMax: 300,
-  },
-  };
+      const novoEquipamento = {
+        nome: nomeEquipamento.trim(),
+        marcaModelo: marcaModelo.trim(),
+        patrimonio: numeroPatrimonio.trim(),
+      };
 
-  function cadastrarEquipamento() {
-    if (!equipamento) return;
+      await api.post("/equipamentos", novoEquipamento);
 
-    const novoEquipamento = {
-      nome: equipamento,
-      categoria: equipamentos[equipamento].categoria,
-      tempMin: equipamentos[equipamento].tempMin,
-      tempMax: equipamentos[equipamento].tempMax,
-    };
-
-    const equipamentosSalvos =
-      JSON.parse(localStorage.getItem("equipamentos")) || [];
-
-    equipamentosSalvos.push(novoEquipamento);
-
-    localStorage.setItem(
-      "equipamentos",
-      JSON.stringify(equipamentosSalvos)
-    );
-
-    navigate("/produtos");
-  }    
+      alert("Equipamento cadastrado com sucesso!");
+      navigate("/produtos");
+    } catch (error) {
+      console.error("Erro ao cadastrar equipamento:", error);
+      alert("Erro ao cadastrar equipamento!");
+    } finally {
+      setCarregando(false);
+    }
+  }
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        background:
-          "linear-gradient(180deg, #c9d9e7 0%, #b7c9d9 100%)",
+    <Box 
+      sx={{ 
+        minHeight: "100vh", 
+        backgroundColor: "#b8ced8", 
+        p: { xs: 2, sm: 5 },
+        boxSizing: "border-box"
       }}
     >
-      
-      <Box
+
+      <Button
+        startIcon={
+          <ArrowBackIcon
+            sx={{
+              fontSize: { xs: 28, sm: 36 },
+              stroke: "#2C3E50",
+              strokeWidth: 2.5,
+            }}
+          />
+        }
+        onClick={() => navigate("/produtos")}
         sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          px: 3,
-          py: 4,
+          color: "#2C3E50",
+          textTransform: "none",
+          fontSize: { xs: "18px", sm: "22px" },
+          fontWeight: 700,
+          mb: 2,
         }}
       >
-        
-        <Typography
-          sx={{
-            fontSize: "1.8rem",
-            fontWeight: "bold",
-            color: "#6d86a3",
-            mb: 3,
-          }}
-        >
-          Adicionar Equipamento
-        </Typography>
+        Voltar
+      </Button>
 
-        
-        <Paper
-          elevation={0}
-          sx={{
-            width: "100%",
-            maxWidth: "700px",
-            backgroundColor: "#eab996",
-            borderRadius: "24px",
-            display: "flex",
-            alignItems: "center",
-            gap: 3,
-            p: 2.5,
-            mb: 4,
-          }}
-        >
-          
-          <Box
-            sx={{
-              width: 75,
-              height: 75,
-              borderRadius: "18px",
-              backgroundColor: "#ff8c42",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-            }}
-          >
-            <AddRoundedIcon
-              sx={{
-                fontSize: 55,
-                color: "white",
-              }}
-            />
-          </Box>
+      <Typography
+        variant="h3"
+        fontWeight="bold"
+        textAlign="center"
+        sx={{ 
+          color: "#2C3E50", 
+          mb: { xs: 3, sm: 5 },
+          fontSize: { xs: "26px", sm: "40px" } 
+        }}
+      >
+        Adicionar Equipamento
+      </Typography>
 
-         
-          <Box>
-            <Typography
-              sx={{
-                fontSize: "1.5rem",
-                fontWeight: "bold",
-                color: "#ef7f2d",
-                mb: 0.5,
-              }}
-            >
-              Adicionar Equipamento
-            </Typography>
-
-            <Typography
-              sx={{
-                fontSize: "1rem",
-                color: "#1f1f1f",
-                lineHeight: 1.4,
-              }}
-            >
-              Preencha todos os campos abaixo para
-              <br />
-              cadastrar o equipamento desejado
-            </Typography>
-          </Box>
-        </Paper>
-
-        
+      <Paper
+        elevation={0}
+        sx={{
+          maxWidth: 850,
+          mx: "auto",
+          p: { xs: 3, sm: 4 },
+          borderRadius: { xs: 4, sm: 6 },
+          backgroundColor: "#efbc97",
+          display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
+          alignItems: "center",
+          textAlign: { xs: "center", sm: "left" },
+          gap: { xs: 2, sm: 4 },
+          mb: 5,
+          boxSizing: "border-box"
+        }}
+      >
         <Box
           sx={{
-            width: "100%",
-            maxWidth: "700px",
+            width: { xs: 80, sm: 110 },
+            height: { xs: 80, sm: 110 },
+            borderRadius: 3,
+            backgroundColor: "#ff8c42",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            color: "#fff",
+            flexShrink: 0
           }}
         >
-          
-          <Typography
-            sx={{
-              fontSize: "1.2rem",
-              fontWeight: 600,
-              color: "#6d86a3",
-              mb: 1,
+          <AddIcon sx={{ fontSize: { xs: 50, sm: 70 } }} />
+        </Box>
+
+        <Box>
+          <Typography 
+            variant="h4" 
+            fontWeight="bold" 
+            sx={{ 
+              color: "#d35400", 
+              fontSize: { xs: "22px", sm: "30px" },
+              mb: 0.5
             }}
           >
-            Equipamento:
+            Adicionar Equipamento
           </Typography>
 
-          <TextField
-                select
-                fullWidth
-                label="Equipamento"
-                value={equipamento}
-                onChange={(e) => setEquipamento(e.target.value)}
+          <Typography sx={{ fontSize: { xs: 15, sm: 18 }, color: "#2C3E50", fontWeight: 500 }}>
+            Preencha todos os campos abaixo para cadastrar o maquinário ou utensílio desejado
+          </Typography>
+        </Box>
+      </Paper>
 
-                sx={{
-                    mb: 3,
+      <Box sx={{ maxWidth: 750, mx: "auto" }}>
+        
+        <Typography 
+          variant="h5" 
+          sx={{ 
+            color: "#2C3E50", 
+            mb: 1, 
+            fontWeight: 600, 
+            fontSize: { xs: "16px", sm: "20px" } 
+          }}>
 
-                    "& .MuiOutlinedInput-root": {
-                        backgroundColor: "white",
-                        borderRadius: "18px",
-                        height: "50px",
-                        fontSize: "1rem",
-                    },
+          Nome do Equipamento:
+        </Typography>
 
-                    "& input::placeholder": {
-                        color: "#9cb1c7",
-                        opacity: 1,
-                    },
-                }}
-            >
-                <MenuItem value="freezer">Freezer</MenuItem>
-                <MenuItem value="camara_fria">Câmara Fria</MenuItem>
-                <MenuItem value="forno_combinado">Forno Combinado</MenuItem>
-                <MenuItem value="fogao_industrial">Fogão Industrial</MenuItem>
-            </TextField>
+        <TextField
+          fullWidth
+          placeholder="Ex: Forno Industrial, Geladeira"
+          value={nomeEquipamento}
+          onChange={(e) => setNomeEquipamento(e.target.value)}
+          slotProps={{ input: { style: { color: "#2C3E50", fontWeight: 500, borderRadius: "8px" } } }}
+          sx={{ 
+            backgroundColor: "#fff", borderRadius: "8px", mb: 4,
+            "& .MuiOutlinedInput-root": { "& fieldset": { border: "none" } }
+          }}
+        />
 
-            
-            {equipamento && (
-            <>
-                <Typography
-                sx={{
-                    fontSize: "1.2rem",
-                    fontWeight: 600,
-                    color: "#6d86a3",
-                    mt: 3,
-                    mb: 1,
-                }}
-                >
-                Categoria:
-                </Typography>
+        
+        <Typography 
+          variant="h5" 
+          sx={{ 
+            color: "#2C3E50", 
+            mb: 1, 
+            fontWeight: 600, 
+            fontSize: { xs: "16px", sm: "20px" } 
+          }}>
+          Marca / Modelo:
+        </Typography>
 
-                <TextField
-                fullWidth
-                value={equipamentos[equipamento].categoria}
-                disabled
-                
-                sx={{
-                    mb: 3,
+        <TextField
+          fullWidth
+          placeholder="Insira a marca ou o modelo"
+          value={marcaModelo}
+          onChange={(e) => setMarcaModelo(e.target.value)}
+          slotProps={{ input: { style: { color: "#2C3E50", fontWeight: 500, borderRadius: "8px" } } }}
+          sx={{ 
+            backgroundColor: "#fff", borderRadius: "8px", mb: 4,
+            "& .MuiOutlinedInput-root": { "& fieldset": { border: "none" } }
+          }}
+        />
 
-                    "& .MuiOutlinedInput-root": {
-                        backgroundColor: "white",
-                        borderRadius: "18px",
-                        height: "50px",
-                        fontSize: "1rem",
-                    },
+  
+        <Typography 
+          variant="h5" 
+          sx={{ 
+            color: "#2C3E50", 
+            mb: 1, 
+            fontWeight: 600, 
+            fontSize: { xs: "16px", sm: "20px" } 
+          }}>
 
-                    "& input::placeholder": {
-                        color: "#9cb1c7",
-                        opacity: 1,
-                    },
-                }}
-                />
-            </>
-            )}
+          Número de Patrimônio / Identificação:
+        </Typography>
+        
+        <TextField
+          fullWidth
+          placeholder="Insira o número de identificação"
+          value={numeroPatrimonio}
+          onChange={(e) => setNumeroPatrimonio(e.target.value)}
+          slotProps={{ input: { style: { color: "#2C3E50", fontWeight: 500, borderRadius: "8px" } } }}
+          sx={{ 
+            backgroundColor: "#fff", borderRadius: "8px", mb: 4,
+            "& .MuiOutlinedInput-root": { "& fieldset": { border: "none" } }
+          }}
+        />
 
-            
-            {equipamento && (
-            <>
-                <Typography
-                sx={{
-                    fontSize: "1.2rem",
-                    fontWeight: 600,
-                    color: "#6d86a3",
-                    mt: 3,
-                    mb: 1,
-                }}
-                >
-                Temperatura Ideal:
-                </Typography>
 
-                <Paper
-                elevation={0}
-                sx={{
-                    backgroundColor: "#eab996",
-                    borderRadius: "25px",
-                    p: 4,
-                    display: "flex",
-                    justifyContent: "space-around",
-                    alignItems: "center",
-                }}
-                >
-
-                <Box
-                    sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: 1,
-                    }}
-                    >
-                    <DeviceThermostatRoundedIcon
-                        sx={{
-                        fontSize: 40,
-                        color: "white",
-                        }}
-                    />
-                </Box>
-
-                <Typography
-                    sx={{
-                    fontSize: "2rem",
-                    fontWeight: "bold",
-                    }}
-                >
-                    {equipamentos[equipamento].tempMin}°C
-                </Typography>
-
-                 
-                <Box
-                sx={{
-                    width: "80px",
-                    height: "5px",
-                    backgroundColor: "#ff8c42",
-                    borderRadius: "10px",
-                }}
-                />
-
-                <Typography
-                    sx={{
-                    fontSize: "2rem",
-                    fontWeight: "bold",
-                    }}
-                >
-                    {equipamentos[equipamento].tempMax}°C
-                </Typography>
-
-                <DeviceThermostatRoundedIcon
-                sx={{
-                  fontSize: 40,
-                  color: "white",
-                }}
-                />
-                </Paper>
-            </>
-            )}
-
-          {/* BOTÃO */}
-          <Box
+        <Box display="flex" justifyContent={{ xs: "stretch", sm: "flex-end" }} sx={{ mt: 2 }}>
+          <Button
+            onClick={cadastrarEquipamento}
+            disabled={carregando}
+            fullWidth={{ xs: true, sm: false }}
             sx={{
-              display: "flex",
-              justifyContent: "flex-end",
-              mt: 4,
+              backgroundColor: "#ff8c42",
+              color: "#fff",
+              px: { xs: 4, sm: 8 },
+              py: 1.5,
+              borderRadius: 2,
+              fontSize: { xs: 16, sm: 18 },
+              fontWeight: 700,
+              textTransform: "none",
+              boxShadow: "0 4px 10px rgba(255,140,66,0.3)",
+              "&:hover": {
+                backgroundColor: "#f47c2d",
+              },
             }}
           >
-            <Button
-              variant="contained"
-              onClick={cadastrarEquipamento}
-              sx={{
-                backgroundColor: "#ff8c42",
-                width: "150px",
-                height: "45px",
-                borderRadius: "12px",
-                fontSize: "1rem",
-                textTransform: "none",
-                fontWeight: "bold",
-                boxShadow: "none",
-
-                "&:hover": {
-                  backgroundColor: "#ef7f2d",
-                  boxShadow: "none",
-                },
-              }}
-            >
-              Cadastrar
-            </Button>
-          </Box>
+            {carregando ? "Cadastrando..." : "Cadastrar Equipamento"}
+          </Button>
         </Box>
       </Box>
     </Box>
   );
 }
 
-export default Equipamentos;
+export default CadastroEquipamento;
