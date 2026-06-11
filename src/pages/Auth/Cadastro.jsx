@@ -64,6 +64,10 @@ function Cadastro({mudarTela}) {
   alert("Cadastro realizado com sucesso!");
   mudarTela("login");
 })
+.catch((error) => {
+  console.error(error);
+  setErro("Não foi possível cadastrar usuário.");
+});
 };
 
 

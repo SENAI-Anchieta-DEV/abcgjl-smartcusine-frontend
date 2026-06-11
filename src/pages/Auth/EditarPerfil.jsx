@@ -10,6 +10,7 @@ import {
   Avatar,
   Stack
 } from "@mui/material";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 function EditarPerfil() {
   const navigate = useNavigate();
@@ -100,10 +101,44 @@ function EditarPerfil() {
         py: 4
       }}
     >
+
+      
+
       <Container maxWidth="md">
-        <Typography variant="h4" fontWeight="bold" gutterBottom>
-          Editar Perfil
-        </Typography>
+
+        <Button
+        startIcon={
+          <ArrowBackIcon
+        sx={{
+          fontSize: 28,
+          stroke: "#7996b4",
+          strokeWidth: 1.8,
+          
+        }}
+      />
+        }
+        onClick={() => navigate("/dashboard")}
+        sx={{
+        border: "3px solid #7996b4",
+        backgroundColor: "#ffffff90",
+        borderRadius: "12px",
+        color: "#7996b4",
+        fontWeight: 700,
+        px: 2,
+        py: 1,
+      }}
+      >
+        Home
+      </Button>
+
+        <Typography
+  variant="h4"
+  fontWeight="bold"
+  gutterBottom
+  sx={{ mt: 6 }}
+>
+  Editar Perfil
+</Typography>
 
         <Typography color="text.secondary" mb={3}>
           Atualize suas informações pessoais
@@ -178,25 +213,36 @@ function EditarPerfil() {
               justifyContent="flex-end"
             >
               <Button
-                variant="outlined"
-                color="secondary"
-                sx={{ borderRadius: 3 }}
-                onClick={() => navigate("/dashboard")}
-              >
-                Cancelar
-              </Button>
+  variant="contained"
+  sx={{
+    borderRadius: 3,
+    color: "#fff",
+    borderColor: "#7996b4",
+    backgroundColor: "#7996b4",
+    "&:hover": {
+      backgroundColor: "#7996b4",
+      borderColor: "#7996b4"
+    }
+  }}
+  onClick={() => navigate("/dashboard")}
+>
+  Cancelar
+</Button>
 
-              <Button
-                variant="contained"
-                color="secondary"
-                sx={{
-                  borderRadius: 3,
-                  color: "#fff"
-                }}
-                onClick={salvar}
-              >
-                Salvar
-              </Button>
+<Button
+  variant="contained"
+  sx={{
+    borderRadius: 3,
+    color: "#fff",
+    backgroundColor: "#ff7a00",
+    "&:hover": {
+      backgroundColor: "#e66a00"
+    }
+  }}
+  onClick={salvar}
+>
+  Salvar
+</Button>
             </Stack>
           </Stack>
         </Paper>
