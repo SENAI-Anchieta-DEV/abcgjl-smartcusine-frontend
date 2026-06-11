@@ -158,39 +158,50 @@ if (insumoJaAdicionado) {
   if (
     !nomePreparo ||
     !tipoEquipamento ||
-    !temperaturaMinima ||
-    !temperaturaMaxima
+    temperaturaMinima === "" ||
+    temperaturaMaxima === ""
   ) {
     alert("Preencha todos os campos da ficha!");
     return;
   }
 
-  
+   const min = Number(temperaturaMinima);
+   const max = Number(temperaturaMaxima);
 
-  if (Number(temperaturaMinima) <= 0 || Number(temperaturaMaxima) <= 0) {
-  alert("As temperaturas devem ser maiores que zero!");
-  return;
-}
+  if (Number.isNaN(min) || Number.isNaN(max)) {
+    alert("Informe temperaturas válidas!");
+    return;
+  }
 
-if (Number(temperaturaMinima) > Number(temperaturaMaxima)) {
-  alert("A temperatura mínima não pode ser maior que a máxima!");
-  return;
-}
+  const equipamentoFrio = ["Freezer", "Camara Fria", "Câmara Fria"].includes(
+    tipoEquipamento
+  );
 
-if (insumosUtilizados.length === 0) {
-  alert("Adicione pelo menos um insumo para cadastrar a ficha técnica!");
-  return;
-}
+  if (!equipamentoFrio && (min <= 0 || max <= 0)) {
+    alert("Para forno e fogão, as temperaturas devem ser maiores que zero!");
+    return;
+  }
+
+  if (min > max) {
+    alert("A temperatura mínima não pode ser maior que a máxima!");
+    return;
+  }
+
+  if (insumosUtilizados.length === 0) {
+    alert("Adicione pelo menos um insumo para cadastrar a ficha técnica!");
+    return;
+  }
 
   const ficha = {
     id: Date.now(),
     nomePreparo,
     tipoEquipamento,
-    temperaturaMinima: Number(temperaturaMinima),
-    temperaturaMaxima: Number(temperaturaMaxima),
+    temperaturaMinima: min,
+    temperaturaMaxima: max,
     insumosUtilizados,
     dataCriacao: new Date().toISOString().split("T")[0],
   };
+
 
   try {
     const fichasSalvas =
@@ -198,10 +209,7 @@ if (insumosUtilizados.length === 0) {
 
     fichasSalvas.push(ficha);
 
-    localStorage.setItem(
-      "fichasTecnicas",
-      JSON.stringify(fichasSalvas)
-    );
+    localStorage.setItem("fichasTecnicas", JSON.stringify(fichasSalvas));
 
     alert("Ficha técnica cadastrada com sucesso!");
     navigate("/produtos");
