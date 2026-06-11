@@ -11,8 +11,7 @@ import {
   Box,
   InputAdornment,
   MenuItem,
-  Link,
-  CircularProgress
+  Link
 } from "@mui/material";
 
 function Cadastro({mudarTela}) {
@@ -23,31 +22,15 @@ function Cadastro({mudarTela}) {
   const [confirmarSenha, setConfirmarSenha] = useState("");
   const [erro, setErro] = useState("");
 
-  const [tentouEnviar, setTentouEnviar] = useState(false);
-
-
-
-  const [loading, setLoading] = useState(false);
-
-  const cadastrar = async () => {
+  const cadastrar = () => {
   setErro("");
-  setTentouEnviar(true);
-
-  if (!nome || !email || !senha || !tipo) {
-    setErro("Por favor, preencha todos os campos obrigatórios.");
-    return;
-  }
 
   if (senha !== confirmarSenha) {
     setErro("As senhas não coincidem");
     return;
   }
 
-  setLoading(true);
-
-  try {
-
-    const res = await fetch("https://abcgjl-smartcusine-backend-api.onrender.com/usuarios", {
+  fetch("https://abcgjl-smartcusine-backend-api.onrender.com/usuarios", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -59,20 +42,35 @@ function Cadastro({mudarTela}) {
       tipo
     })
   })
-    if (!res.ok) {
-        throw new Error("Erro ao cadastrar");
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error("Erro ao cadastrar usuário");
       }
 
-      mudarTela("login");
+      return res.json();
+    })
+    .then((data) => {
+  localStorage.setItem(
+    `usuario_${data.email}`,
+    JSON.stringify(data)
+  );
 
-    } catch (error) {
-      setErro("Erro ao cadastrar usuário.");
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-  
+  localStorage.setItem("usuario", JSON.stringify(data));
+
+  if (data.id) {
+    localStorage.setItem("usuarioId", data.id);
+  }
+
+  alert("Cadastro realizado com sucesso!");
+  mudarTela("login");
+})
+.catch((error) => {
+  console.error(error);
+  setErro("Não foi possível cadastrar usuário.");
+});
+};
+
+
   return (
     <Box
       sx={{
@@ -134,12 +132,10 @@ function Cadastro({mudarTela}) {
 
             <Box display="flex" flexDirection="column" gap={2}>
 
+              {/* TIPO DE PERFIL */}
               <TextField
                 select
                 label="Selecione um perfil"
-                required
-                error={tentouEnviar && !tipo}
-                helperText={tentouEnviar && !tipo ? "Selecione um perfil" : ""}
                 size="small"
                 value={tipo}
                 onChange={(e) => setTipo(e.target.value)}
@@ -151,11 +147,9 @@ function Cadastro({mudarTela}) {
                 <MenuItem value="COZINHEIRO">Cozinheiro</MenuItem>
               </TextField>
 
+              {/* NOME */}
               <TextField
                 label="Seu nome"
-                required     
-                error={!nome && tentouEnviar}
-                helperText={!nome && tentouEnviar ? "O nome é obrigatório" : ""}
                 size="small"
                 fullWidth
                 onChange={(e) => setNome(e.target.value)}
@@ -169,12 +163,9 @@ function Cadastro({mudarTela}) {
                 sx={{ backgroundColor: "#f5f5f5", borderRadius: 2 }}
               />
 
+              {/* EMAIL */}
               <TextField
-                label="Email"
-                type="email"
-                required
-                error={tentouEnviar && !email}
-                helperText={tentouEnviar && !email ? "O e-mail é obrigatório" : ""}
+                label="Seu email"
                 size="small"
                 fullWidth
                 onChange={(e) => setEmail(e.target.value)}
@@ -188,12 +179,10 @@ function Cadastro({mudarTela}) {
                 sx={{ backgroundColor: "#f5f5f5", borderRadius: 2 }}
               />
 
+              {/* SENHA */}
               <TextField
                 label="Senha"
                 type="password"
-                required
-                error={tentouEnviar && !senha}
-                helperText={tentouEnviar && !senha ? "A senha é obrigatória" : ""}
                 size="small"
                 fullWidth
                 onChange={(e) => setSenha(e.target.value)}
@@ -207,21 +196,13 @@ function Cadastro({mudarTela}) {
                 sx={{ backgroundColor: "#f5f5f5", borderRadius: 2 }}
               />
 
+              {/* CONFIRMAR SENHA */}
               <TextField
                 label="Confirmar senha"
                 type="password"
-                required
                 size="small"
                 fullWidth
                 onChange={(e) => setConfirmarSenha(e.target.value)}
-                error={tentouEnviar && (!confirmarSenha || confirmarSenha !== senha)}
-                helperText={
-                  tentouEnviar && !confirmarSenha 
-                  ? "Confirme sua senha" 
-                  : tentouEnviar && confirmarSenha !== senha 
-                    ? "As senhas não coincidem" 
-                    : ""
-                }
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
@@ -231,48 +212,26 @@ function Cadastro({mudarTela}) {
                 }}
                 sx={{ backgroundColor: "#f5f5f5", borderRadius: 2 }}
               />
-              
-              <Button
-              variant="contained"
-              fullWidth 
-              onClick={cadastrar}
-              disabled={loading}
-              sx={{
-                fontFamily: "'Poppins', sans-serif",
-                mt: 1,
-                padding: 1.2,
-                borderRadius: 2,
-                backgroundColor: "#ff7a00",
-                fontWeight: "bold",
-                "&:hover": {
-                  backgroundColor: "#e66a00"
-                },
 
-               "&.Mui-disabled": {
-                  backgroundColor: "#ff7a00", 
-                   padding: 1.2,
-                  opacity: 0.7, 
-                  color: "white" 
-                },
-                position: 'relative'
-              }}
-            >
-              {loading ? (
-                <CircularProgress 
-                  size={24} 
-                  sx={{ 
-                    color: 'white',
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    marginTop: '-12px',
-                    marginLeft: '-12px',
-                  }} 
-                />
-              ) : (
-                'Criar conta'
-              )}
-            </Button>
+              {/* BOTÃO */}
+              <Button
+                variant="contained"
+                fullWidth
+                onClick={cadastrar}
+                sx={{
+                  fontFamily: "'Poppins', sans-serif",
+                  mt: 1,
+                  padding: 1.2,
+                  borderRadius: 2,
+                  backgroundColor: "#ff7a00",
+                  fontWeight: "bold",
+                  "&:hover": {
+                    backgroundColor: "#e66a00"
+                  }
+                }}
+              >
+                Criar conta
+              </Button>
 
               {erro && (
                 <Typography color="error" align="center">
