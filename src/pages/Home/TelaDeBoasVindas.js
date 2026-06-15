@@ -19,6 +19,13 @@ import FactCheckIcon from '@mui/icons-material/FactCheck';
 import MenuIcon from '@mui/icons-material/Menu';
 import imagemLogin from "../../assets/images/logo/Logo_SmartCuisine.png";
 import cozinhaImg from "../../assets/images/backgrounds/cozinha.webp";
+import Bianca from "../../assets/images/equipe/Bianca.jpeg"
+import Catarina from "../../assets/images/equipe/Catarina.jpeg"
+import Gabrieli from "../../assets/images/equipe/Gabrieli.jpeg"
+import Jamily from "../../assets/images/equipe/Jamily.jpeg"
+import Laura from "../../assets/images/equipe/Laura.jpeg"
+import Amanda from "../../assets/images/equipe/Amanda.png"
+
 
 function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
 
@@ -69,28 +76,47 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
             </Typography>
           </Box>
 
-          <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 4 }}>
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 3, alignItems:'center' }}>
             <Button onClick={() => scrollToSection('funcionalidades')} 
               sx={{ 
-                color: '#1a1a1a', 
-                '&:hover': {
-                  backgroundColor: 'transparent',
-                  color: '#EF6C00'
-                }
-              }}>
+  color: '#1a1a1a',
+  minWidth: 'auto',
+  px: 1,
+  '&:hover': {
+    backgroundColor: 'transparent',
+    color: '#EF6C00'
+  }
+}}>
               Funcionalidades
             </Button>
 
             <Button onClick={() => scrollToSection('como-funciona')} 
               sx={{ 
-                color: '#1A1A1A',
-                '&:hover': {
-                  backgroundColor: 'transparent',
-                  color: '#EF6C00'
-                }
-                }}>
+  color: '#1a1a1a',
+  minWidth: 'auto',
+  px: 1,
+  '&:hover': {
+    backgroundColor: 'transparent',
+    color: '#EF6C00'
+  }
+}}>
               Como Funciona
             </Button>
+
+            <Button 
+  onClick={() => scrollToSection('sobre-nos')} 
+  sx={{ 
+    color: '#1a1a1a',
+    minWidth: 'auto',
+    p: 0,
+    '&:hover': {
+      backgroundColor: 'transparent',
+      color: '#EF6C00'
+    }
+  }}
+>
+  Sobre nós
+</Button>
 
             <Button variant="contained" 
               onClick={irParaLogin} 
@@ -500,6 +526,156 @@ function TelaDeBoasVindas({ irParaLogin, irParaCadastro }) {
           </Button>
         </Container>
       </Box>
+
+      <Box
+ id="sobre-nos"
+ sx={{
+   py:{xs:8, md:12},
+   px:4,
+   backgroundColor:'#fff',
+   textAlign:'center'
+ }}
+>
+
+<Typography
+ variant="h4"
+ sx={{
+   fontWeight:800,
+   mb:2
+ }}
+>
+ Sobre Nós
+</Typography>
+
+
+<Typography
+ sx={{
+   color:'#666',
+   mb:6
+ }}
+>
+ Conheça a equipe por trás do SmartCuisine
+ </Typography>
+
+
+<Grid 
+ container 
+ spacing={4}
+ justifyContent="center"
+>
+
+
+{[
+ {
+  nome:"Amanda Marques",
+  cargo:"Scrum Master/Frontend,",
+  foto: Amanda,
+  linkedin:"https://linkedin.com"
+ },
+
+  {
+  nome:"Bianca Neves",
+  cargo:"Banco de Dados/IoT,",
+  foto: Bianca,
+  linkedin:"https://www.linkedin.com/in/bianca-neves-torres-a9545a2a3?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=android_app"
+ },
+
+
+ {
+  nome:"Catarina Macedo Lopes",
+  cargo:"Frontend",
+  foto: Catarina,
+  linkedin:"https://www.linkedin.com/in/catarina-macedo-lopes-b9212034a?utm_source=share_via&utm_content=profile&utm_medium=member_android"
+ },
+
+ {
+  nome:"Gabrieli da Silva Marcelino",
+  cargo:"Backend",
+  foto: Gabrieli,
+  linkedin:"https://www.linkedin.com/in/gabrieli-da-silva-administrativo/"
+ },
+
+ {
+  nome:"Jamily Vitoria Alecrim",
+  cargo:"Banco de Dados/Mobile",
+  foto: Jamily,
+  linkedin:"https://www.linkedin.com/in/jamily-vitoria-silva-3866b4213?utm_source=share_via&utm_content=profile&utm_medium=member_android"
+ },
+
+ {
+  nome:"Laura Basilio Mitterbach",
+  cargo:"Backend/Frontend",
+  foto: Laura,
+  linkedin:"https://www.linkedin.com/in/laura-basilio-mitterbach-276014247?utm_source=share_via&utm_content=profile&utm_medium=member_android"
+ },
+
+
+].map((pessoa,index)=>(
+
+<Grid item xs={12} sm={6} md={3} key={index}>
+
+<Paper
+ elevation={3}
+ sx={{
+   p:3,
+   borderRadius:'24px'
+ }}
+>
+
+
+<Box
+ component="img"
+ src={pessoa.foto}
+ sx={{
+  width:160,
+  height:160,
+  borderRadius:'20px',
+  objectFit:'cover',
+  mb:2
+ }}
+/>
+
+
+<Typography
+ variant="h6"
+ sx={{fontWeight:700}}
+>
+ {pessoa.nome}
+</Typography>
+
+
+<Typography
+ sx={{
+  color:'#777',
+  mb:2
+ }}
+>
+ {pessoa.cargo}
+</Typography>
+
+
+<Button
+ variant="contained"
+ href={pessoa.linkedin}
+ target="_blank"
+ sx={{
+  backgroundColor:'#EF6C00'
+ }}
+>
+ LinkedIn
+</Button>
+
+
+</Paper>
+
+</Grid>
+
+))}
+
+
+</Grid>
+
+</Box>
 
 
       <Box component="footer" 
