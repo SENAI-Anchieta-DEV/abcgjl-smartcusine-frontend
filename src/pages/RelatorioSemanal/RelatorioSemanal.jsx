@@ -5,7 +5,7 @@ import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
-export default function RelatorioSemanal() {
+export default function RelatorioSemanal({ setTelaAtiva }) {
   const navigate = useNavigate();
 
   const [nomeRelatorio, setNomeRelatorio] = useState("");
@@ -14,6 +14,7 @@ export default function RelatorioSemanal() {
   
   const [dadosPizza, setDadosPizza] = useState([]);
   const [fichasUsadas, setFichasUsadas] = useState([]);
+  const [descricaoRelatorio, setDescricaoRelatorio] = useState("");
   const [carregando, setCarregando] = useState(true); 
 
   const [mensagemAberta, setMensagemAberta] = useState(false);
@@ -80,6 +81,27 @@ export default function RelatorioSemanal() {
     if (reason === "clickaway") return;
     setMensagemAberta(false);
   };
+
+  const concluirRelatorio = () => {
+  const novoRelatorio = {
+    id: Date.now(),
+    nome: nomeRelatorio || "Relatório Semanal",
+    descricao: descricaoRelatorio,
+    data: new Date().toLocaleDateString("pt-BR")
+  };
+
+  const relatoriosSalvos =
+    JSON.parse(localStorage.getItem("relatoriosSemanais")) || [];
+
+  localStorage.setItem(
+    "relatoriosSemanais",
+    JSON.stringify([...relatoriosSalvos, novoRelatorio])
+  );
+
+  alert("Relatório gerado com sucesso!");
+
+  setTelaAtiva("lista-relatorios");
+};
 
   if (carregando) {
     return (
@@ -253,14 +275,16 @@ export default function RelatorioSemanal() {
           <h2 style={{ fontSize: 16, fontWeight: 600, color: "#1E293B", marginBottom: 12 }}>
             Considerações / Relatório Geral
           </h2>
-          <textarea
-            value={textoRelatorio}
-            onChange={e => setTextoRelatorio(e.target.value)}
-            placeholder="Digite aqui as observações da semana, mudanças em equipamentos, controle de validade e notas de qualidade..."
-            style={{
-              width: "100%", height: 140, padding: "14px", borderRadius: 8, border: "1.5px solid #E2E8F0",
-              fontSize: 14, fontFamily: "inherit", resize: "vertical", outline: "none", lineHeight: 1.6, color: "#334155",
-              boxSizing: "border-box"
+          <TextField
+            label="Descrição do Relatório"
+            value={descricaoRelatorio}
+            onChange={(e) => setDescricaoRelatorio(e.target.value)}
+            multiline
+            minRows={6}
+            fullWidth
+            sx={{
+              backgroundColor: "#fff",
+              borderRadius: 2
             }}
           />
         </div>
@@ -268,7 +292,7 @@ export default function RelatorioSemanal() {
         {/* Container do Botão */}
         <div style={{ display: "flex", justifyContent: isMobile ? "stretch" : "flex-end" }}>
           <button
-            onClick={handleConcluir}
+            onClick={concluirRelatorio}
             style={{
               background: enviado ? "#10B981" : "#F4A623", border: "none", color: "#fff",
               borderRadius: 8, padding: "14px 40px", fontWeight: 700, fontSize: 15, cursor: "pointer",

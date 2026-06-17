@@ -108,7 +108,7 @@ function Menu({ onLogout, setTelaAtiva, toggleTema, modo }) {
         <Box display="flex" alignItems="center" gap={2}>
           <Button
             startIcon={<AssessmentIcon />}
-            onClick={() => setTelaAtiva("relatorio-semanal")}
+            onClick={() => setTelaAtiva("lista-relatorios")}
             sx={{
               fontSize: { xs: "0.75rem", sm: "0.875rem" },
               padding: { xs: "6px 12px", sm: "8px 16px" },

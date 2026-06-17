@@ -13,6 +13,7 @@ import CadastroInsumo from "./pages/Insumos/CadastroInsumo";
 import CadastroFichaTecnica from "./pages/FichaTecnica/CadastroFichaTecnica";
 import Produtos from "./pages/Produtos/Produtos";
 import Equipamentos from "./pages/Equipamentos/Equipamentos";
+import ListaRelatorios from "./pages/RelatorioSemanal/ListaRelatorios";
 import RelatorioSemanal from "./pages/RelatorioSemanal/RelatorioSemanal";
 
 function AppContent() {
@@ -44,6 +45,7 @@ function AppContent() {
     else if (tela === "boas-vindas") navigate("/teladeboasvindas");
     else if (tela === "adicionar-produto") navigate("/adicionar-produto");
     else if (tela === "produtos") navigate("/produtos");
+    else if (tela === "lista-relatorios") navigate("/lista-relatorios");
     else if (tela === "relatorio-semanal") navigate("/relatorio-semanal");
     else navigate(`/${tela}`);
   };
@@ -232,6 +234,23 @@ function AppContent() {
     justifyContent: "center",
   }}>
         <CadastroFichaTecnica />
+      </main>
+    </>
+  ) : (
+    <Navigate to="/login" replace />
+  )
+} />
+<Route path="/lista-relatorios" element={
+  logado ? (
+    <>
+      <Menu 
+        onLogout={() => { setLogado(false); irParaBoasVindas(); }} 
+        setTelaAtiva={mudarTelaPorString} 
+        toggleTema={toggleTema} 
+        modo={modo} 
+      />
+      <main style={{ padding: "20px" }}>
+        <ListaRelatorios setTelaAtiva={mudarTelaPorString} />
       </main>
     </>
   ) : (
